@@ -345,7 +345,7 @@ public struct SessionArtifacts: Equatable, Sendable {
         // because a public function's default argument may not name an
         // internal static, and duplicating the UTC definition would be worse.
         var utc = calendar ?? Calendar(identifier: .gregorian)
-        utc.timeZone = TimeZone(secondsFromGMT: 0)
+        utc.timeZone = TimeZone(secondsFromGMT: 0)! // the identifier always resolves
         let f = DateFormatter()
         f.calendar = utc
         f.locale = Locale(identifier: "en_US_POSIX")
