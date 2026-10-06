@@ -11,11 +11,10 @@
 # Nothing here is invented: the runtime comes from DroidDeck's own catalogue, so
 # the guest is the runtime an Android device would have run, byte for byte.
 #
-# The kernel is Debian's, not the guest's own: Arch's aarch64 kernel keeps
-# virtio_blk as a module and would want an initramfs of its own to find the disk,
-# while Debian's cloud kernel and its initramfs-tools do the "mount /dev/vda and
-# switch_root" dance out of the box. A kernel is a kernel; the userland that ends
-# up running is Arch's, from DroidDeck.
+# The kernel is Alpine's aarch64 netboot pair rather than the guest's own: Arch's
+# aarch64 kernel keeps virtio_blk as a module and would want an initramfs built for
+# it, while that pair mounts /dev/vda and switch_roots out of the box. A kernel is
+# a kernel; the userland that ends up running is the runtime's, from DroidDeck.
 #
 # Not done by this script, and the next thing to do:
 #
@@ -38,18 +37,30 @@ IMAGE_MB="${IMAGE_MB:-6144}"
 
 step() { printf '\n\033[1;34m##### %s\033[0m\n' "$*"; }
 
+# One message that names the command, both package managers, and what the
+# machine that failed it looked like: a guest build that dies on "command not
+# found" three hours in says nothing about which host it was on.
 need() {
     command -v "$1" >/dev/null 2>&1 || {
-        echo "missing $1 - on Ubuntu: apt-get install -y $2" >&2
+        echo "missing $1" >&2
+        echo "  Debian/Ubuntu: apt-get install -y $2" >&2
+        echo "  macOS:         brew install $3" >&2
+        echo "  on this host:  $(uname -srm) / $(sw_vers -productVersion 2>/dev/null || echo 'unknown')" >&2
         exit 1
     }
 }
 
 mkdir -p "$GUEST"
-need curl curl
-need zstd zstd
-need tar tar
-need mkfs.ext4 e2fsprogs
+need curl curl curl
+need zstd zstd zstd
+need tar tar gtar
+# mkfs.ext4 comes from e2fsprogs on both; macOS needs it from Homebrew because the
+# runner has no Linux tools at all. The -d flag (write a directory tree into a
+# fresh image) is what makes this work without a loop mount, and it needs
+# e2fsprogs 1.43 or newer - Homebrew's is far past that.
+need mkfs.ext4 e2fsprogs e2fsprogs
+need tune2fs e2fsprogs e2fsprogs
+need e2fsck e2fsprogs e2fsprogs
 
 step "the runtime catalogue"
 # Same URL the Android app fetches, so the guest can never drift from the runtime

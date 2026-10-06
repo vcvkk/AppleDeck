@@ -185,14 +185,31 @@ jobs:
           key: guest-${{ env.GUEST_CACHE_VERSION }}-${{ hashFiles('ios/scripts/build_guest_image.sh') }}
           restore-keys: guest-${{ env.GUEST_CACHE_VERSION }}-
 
+      # The image is packed with mkfs.ext4, which is a Linux tool: on a macOS
+      # runner it has to come from Homebrew, and without this the guest build
+      # stops on the first missing command rather than on anything interesting.
+      - name: Tools for the guest build
+        if: ${{ github.event_name == 'schedule' || inputs.guest == true }}
+        run: |
+          set -euo pipefail
+          brew install e2fsprogs zstd
+          mkfs.ext4 -V 2>&1 | head -2 || true
+
       - name: Build the guest runtime
         if: ${{ github.event_name == 'schedule' || inputs.guest == true }}
         run: |
           # The image first: it is a download and a repack, and the emulator is
           # the long part. Failing fast on a missing kernel beats spending an hour
           # on QEMU to find out there is nothing to boot.
-          ./ios/scripts/build_guest_image.sh
-          ./ios/scripts/build_guest.sh
+          #
+          # tee'd and pipefail'd: without the flag a failure is masked by tee's
+          # exit status, and without the log the published report says nothing at
+          # all - which is exactly how the last one failed silently.
+          set -o pipefail
+          {
+            ./ios/scripts/build_guest_image.sh
+            ./ios/scripts/build_guest.sh
+          } 2>&1 | tee /tmp/guest.log
 
       - name: Build and package
         # teed, because the script's own output is where a bundle validation
@@ -228,6 +245,12 @@ jobs:
             grep -E 'error:|fatal error|error :' /tmp/appledeck_ipa/build.log 2>/dev/null \
               | sed 's#/Users/runner/work/AppleDeck/AppleDeck/##' \
               | awk '!seen[$0]++' || true
+            echo '```'
+            echo
+            echo "## guest build"
+            echo
+            echo '```'
+            tail -80 /tmp/guest.log 2>/dev/null || echo "no guest log: the guest build did not run"
             echo '```'
             echo
             echo "## bundle validation and packaging"
