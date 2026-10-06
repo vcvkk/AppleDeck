@@ -20,6 +20,10 @@ public final class GameEnvironmentStore {
     /// reads what the launcher passes down.
     public var url: URL
 
+    /// Told after every successful write. The launcher keeps a copy in memory so
+    /// the editor and the session cannot read different files.
+    public var onWrite: (@Sendable (GameEnvironment.Config) -> Void)?
+
     public init(url: URL) {
         self.url = url
     }
@@ -44,6 +48,7 @@ public final class GameEnvironmentStore {
         // .atomic writes a temporary file and renames it, so a reader either sees
         // the old file or the new one and never half of either.
         try data.write(to: url, options: .atomic)
+        onWrite?(config)
     }
 
     /// Removes the file, which is what "reset to defaults" means: there is no

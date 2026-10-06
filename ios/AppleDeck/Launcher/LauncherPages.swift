@@ -101,6 +101,19 @@ struct LibraryView: View {
                     }
                 }
             }
+            .swipeActions(edge: .trailing) {
+                // The per-game environment, next to the game it is for: setting a
+                // variable globally that was meant for one game is invisible
+                // until you launch a different one and find it still applied.
+                if let appID = game.appID, !appID.isEmpty {
+                    NavigationLink {
+                        GameEnvironmentEditor(scope: appID, gameName: game.name)
+                    } label: {
+                        Label("Environment", systemImage: "slider.horizontal.3")
+                    }
+                    .tint(.indigo)
+                }
+            }
         }
         .searchable(text: $search, prompt: "Games")
         .overlay {
@@ -297,6 +310,20 @@ struct SettingsView: View {
                 Toggle("AppImage import", isOn: Binding(
                     get: { launcher.prefs.appImagesEnabled },
                     set: { launcher.prefs.appImagesEnabled = $0 }))
+            }
+            Section("Every game") {
+                NavigationLink {
+                    GameEnvironmentEditor(scope: "", gameName: nil)
+                } label: {
+                    Text("Game environment")
+                }
+                Picker("FEX preset", selection: Binding(
+                    get: { launcher.prefs.string("fexPreset", "") },
+                    set: { launcher.prefs.string("fexPreset", $0) })) {
+                    ForEach(FexPreset.all) { entry in
+                        Text(entry.label).tag(entry.id)
+                    }
+                }
             }
             Section("Logs") {
                 Toggle("Keep session logs", isOn: Binding(

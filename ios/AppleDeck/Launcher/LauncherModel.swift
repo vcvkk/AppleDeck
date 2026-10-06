@@ -25,6 +25,10 @@ final class LauncherModel: ObservableObject {
     let prefs: Prefs
     let session: SessionController
     let store: FlathubClient
+    /// The game environment, as the editor's own store: the editor is the only
+    /// writer, and the session reads the same file when it builds a command line.
+    let environmentStore: GameEnvironmentStore
+    private(set) var environment: GameEnvironment.Config
 
     /// The runtime the launcher will use. TCG today; see docs/ios-port.md for
     /// what a second backend has to satisfy.
@@ -45,8 +49,17 @@ final class LauncherModel: ObservableObject {
         self.runtime = QemuRuntime()
         self.session = SessionController(prefs: prefs, runtime: runtime, paths: paths)
         self.store = FlathubClient()
+        self.environmentStore = GameEnvironmentStore.standard(container: container)
+        // Read once and kept: the editor writes it, and a session reads it when
+        // it builds the guest command line. A failed read is an empty
+        // environment, which is what a session would have had anyway.
+        self.environment = (try? self.environmentStore.read()) ?? GameEnvironment.Config()
         self.session.onFinish = { [weak self] in
             Task { @MainActor in self?.refreshLibrary() }
+        }
+        // Keep the copy the editor holds honest after a write.
+        self.environmentStore.onWrite = { config in
+            Task { @MainActor in self?.environment = config }
         }
         reloadRuntimeStatus()
     }
