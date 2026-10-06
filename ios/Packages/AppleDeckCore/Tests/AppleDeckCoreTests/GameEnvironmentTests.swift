@@ -158,12 +158,12 @@ final class GameEnvironmentOptionsTests: XCTestCase {
 
     func testAnExplicitNullIsNotTheSameAsUnset() throws {
         let option = try XCTUnwrap(GameEnvironmentOptions.find("DXVK_CONFIG"))
-        let defaults = ["DXVK_CONFIG": "dxvk.maxFrameRate = 60"]
-        XCTAssertEqual(GameEnvironmentOptions.effectiveValue(for: option, in: [:], defaults: defaults),
+        let fallbacks = ["DXVK_CONFIG": "dxvk.maxFrameRate = 60"]
+        XCTAssertEqual(GameEnvironmentOptions.effectiveValue(for: option, in: [:], fallbacks: fallbacks),
                        "dxvk.maxFrameRate = 60")
         XCTAssertEqual(GameEnvironmentOptions.effectiveValue(for: option,
                                                              in: ["DXVK_CONFIG": nil],
-                                                             defaults: defaults),
+                                                             fallbacks: fallbacks),
                        "", "set to nothing is not the same as never set")
     }
 }

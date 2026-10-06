@@ -149,7 +149,7 @@ public enum GameEnvironmentOptions {
     /// The value the editor shows for an option that has never been set.
     public static func effectiveValue(for option: Option,
                                      in entries: [String: String?],
-                                     defaults defaults: [String: String?]) -> String {
+                                     fallbacks: [String: String?]) -> String {
         if let value = entries[option.name] {
             // An explicit null means "no value", which is different from unset.
             guard let value else { return "" }
@@ -158,7 +158,7 @@ public enum GameEnvironmentOptions {
         // `defaults` holds [String: String?] because "set to nothing" is a value
         // the editor distinguishes, so the lookup is String?? and ?? flattens only
         // one level of it.
-        if let stored = defaults[option.name] {
+        if let stored = fallbacks[option.name] {
             return stored ?? ""
         }
         return option.defaultValue

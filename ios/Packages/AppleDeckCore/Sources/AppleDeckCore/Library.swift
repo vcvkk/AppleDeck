@@ -1,5 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import Foundation
+// URLSession lives in FoundationNetworking on Linux and in Foundation on Apple
+// platforms, which is the whole reason this package is worth testing on a runner
+// that has no iOS in it.
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 /// Valve's KeyValues text format, as far as the Steam client writes it.
 ///

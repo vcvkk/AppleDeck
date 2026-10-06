@@ -282,10 +282,17 @@ jobs:
 
           git config user.name "ci" || true
           git config user.email "ci@users.noreply.github.com" || true
-          git checkout -q --orphan ci/logs 2>/dev/null || true
-          git commit -q --allow-empty -m "ci logs" || true
-          git push -q --force origin HEAD:refs/heads/ci/logs || true
-          git checkout -q main 2>/dev/null || true
+          # Checked out, not re-created. An orphan branch force-pushed on every
+          # run wipes the log it was published to, so a run whose PUT then failed
+          # left nothing at all to read - which is the one time the log is wanted
+          # most.
+          if git fetch -q origin ci/logs:ci/logs 2>/dev/null; then
+            git checkout -q ci/logs
+          else
+            git checkout -q --orphan ci/logs
+            git commit -q --allow-empty -m "ci logs" || true
+            git push -q origin HEAD:refs/heads/ci/logs || true
+          fi
 
           sha=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
             "${{ github.api_url }}/repos/$REPO/contents/ci-logs/ios-build.log?ref=ci/logs" \
