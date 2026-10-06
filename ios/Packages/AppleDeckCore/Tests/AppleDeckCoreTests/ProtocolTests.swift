@@ -148,7 +148,20 @@ final class KeyValuesTests: XCTestCase {
 
     func testTruncatedFileParsesAsAbsent() {
         XCTAssertNil(KeyValues.parse("\"Shortcuts\"\n{\n  \"0\"\n"))
+    }
+
+    func testSomethingThatIsNotKeyValuesParsesAsAbsent() {
         XCTAssertNil(KeyValues.parse("not keyvalues at all"))
+    }
+
+    func testCommasSeparateEntries() throws {
+        // Every file the Steam client writes separates entries with commas, and
+        // treating one as part of the next key mis-parses everything after the
+        // first one.
+        let text = "\"libraryfolders\" { \"0\" { \"path\" \"/a\", \"label\" \"\", } }"
+        let root = try XCTUnwrap(KeyValues.parse(text)).first?.value
+        XCTAssertEqual(root?.list("0")?.first?.value.string("path"), "/a")
+        XCTAssertEqual(root?.list("0")?.first?.value.string("label"), "")
     }
 }
 
