@@ -25,15 +25,27 @@ else
 fi
 
 echo "==> building"
-# -Xfrontend -error-limit=0 matters more than it looks: without it the compiler
-# stops after twenty errors in a file, so a build that has thirty problems
-# reports twenty of them and the other ten wait for the next push. One build,
-# every error, is the difference between fixing a batch and fixing one at a time.
-xcodebuild -project "$APPLEDECK_ROOT/AppleDeck.xcodeproj" -scheme AppleDeck \
-    -sdk iphoneos -configuration Release -derivedDataPath "$DD" \
-    CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-    OTHER_SWIFT_FLAGS="$(inherited) -Xfrontend -error-limit=0" \
-    build 2>&1 | tee "$DD/build.log" | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
+
+# Asking the compiler for every error instead of the first twenty matters more
+# than it looks: a build with thirty problems reports twenty of them and leaves
+# the rest for the next push, which turns one fix into five.
+#
+# The frontend flag is not in every toolchain, and a build that dies on an
+# unknown flag reports no errors at all - so it is probed once, and the build is
+# repeated plainly if the toolchain will not take it.
+build_app() {
+    xcodebuild -project "$APPLEDECK_ROOT/AppleDeck.xcodeproj" -scheme AppleDeck \
+        -sdk iphoneos -configuration Release -derivedDataPath "$DD" \
+        CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+        "$@" \
+        build 2>&1 | tee "$DD/build.log" | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
+}
+
+build_app OTHER_SWIFT_FLAGS="$(inherited) -Xfrontend -error-limit -Xfrontend 0"
+if grep -q "unknown argument" "$DD/build.log"; then
+    echo "==> this toolchain has no -error-limit; rebuilding without it" >&2
+    build_app
+fi
 
 # A failed build used to sail straight past this: the previous .app is still in
 # DerivedData, so validation and packaging both succeed and produce an IPA of the
