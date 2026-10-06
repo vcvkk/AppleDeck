@@ -35,9 +35,9 @@ final class GameSavesTests: XCTestCase {
     private let prefix = "/root/.local/share/Steam/steamapps/compatdata/1245620/pfx"
 
     func testFindsOnlyTheDirectoriesThatExist() {
-        files.directories = ["\(prefix)/users/steamuser/Documents", "\(prefix)/users/steamuser/AppData"]
-        files.sizes = ["\(prefix)/users/steamuser/Documents": 4096,
-                       "\(prefix)/users/steamuser/AppData": 1024]
+        files.directories = ["\(prefix)/drive_c/users/steamuser/Documents", "\(prefix)/drive_c/users/steamuser/AppData"]
+        files.sizes = ["\(prefix)/drive_c/users/steamuser/Documents": 4096,
+                       "\(prefix)/drive_c/users/steamuser/AppData": 1024]
         var game = GameSaves.makeGame(id: "1245620", name: "ELDEN RING", protonPrefix: prefix)
         game = reader.locate(game: game)
         XCTAssertEqual(game.directories.count, 2)
@@ -79,7 +79,7 @@ final class GameSavesTests: XCTestCase {
 
     func testExportOfTheWholeProfileExportsThePrefix() throws {
         files.directories = ["\(prefix)/drive_c/users/steamuser/Documents"]
-        files.sizes = ["\(prefix)/users/steamuser/Documents": 10]
+        files.sizes = ["\(prefix)/drive_c/users/steamuser/Documents": 10]
         var game = GameSaves.makeGame(id: "1", name: "Game", protonPrefix: prefix)
         game = reader.locate(game: game)
         let result = try reader.export(game: game, layout: .profile, at: Date())
@@ -91,7 +91,7 @@ final class GameSavesTests: XCTestCase {
 
     func testExportOfOnlyTheGameFoldersExportsThose() throws {
         files.directories = ["\(prefix)/drive_c/users/steamuser/Documents"]
-        files.sizes = ["\(prefix)/users/steamuser/Documents": 10]
+        files.sizes = ["\(prefix)/drive_c/users/steamuser/Documents": 10]
         var game = GameSaves.makeGame(id: "1", name: "Game", protonPrefix: prefix)
         game = reader.locate(game: game)
         _ = try reader.export(game: game, layout: .directories, at: Date())
