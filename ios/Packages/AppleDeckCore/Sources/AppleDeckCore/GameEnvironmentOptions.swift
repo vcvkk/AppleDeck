@@ -155,6 +155,12 @@ public enum GameEnvironmentOptions {
             guard let value else { return "" }
             return value
         }
-        return defaults[option.name] ?? option.defaultValue
+        // `defaults` holds [String: String?] because "set to nothing" is a value
+        // the editor distinguishes, so the lookup is String?? and ?? flattens only
+        // one level of it.
+        if let stored = defaults[option.name] {
+            return stored ?? ""
+        }
+        return option.defaultValue
     }
 }

@@ -64,7 +64,13 @@ jobs:
       # runner is minutes instead of the ten a macOS queue costs.
       - name: swift test
         id: core-test
-        run: swift test --package-path ios/Packages/AppleDeckCore 2>&1 | tee /tmp/core-test.log
+        # pipefail, because without it tee's exit status is the step's and this
+        # step is green whatever swiftc says. It was: several builds "passed" with
+        # compile errors in the tree, which is exactly the kind of green that
+        # costs an afternoon.
+        run: |
+          set -o pipefail
+          swift test --package-path ios/Packages/AppleDeckCore 2>&1 | tee /tmp/core-test.log
 
       # The agent bridge's other half: the CLI against a stand-in server that
       # answers the way AgentRoute does. Swift tests each side, and this tests the

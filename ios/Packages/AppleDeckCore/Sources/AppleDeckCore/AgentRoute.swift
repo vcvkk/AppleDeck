@@ -206,9 +206,11 @@ public struct AgentRoute: Sendable {
         json(status, ["ok": false, "error": code.rawValue, "message": message])
     }
 
-    private func failure(_ error: Error, fallback: BridgeError) -> Response {
-        let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
-        let code = (error as? BridgeFailure)?.code ?? fallback
+    // Named `cause`, not `error`: the parameter would otherwise shadow the
+    // `error(_:_:)` method two lines below and the body would call the error.
+    private func failure(_ cause: Error, fallback: BridgeError) -> Response {
+        let message = (cause as? LocalizedError)?.errorDescription ?? cause.localizedDescription
+        let code = (cause as? BridgeFailure)?.code ?? fallback
         return error(200, code, message)
     }
 
