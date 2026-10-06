@@ -185,34 +185,72 @@ final class InputRouter {
     /// work; `xbox360` presents it as an XInput pad, which is what Proton games
     /// want. The choice is DroidDeck's and the mapping follows from it.
     private func adopt(_ controller: GCController) {
+        guard let pad = controller.extendedGamepad else { return }
+        // Per-button handlers rather than one handler switching over the
+        // element: the buttons are GCExtendedGamepad members that have been
+        // there since iOS 9 and never moved, while the element constants are the
+        // part of the API this code would rather not depend on.
+        //
+        // The deck profile presents the pad as a Steam Deck controller, so B is
+        // East and A is South; an Xbox profile swaps A and B, which is what
+        // Proton games want.
         let deck = prefs.controllerProfile == .deck
-        controller.extendedGamepad?.valueChangedHandler = { [weak self] pad, element in
-            guard let self else { return }
-            switch element {
-            case .buttonA:
-                self.set(pad.buttonA, deck ? Key.btnSouth : Key.btnSouth)
-            case .buttonB:
-                // On a Steam Deck pad B is East; an Xbox layout wants the
-                // client's A, and the client's own mapping handles the rest.
-                self.set(pad.buttonB, deck ? Key.btnEast : Key.btnSouth)
-            case .buttonX:
-                self.set(pad.buttonX, deck ? Key.btnNorth : Key.btnWest)
-            case .buttonY:
-                self.set(pad.buttonY, deck ? Key.btnWest : Key.btnNorth)
-            case .leftShoulder: self.set(pad.leftShoulder, Key.shoulderL)
-            case .rightShoulder: self.set(pad.rightShoulder, Key.shoulderR)
-            case .leftTrigger: self.trigger(pad.leftTrigger.value, Key.triggerL)
-            case .rightTrigger: self.trigger(pad.rightTrigger.value, Key.triggerR)
-            case .dpad: self.dpad(pad.dpad)
-            case .leftThumbstickButton: self.set(pad.leftThumbstickButton, Key.thumbL)
-            case .rightThumbstickButton: self.set(pad.rightThumbstickButton, Key.thumbR)
-            default: break
-            }
+        pad.buttonA.valueChangedHandler = { [weak self] _, _, pressed in
+            self?.send(pressed, Key.btnSouth)
         }
-        // Nothing is done here with the pad's vendor-specific buttons: they have
-        // no evdev codes of their own, and a wrong guess sends a key the guest
-        // has no use for. `buttonHome` above is the one that maps.
-        _ = deck
+        pad.buttonB.valueChangedHandler = { [weak self] _, _, pressed in
+            self?.send(pressed, deck ? Key.btnEast : Key.btnSouth)
+        }
+        pad.buttonX.valueChangedHandler = { [weak self] _, _, pressed in
+            self?.send(pressed, deck ? Key.btnNorth : Key.btnWest)
+        }
+        pad.buttonY.valueChangedHandler = { [weak self] _, _, pressed in
+            self?.send(pressed, deck ? Key.btnWest : Key.btnNorth)
+        }
+        pad.leftShoulder.valueChangedHandler = { [weak self] _, _, pressed in
+            self?.send(pressed, Key.shoulderL)
+        }
+        pad.rightShoulder.valueChangedHandler = { [weak self] _, _, pressed in
+            self?.send(pressed, Key.shoulderR)
+        }
+        pad.leftThumbstickButton.valueChangedHandler = { [weak self] _, _, pressed in
+            self?.send(pressed, Key.thumbL)
+        }
+        pad.rightThumbstickButton.valueChangedHandler = { [weak self] _, _, pressed in
+            self?.send(pressed, Key.thumbR)
+        }
+        // The Steam Deck's own View button. It is the only vendor button with an
+        // evdev code of its own (BTN_MODE), and the only one worth guessing at:
+        // anything else would send the guest a key it has no use for.
+        pad.buttonHome.valueChangedHandler = { [weak self] _, _, pressed in
+            self?.send(pressed, Key.mode)
+        }
+        // Triggers are digital: a Steam Input profile maps the trigger axis from
+        // the digital bit, and a half-pressed trigger read as an axis stutters in
+        // every menu.
+        pad.leftTrigger.valueChangedHandler = { [weak self] _, value, _ in
+            self?.trigger(value, Key.triggerL)
+        }
+        pad.rightTrigger.valueChangedHandler = { [weak self] _, value, _ in
+            self?.trigger(value, Key.triggerR)
+        }
+        pad.dpad.up.valueChangedHandler = { [weak self] _, _, pressed in
+            self?.send(pressed, Key.dpadUp)
+        }
+        pad.dpad.down.valueChangedHandler = { [weak self] _, _, pressed in
+            self?.send(pressed, Key.dpadDown)
+        }
+        pad.dpad.left.valueChangedHandler = { [weak self] _, _, pressed in
+            self?.send(pressed, Key.dpadLeft)
+        }
+        pad.dpad.right.valueChangedHandler = { [weak self] _, _, pressed in
+            self?.send(pressed, Key.dpadRight)
+        }
+        padConnected = controller
+    }
+
+    private func send(_ pressed: Bool, _ code: Int) {
+        sink?(.button(linuxButton: code, down: pressed))
     }
 
     private func set(_ pressed: Bool, _ code: Int) {
@@ -220,17 +258,7 @@ final class InputRouter {
     }
 
     private func trigger(_ value: Float, _ code: Int) {
-        // Digital, on purpose: a Steam Input profile maps the trigger axis from
-        // the digital bit, and a half-pressed trigger read as an axis stutters
-        // in every menu.
         sink?(.button(linuxButton: code, down: value > 0.5))
-    }
-
-    private func dpad(_ pad: GCControllerDirectionPad) {
-        set(pad.up, Key.dpadUp)
-        set(pad.down, Key.dpadDown)
-        set(pad.left, Key.dpadLeft)
-        set(pad.right, Key.dpadRight)
     }
 }
 

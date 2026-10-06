@@ -11,10 +11,10 @@ import PackageDescription
 let package = Package(
     name: "AppleDeckCore",
     platforms: [
-        // Husk's floor and Madeira's: the JIT paths that everything else depends on
-        // are only reliable from here on. Kept in one place so the app target and
-        // this package cannot drift apart.
-        .iOS(.v16)
+        // Kept in one place so the app target and this package cannot drift
+        // apart. The floor is 18 for the Metal texture API; the real one is
+        // iOS 26, where TXM makes executable memory a debugger's privilege.
+        .iOS(.v18)
     ],
     products: [
         .library(name: "AppleDeckCore", targets: ["AppleDeckCore"])

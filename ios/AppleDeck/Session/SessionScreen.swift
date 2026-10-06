@@ -201,7 +201,7 @@ struct DeckPad: View {
             Circle()
                 .fill(.white.opacity(0.25))
                 .frame(width: size * 0.36, height: size * 0.36)
-                .offset(x: knobOffset.x, y: knobOffset.y)
+                .offset(knobOffset)
         }
         .frame(width: size, height: size)
         .contentShape(Circle())

@@ -79,11 +79,14 @@ final class MetalPresenter: UIView {
         }
         let wanted = CGSize(width: frame.width, height: frame.height)
         if texture == nil || textureSize != wanted || textureStride != frame.stride {
-            let descriptor = MTKTextureDescriptor.texture2DDescriptor(
-                pixelFormat: .bgra8Unorm,
-                width: frame.width,
-                height: frame.height,
-                mipmapped: false)
+            // MTLTextureDescriptor, not MetalKit's MTKTextureDescriptor: the
+            // latter is deprecated and gone from the current SDK, and this app
+            // deploys to iOS 18 anyway (the guest runtime needs iOS 26 for JIT).
+            let descriptor = MTLTextureDescriptor()
+            descriptor.textureType = .type2D
+            descriptor.pixelFormat = .bgra8Unorm
+            descriptor.width = frame.width
+            descriptor.height = frame.height
             descriptor.usage = .shaderRead
             descriptor.storageMode = .shared
             guard let made = device.makeTexture(descriptor: descriptor) else {
@@ -125,11 +128,13 @@ final class MetalPresenter: UIView {
         guard let command = queue.makeCommandBuffer(),
               let blit = command.makeBlitCommandEncoder() else { return }
         blit.copy(from: texture,
-                  to: drawable.texture,
                   sourceSlice: 0,
                   sourceLevel: 0,
+                  to: drawable.texture,
                   destinationSlice: 0,
-                  destinationLevel: 0)
+                  destinationLevel: 0,
+                  sliceCount: 1,
+                  levelCount: 1)
         command.present(drawable)
         command.commit()
 
