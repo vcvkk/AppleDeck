@@ -60,7 +60,11 @@ def main() -> int:
     # Streamed through zstd rather than read whole: the archive is 754 MB and the
     # runner's disk is not something to spend twice.
     decompressor = subprocess.Popen(["zstd", "-dc", archive], stdout=subprocess.PIPE)
-    count = {"file": 0, "dir": 0, "link": 0}
+    count = {"file": 0, "dir": 0, "link": 0, "deferred": 0, "dropped": 0}
+    # Hard links whose target has not been seen yet. The terminfo tree is full of
+    # them: a file is linked from a directory whose own file appears later in the
+    # archive. Failing on the first one loses everything after it.
+    deferred: list[tuple[str, str]] = []
     try:
         with tarfile.open(fileobj=decompressor.stdout, mode="r|") as tar:
             for member in tar:
@@ -84,11 +88,8 @@ def main() -> int:
                     count["link"] += 1
                 elif member.islnk():
                     source = safe_join(dest, member.linkname)
-                    if source and os.path.exists(source):
-                        if os.path.exists(target):
-                            os.remove(target)
-                        os.link(source, target)
-                        count["link"] += 1
+                    if source:
+                        deferred.append((source, target))
                 elif member.isfile():
                     source = tar.extractfile(member)
                     if source is None:
@@ -115,8 +116,27 @@ def main() -> int:
         print(f"zstd exited {status}", file=sys.stderr)
         return 1
 
+    # Second pass for the hard links. A target that is still missing after the
+    # whole archive has been read is genuinely absent from it, and the one link
+    # that cannot be made is worth counting rather than worth dying over.
+    for source, target in deferred:
+        count["deferred"] += 1
+        try:
+            if not os.path.exists(source):
+                count["dropped"] += 1
+                print(f"hard link with no target: {target} -> {source}", file=sys.stderr)
+                continue
+            if os.path.exists(target):
+                os.remove(target)
+            os.link(source, target)
+            count["link"] += 1
+        except OSError as error:
+            count["dropped"] += 1
+            print(f"could not link {target}: {error}", file=sys.stderr)
+
     print(f"unpacked {count['file']} files, {count['dir']} directories, "
-          f"{count['link']} links into {dest}")
+          f"{count['link']} links into {dest}"
+          + (f"; {count['dropped']} links could not be made" if count["dropped"] else ""))
     return 0
 
 
