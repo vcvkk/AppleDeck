@@ -163,8 +163,12 @@ jobs:
             echo "run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             echo
             echo '```'
+            # Every error the compiler produced, deduplicated and not truncated:
+            # the whole point of -error-limit=0 is that one build answers all of
+            # them, and cutting the list short would undo that.
             grep -E 'error:|fatal error|error :' /tmp/appledeck_ipa/build.log 2>/dev/null \
-              | awk '!seen[$0]++' | head -100 || echo "no build log"
+              | sed 's#/Users/runner/work/AppleDeck/AppleDeck/##' \
+              | awk '!seen[$0]++' || echo "no build log"
             echo '```'
           } > /tmp/ios-build.md
           git config user.name "ci"

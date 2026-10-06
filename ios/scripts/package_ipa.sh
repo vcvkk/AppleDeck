@@ -25,10 +25,15 @@ else
 fi
 
 echo "==> building"
+# -Xfrontend -error-limit=0 matters more than it looks: without it the compiler
+# stops after twenty errors in a file, so a build that has thirty problems
+# reports twenty of them and the other ten wait for the next push. One build,
+# every error, is the difference between fixing a batch and fixing one at a time.
 xcodebuild -project "$APPLEDECK_ROOT/AppleDeck.xcodeproj" -scheme AppleDeck \
     -sdk iphoneos -configuration Release -derivedDataPath "$DD" \
     CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-    build 2>&1 | tee "$DD/build.log" | grep -E "error:|warning: .*deprecat|BUILD (SUCCEEDED|FAILED)" || true
+    OTHER_SWIFT_FLAGS="$(inherited) -Xfrontend -error-limit=0" \
+    build 2>&1 | tee "$DD/build.log" | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
 
 # A failed build used to sail straight past this: the previous .app is still in
 # DerivedData, so validation and packaging both succeed and produce an IPA of the
