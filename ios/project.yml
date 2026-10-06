@@ -1,0 +1,77 @@
+# XcodeGen project for the iOS port.
+#
+# The generated AppleDeck.xcodeproj is checked in as well, because a checkout
+# has to build on a machine that does not have XcodeGen; CI regenerates it from
+# this file first so the two cannot drift.
+#
+# The layout mirrors Husk's (project.yml + committed project), for the same
+# reason: a glob in here means adding a file under AppleDeck/ is all it takes
+# to have it in the target, and CI proves that on every push.
+name: AppleDeck
+options:
+  bundleIdPrefix: com.vcvkk
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+  generateEmptyDirectories: false
+
+packages:
+  AppleDeckCore:
+    path: Packages/AppleDeckCore
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    # The pod-free build links nothing but system frameworks; C++ interop is on
+    # because the guest bridge speaks to the QEMU dylib's C API.
+    CLANG_CXX_LANGUAGE_STANDARD: "gnu++20"
+    GCC_C_LANGUAGE_STANDARD: "gnu11"
+    ENABLE_USER_SCRIPT_SANDBOXING: "NO"
+    # Built for a sideloaded IPA: no signing team, no provisioning profile.
+    # ios/scripts/package_ipa.sh passes CODE_SIGNING_ALLOWED=NO anyway, and
+    # these make the same thing true for anyone who opens the project.
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: ""
+    CODE_SIGNING_REQUIRED: "NO"
+    CODE_SIGNING_ALLOWED: "NO"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    # The QEMU dylib and the guest helpers are staged by ios/scripts before the
+    # build; when they are missing the app still builds and says so at launch,
+    # rather than failing to link.
+    APPLEDECK_STAGE_DIR: "$(SRCROOT)/build/stage"
+
+targets:
+  AppleDeck:
+    type: application
+    platform: iOS
+    sources:
+      - path: AppleDeck
+        excludes:
+          - "Info.plist"
+    dependencies:
+      - package: AppleDeckCore
+    settings:
+      base:
+        INFOPLIST_FILE: AppleDeck/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.vcvkk.AppleDeck
+        PRODUCT_NAME: AppleDeck
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        HEADER_SEARCH_PATHS:
+          - "$(SRCROOT)/AppleDeck/include"
+        OTHER_LDFLAGS:
+          - "$(inherited)"
+          - "-ldl"
+    info:
+      path: AppleDeck/Info.plist
+
+schemes:
+  AppleDeck:
+    build:
+      targets:
+        AppleDeck: all
+    run:
+      config: Debug
+    archive:
+      config: Release

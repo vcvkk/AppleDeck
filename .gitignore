@@ -33,3 +33,8 @@ __pycache__/
 
 # Local signing with the release key (tools/build_local.sh); holds a password.
 .signing.env
+
+# iOS port (see ios/README.md)
+ios/build/
+ios/AppleDeck.xcodeproj/
+*.ipa

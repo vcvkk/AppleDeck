@@ -1,0 +1,158 @@
+name: Build IPA
+run-name: ${{ github.event_name == 'pull_request' && format('ipa for pr {0} at {1}', github.event.pull_request.number, github.event.pull_request.head.sha) || format('ipa for {0} at {1}', github.ref_name, github.sha) }}
+
+# The Android build is untouched: this workflow only adds an iOS one, so a push
+# that changes nothing under ios/ does not pay for a macOS runner.
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios-ipa.yml'
+  pull_request:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios-ipa.yml'
+  workflow_dispatch:
+    inputs:
+      guest:
+        description: Build the guest runtime too (hours, cached afterwards)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ipa-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # Bumped when the guest image, the QEMU fork or the patches change, so a stale
+  # cached guest is never what a build tests.
+  GUEST_CACHE_VERSION: v1
+
+jobs:
+  core:
+    name: AppleDeckCore
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-swift@v2
+        with:
+          swift-version: "6.0"
+      # The platform-independent half of the port runs anywhere Swift runs: the
+      # session state machine, the preference schema, the guest command line,
+      # the agent bridge's verbs, the library reader. Catching those on a Linux
+      # runner is minutes instead of the ten a macOS queue costs.
+      - name: swift test
+        run: swift test --package-path ios/Packages/AppleDeckCore
+      - name: No vendored key material
+        run: |
+          set -euo pipefail
+          keys=$(git ls-files ios/ | grep -iE '\.(p12|pfx|p8|mobileprovision|key)$' || true)
+          if [ -n "$keys" ]; then
+            echo "::error::a key is committed under ios/: $keys"
+            exit 1
+          fi
+
+  ipa:
+    name: Unsigned IPA
+    needs: core
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: XcodeGen
+        run: |
+          set -euo pipefail
+          brew install xcodegen
+          cd ios && xcodegen generate --quiet
+
+      - name: Cache the guest runtime
+        id: guest
+        uses: actions/cache@v4
+        with:
+          path: ios/build/guest
+          key: guest-${{ env.GUEST_CACHE_VERSION }}-${{ hashFiles('ios/scripts/build_guest.sh', 'ios/patches/**') }}
+
+      - name: Build the guest runtime
+        if: ${{ inputs.guest == true || github.event_name == 'workflow_dispatch' }}
+        run: ./ios/scripts/build_guest.sh
+
+      - name: Build and package
+        run: ./ios/scripts/package_ipa.sh "$PWD/AppleDeck.ipa"
+
+      - name: What this build is
+        run: |
+          {
+            echo "### AppleDeck, unsigned IPA"
+            echo
+            echo "Commit \`${GITHUB_SHA::7}\` on \`${GITHUB_REF_NAME}\`."
+            if [ -f ios/build/guest/vmlinuz-virt ]; then
+              echo
+              echo "Guest runtime: **included** (TCG guest, DroidDeck's Linux runtime inside)."
+            else
+              echo
+              echo "Guest runtime: **not included**. The app installs and runs, and says on the"
+              echo "Home page why a session cannot start. Re-run this workflow with the"
+              echo "\`guest\` input to build one."
+            fi
+            echo
+            echo "Install with AltStore, SideStore, TrollStore or Sideloadly. Unsigned on"
+            echo "purpose; see \`ios/README.md\` for why it cannot be signed here."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AppleDeck-ipa
+          path: AppleDeck.ipa
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Report on the pull request
+        if: always() && github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -uo pipefail
+          MARK="<!-- appledeck-ipa -->"
+          case "${{ job.status }}" in
+            success)
+              body="### Build passed
+
+The \`AppleDeck-ipa\` artifact is [on this run]($RUN_URL): an unsigned IPA, ready for
+AltStore, SideStore or TrollStore."
+              ;;
+            *)
+              body="### Build failed
+
+The compiler's errors ([full log]($RUN_URL)):
+
+\`\`\`
+$(grep -E 'error:' /tmp/appledeck_ipa/build.log 2>/dev/null | awk '!seen[$0]++' | head -40 || echo 'no build log')
+\`\`\`"
+              ;;
+          esac
+          {
+            echo "$MARK"
+            echo "$body"
+          } > /tmp/ipa-report.md
+          cat /tmp/ipa-report.md >> "$GITHUB_STEP_SUMMARY"
+          ID=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" --paginate --jq ".[] | select(.body | startswith(\"$MARK\")) | .id" | head -1 || true)
+          if [ -n "$ID" ]; then
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${ID}" -F body=@/tmp/ipa-report.md >/dev/null
+          else
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" -F body=@/tmp/ipa-report.md >/dev/null
+          fi
