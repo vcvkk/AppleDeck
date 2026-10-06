@@ -44,6 +44,20 @@ jobs:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
+      # AppleDeck: this is a fork, and a fork has no releases of its own, so the
+      # prebuilt runtime packages (gamescope, wlroots, the MangoApp bundle) come
+      # from upstream. The APK this workflow builds is otherwise identical to the
+      # one The412Banner builds from the same commit.
+      - name: Release assets come from upstream in a fork
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_REPOSITORY}" != "The412Banner/DroidDeck" ]; then
+            echo "DROIDDECK_ASSET_REPO=The412Banner/DroidDeck" >> "$GITHUB_ENV"
+            echo "fetching runtime packages from The412Banner/DroidDeck"
+          else
+            echo "DROIDDECK_ASSET_REPO=${GITHUB_REPOSITORY}" >> "$GITHUB_ENV"
+          fi
+
       - name: The packages a signed build ships as
         id: variants
         run: echo "list=$(awk '!/^#/ && NF { print $1 }' tools/release/variants.txt | jq -R . | jq -sc .)" >> "$GITHUB_OUTPUT"
@@ -182,7 +196,7 @@ jobs:
           done
           if [ -f tools/gamescope/release.env ]; then
             . tools/gamescope/release.env
-            gh release download "${GAMESCOPE_TAG}" -R "${GITHUB_REPOSITORY}" -p gamescope.tzst -O gamescope.tzst
+            gh release download "${GAMESCOPE_TAG}" -R "${DROIDDECK_ASSET_REPO}" -p gamescope.tzst -O gamescope.tzst
             echo "${GAMESCOPE_SHA256}  gamescope.tzst" | sha256sum -c -
             tar --use-compress-program=unzstd -xf gamescope.tzst -C "$D"
             test -f "$D/usr/local/bin/gamescope"
@@ -190,7 +204,7 @@ jobs:
           fi
           if [ -f tools/wlroots/release.env ]; then
             . tools/wlroots/release.env
-            gh release download "${WLROOTS_TAG}" -R "${GITHUB_REPOSITORY}" -p wlroots.tzst -O wlroots.tzst
+            gh release download "${WLROOTS_TAG}" -R "${DROIDDECK_ASSET_REPO}" -p wlroots.tzst -O wlroots.tzst
             echo "${WLROOTS_SHA256}  wlroots.tzst" | sha256sum -c -
             tar --use-compress-program=unzstd -xf wlroots.tzst -C "$D"
             test -f "$D/usr/local/lib/droiddeck-wlroots/libwlroots-0.20.so"

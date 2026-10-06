@@ -130,25 +130,28 @@ jobs:
           MARK="<!-- appledeck-ipa -->"
           case "${{ job.status }}" in
             success)
-              body="### Build passed
-
-The \`AppleDeck-ipa\` artifact is [on this run]($RUN_URL): an unsigned IPA, ready for
-AltStore, SideStore or TrollStore."
+              {
+                echo "$MARK"
+                echo "### Build passed"
+                echo
+                echo "The \`AppleDeck-ipa\` artifact is [on this run]($RUN_URL): an unsigned IPA,"
+                echo "ready for AltStore, SideStore or TrollStore."
+              } > /tmp/ipa-report.md
               ;;
             *)
-              body="### Build failed
-
-The compiler's errors ([full log]($RUN_URL)):
-
-\`\`\`
-$(grep -E 'error:' /tmp/appledeck_ipa/build.log 2>/dev/null | awk '!seen[$0]++' | head -40 || echo 'no build log')
-\`\`\`"
+              {
+                echo "$MARK"
+                echo "### Build failed"
+                echo
+                echo "The compiler's errors ([full log]($RUN_URL)):"
+                echo
+                echo '```'
+                grep -E "error:" /tmp/appledeck_ipa/build.log 2>/dev/null | awk '!seen[$0]++' | head -40 \
+                  || echo "no build log; the failure was before xcodebuild"
+                echo '```'
+              } > /tmp/ipa-report.md
               ;;
           esac
-          {
-            echo "$MARK"
-            echo "$body"
-          } > /tmp/ipa-report.md
           cat /tmp/ipa-report.md >> "$GITHUB_STEP_SUMMARY"
           ID=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" --paginate --jq ".[] | select(.body | startswith(\"$MARK\")) | .id" | head -1 || true)
           if [ -n "$ID" ]; then
