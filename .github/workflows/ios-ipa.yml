@@ -173,7 +173,11 @@ jobs:
         # teed, because the script's own output is where a bundle validation
         # failure explains itself; without this the publish step below would
         # find an empty log and say nothing at all.
-        run: ./ios/scripts/package_ipa.sh "$PWD/AppleDeck.ipa" 2>&1 | tee /tmp/ipa.log
+        # pipefail, or a script that fails is masked by tee's exit status and the
+        # run goes green with no IPA in it - which is exactly what happened once.
+        run: |
+          set -o pipefail
+          ./ios/scripts/package_ipa.sh "$PWD/AppleDeck.ipa" 2>&1 | tee /tmp/ipa.log
 
       - name: publish the failure
         if: failure()
@@ -196,9 +200,11 @@ jobs:
               grep -E 'MISSING|ERROR|missing|no build log' /tmp/ipa.log 2>/dev/null; } \
               | sed 's#/Users/runner/work/AppleDeck/AppleDeck/##' \
               | awk '!seen[$0]++'
-            if [ ! -s /tmp/appledeck_ipa/build.log ] && [ ! -s /tmp/ipa.log ]; then
-              echo "no build log and no script output: the failure was before either"
-            fi
+            echo
+            echo '```'
+            echo "last 40 lines of the packaging step:"
+            tail -40 /tmp/ipa.log 2>/dev/null || echo "no script output"
+            echo '```' 
             echo '```'
           } > /tmp/ios-build.md
           git config user.name "ci"
