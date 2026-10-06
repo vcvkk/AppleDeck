@@ -94,8 +94,11 @@ public enum GameEnvironment {
     /// range is not decoration - it is the width of the id the client stores.
     public static func isValidScope(_ scope: String) -> Bool {
         if scope.isEmpty { return true }
-        guard let first = scope.utf8.first, (49...57).contains(first) else { return false }
-        guard scope.allSatisfy({ (48...57).contains($0) }) else { return false }
+        // unicodeScalars, not Characters: the range is over bytes, and a range of
+        // UInt8 asked about a Character does not compile.
+        let scalars = scope.unicodeScalars
+        guard let first = scalars.first, (49...57).contains(first.value) else { return false }
+        guard scalars.allSatisfy({ (48...57).contains($0.value) }) else { return false }
         guard let value = UInt64(scope) else { return false }
         return value >= 1 && value <= 4_294_967_295
     }

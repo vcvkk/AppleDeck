@@ -270,7 +270,6 @@ public final class SessionStateMachine: @unchecked Sendable {
     }
 
     /// Ends the session and returns to `idle`, ready for the next `begin`.
-    @discardableResult
     public func finish() {
         lock.lock()
         let previous = _phase
