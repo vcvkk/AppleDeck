@@ -42,9 +42,11 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-swift@v2
-        with:
-          swift-version: "6.0"
+      # The runner image already has the toolchain (Swift 6 on ubuntu-24.04).
+      # Installing one on top would be a dependency that can be renamed or
+      # deprecated; the version in use is printed so a failure says which.
+      - name: Toolchain
+        run: swift --version
       # The platform-independent half of the port runs anywhere Swift runs: the
       # session state machine, the preference schema, the guest command line,
       # the agent bridge's verbs, the library reader. Catching those on a Linux
