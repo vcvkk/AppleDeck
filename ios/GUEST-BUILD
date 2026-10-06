@@ -1,0 +1,12 @@
+Ask for a guest runtime build.
+
+This file has no content. Touch it - or make any commit whose message contains
+"guest build" - and the iOS workflow builds the emulator and the guest image and
+ships an IPA with them inside.
+
+    touch ios/GUEST-BUILD
+    git commit -m "guest build please" ios/GUEST-BUILD
+
+It exists because GitHub's scheduler has not fired a single scheduled run on this
+fork, and there is no other way for a change to reach the runner. Once a scheduled
+run has worked, the schedule is the way and this file's comment can say so.

@@ -209,8 +209,12 @@ jobs:
           brew install e2fsprogs zstd
           mkfs.ext4 -V 2>&1 | head -2 || true
 
+      # Three ways in: the nightly/hourly schedule, the dispatch input, or a
+      # commit that touches ios/GUEST-BUILD. The last one exists because GitHub's
+      # scheduler did not fire a single run on this fork, and a guest that is
+      # never built looks exactly like a guest that does not work.
       - name: Build the guest runtime
-        if: ${{ github.event_name == 'schedule' || inputs.guest == true }}
+        if: ${{ github.event_name == 'schedule' || inputs.guest == true || contains(github.event.head_commit.message, 'guest build') }}
         run: |
           # The image first: it is a download and a repack, and the emulator is
           # the long part. Failing fast on a missing kernel beats spending an hour
