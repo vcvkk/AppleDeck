@@ -3,7 +3,9 @@ import XCTest
 @testable import AppleDeckCore
 
 final class GameSavesTests: XCTestCase {
-    private struct FakeFiles: SavesReader.FileSystem {
+    // A class, not a struct: the archive() method records what it was asked to
+    // export, and a protocol requirement cannot be mutating.
+    private final class FakeFiles: SavesReader.FileSystem {
         var directories: Set<String> = []
         var sizes: [String: Int64] = [:]
         var archived: (paths: [String], destination: String, layout: GameSaves.Layout)?
