@@ -82,6 +82,11 @@ public struct AgentRoute: Sendable {
         case usage = "USAGE"
         case noSession = "NO_SESSION"
         case artifactsUnavailable = "ARTIFACTS_UNAVAILABLE"
+        /// The bridge itself could not do its job: it would not bind, or the peer
+        /// is not the phone's own loopback. Distinct from a rejected command,
+        /// which is about what was asked rather than about whether there is
+        /// anything there to ask.
+        case transport = "TRANSPORT"
     }
 
     public let backend: Backend

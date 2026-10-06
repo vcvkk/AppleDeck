@@ -35,10 +35,10 @@ final class AgentBridgeServer {
         }
         let parameters = NWParameters.tcp
         parameters.allowLocalEndpointReuse = true
-        // Loopback only. A listener that says "on everything" is not a knob worth
-        // having on a bridge that can start and stop sessions.
-        let endpoint = NWEndpoint.hostPort(host: .ipv4(.loopback), port: port)
-        let listener = try NWListener(using: parameters, on: endpoint)
+        // NWListener binds a port, not an address, so this is not loopback-only by
+        // construction - `isLoopback(_:)` on each accepted connection is what makes
+        // it so, and it is checked rather than hoped for.
+        let listener = try NWListener(using: parameters, on: port)
         listener.newConnectionHandler = { [weak self] connection in
             Task { @MainActor in self?.serve(connection) }
         }
@@ -62,8 +62,28 @@ final class AgentBridgeServer {
     }
 
     private func serve(_ connection: NWConnection) {
-        connection.start(queue: .main)
+        // Only the phone itself. Anything else on the network is dropped before
+        // a byte is read: a bridge that can start and stop sessions is not
+        // something to leave answering on the wifi.
+        guard Self.isLoopback(connection.endpoint) else {
+            connection.cancel()
+            return
+        }
+        connection.start(queue: DispatchQueue.main)
         receive(connection, body: Data())
+    }
+
+    static func isLoopback(_ endpoint: NWEndpoint) -> Bool {
+        switch endpoint {
+        case .hostPort(let host, _):
+            switch host {
+            case .ipv4(let address): return address == .loopback
+            case .ipv6(let address): return address == .ipv6Loopback
+            default: return false
+            }
+        default:
+            return false
+        }
     }
 
     /// Reads until the request stops growing. The bodies here are small and the
