@@ -107,6 +107,21 @@ public struct SessionStatePayload: Codable, Equatable, Sendable {
             self.width = width
             self.height = height
         }
+
+        // A two-element array, not an object. DroidDeck writes
+        // JSONArray().put(width).put(height), and a harness reading
+        // `.session.output[0]` has to find a number there.
+        public func encode(to encoder: Encoder) throws {
+            var c = encoder.unkeyedContainer()
+            try c.encode(width)
+            try c.encode(height)
+        }
+
+        public init(from decoder: Decoder) throws {
+            var c = try decoder.unkeyedContainer()
+            width = try c.decode(Int.self)
+            height = try c.decode(Int.self)
+        }
     }
 
     public struct Failure: Codable, Equatable, Sendable {

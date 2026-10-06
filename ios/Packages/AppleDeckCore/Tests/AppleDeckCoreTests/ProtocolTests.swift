@@ -103,12 +103,15 @@ final class KeyValuesTests: XCTestCase {
         // Through `list(_:)`, not `string(_:)`: the value under an index key is a
         // list, and optional-chaining off the String? that `string(_:)` returns is
         // not a thing.
+        // The parsed structure is in the failure message on purpose: a parser bug
+        // should say what it saw, not only what it did not find.
+        let seen = "parsed: \(entries)"
         XCTAssertEqual(root?.list("0")?.first?.value.string("path"),
-                       "/root/.local/share/Steam")
+                       "/root/.local/share/Steam", seen)
         XCTAssertEqual(root?.list("1")?.first?.value.string("path"),
-                       "/mnt/sd/SteamLibrary")
+                       "/mnt/sd/SteamLibrary", seen)
         XCTAssertEqual(root?.list("0")?.first?.value.list("apps")?.first?.value.stringValue,
-                       "10")
+                       "10", seen)
     }
 
     func testAppManifest() throws {
@@ -142,8 +145,9 @@ final class KeyValuesTests: XCTestCase {
         """
         let shortcut = try XCTUnwrap(KeyValues.parse(text))
             .first?.value.list("0")?.first?.value
-        XCTAssertEqual(shortcut?.string("AppName"), "Quote \" inside")
-        XCTAssertEqual(shortcut?.string("Exe"), "/usr/bin/games/x.sh")
+        let seen = "shortcut: \(String(describing: shortcut))"
+        XCTAssertEqual(shortcut?.string("AppName"), "Quote \" inside", seen)
+        XCTAssertEqual(shortcut?.string("Exe"), "/usr/bin/games/x.sh", seen)
     }
 
     func testTruncatedFileParsesAsAbsent() {
@@ -159,9 +163,11 @@ final class KeyValuesTests: XCTestCase {
         // treating one as part of the next key mis-parses everything after the
         // first one.
         let text = "\"libraryfolders\" { \"0\" { \"path\" \"/a\", \"label\" \"\", } }"
-        let root = try XCTUnwrap(KeyValues.parse(text)).first?.value
-        XCTAssertEqual(root?.list("0")?.first?.value.string("path"), "/a")
-        XCTAssertEqual(root?.list("0")?.first?.value.string("label"), "")
+        let entries = try XCTUnwrap(KeyValues.parse(text))
+        let root = entries.first?.value
+        let seen = "parsed: \(entries)"
+        XCTAssertEqual(root?.list("0")?.first?.value.string("path"), "/a", seen)
+        XCTAssertEqual(root?.list("0")?.first?.value.string("label"), "", seen)
     }
 }
 
@@ -234,7 +240,9 @@ final class SteamLibraryTests: XCTestCase {
 }
 
 final class FileManagerTests: XCTestCase {
-    private func node(_ name: String, dir: Bool = false, size: Int64 = 0, at: Date? = nil, hidden: Bool = false) -> FileNode {
+    private func node(_ name: String, dir: Bool = false, size: Int64 = 0, at: Date? = nil, hidden: Bool? = nil) -> FileNode {
+        // hidden defaults to nil so the model derives it from the name, which is
+        // what production does.
         FileNode(path: "/dir/\(name)", name: name, isDirectory: dir, size: size,
                  modified: at, isHidden: hidden)
     }
