@@ -196,7 +196,9 @@ final class InputRouter {
     /// guessing which is which has cost more builds than the two lines this
     /// saves are worth.
     private func on(_ input: GCControllerButtonInput?, _ code: Int) {
-        input?.valueChangedHandler = { [weak self] _, _, pressed in
+        input?.valueChangedHandler = { [weak self] (_: GCControllerButtonInput,
+                                                   _: Float,
+                                                   pressed: Bool) in
             self?.send(pressed, code)
         }
     }
@@ -204,8 +206,14 @@ final class InputRouter {
     /// The same for a trigger, which is digital: a Steam Input profile maps the
     /// trigger axis from the digital bit, and a half-pressed trigger read as an
     /// axis stutters in every menu.
-    private func on(_ input: GCControllerAxisInput?, _ code: Int) {
-        input?.valueChangedHandler = { [weak self] _, value, _ in
+    /// Named differently from the button helper on purpose: two overloads whose
+    /// closures differ only in the type of their second parameter cannot be
+    /// inferred from an untyped closure, and the compiler's answer to that is a
+    /// message about a closure parameter rather than about the overloads.
+    private func onAxis(_ input: GCControllerAxisInput?, _ code: Int) {
+        input?.valueChangedHandler = { [weak self] (_: GCControllerAxisInput,
+                                                  value: Float,
+                                                  _: Bool) in
             self?.send(value > 0.5, code)
         }
     }
@@ -228,8 +236,8 @@ final class InputRouter {
         // code of its own (BTN_MODE), and the only one worth guessing at, since
         // anything else sends the guest a key it has no use for.
         on(pad.buttonHome, Key.mode)
-        on(pad.leftTrigger, Key.triggerL)
-        on(pad.rightTrigger, Key.triggerR)
+        onAxis(pad.leftTrigger, Key.triggerL)
+        onAxis(pad.rightTrigger, Key.triggerR)
         on(pad.dpad.up, Key.dpadUp)
         on(pad.dpad.down, Key.dpadDown)
         on(pad.dpad.left, Key.dpadLeft)
