@@ -56,6 +56,16 @@ final class SessionController: ObservableObject {
 
     var isActive: Bool { phase.isLive }
 
+    /// Whether anything can start a session, and why not if not. The agent
+    /// bridge's `health` answers with exactly this pair, because the question a
+    /// person setting the bridge up asks first is "is anything listening, and can
+    /// a session start" rather than anything about the current session.
+    var sessionRuntimeAvailable: Bool { runtime.isAvailable }
+
+    var sessionRuntimeDetail: String {
+        runtime.isAvailable ? runtime.displayName : (runtime.unavailableReason ?? "no runtime")
+    }
+
     var canStart: Bool { phase == .idle || phase == .failed }
 
     init(prefs: Prefs, runtime: QemuRuntime, paths: GuestPaths) {

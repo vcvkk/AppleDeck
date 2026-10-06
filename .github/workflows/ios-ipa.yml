@@ -65,6 +65,13 @@ jobs:
       - name: swift test
         id: core-test
         run: swift test --package-path ios/Packages/AppleDeckCore 2>&1 | tee /tmp/core-test.log
+
+      # The agent bridge's other half: the CLI against a stand-in server that
+      # answers the way AgentRoute does. Swift tests each side, and this tests the
+      # contract between them - a renamed field or a drifted exit code shows up
+      # here and nowhere else.
+      - name: appledeckctl against a stub bridge
+        run: python3 ios/scripts/tests/appledeckctl_test.py
       # A failure has to be legible from outside Actions. Logs need a signed-in
       # session to download, and this fork has no secrets to publish them any
       # other way, so the tail is written to the ci/logs branch through the

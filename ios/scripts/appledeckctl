@@ -47,6 +47,9 @@ from pathlib import Path
 
 DEFAULT_ENDPOINT = os.environ.get("APOLEDECK_ENDPOINT", "http://127.0.0.1:8765")
 
+# The documented default for `start --wait`, in seconds.
+DEFAULT_WAIT_TIMEOUT = 90.0
+
 EXIT_OK = 0
 EXIT_USAGE = 2
 EXIT_TRANSPORT = 3
@@ -123,13 +126,18 @@ def cmd_start(args: argparse.Namespace) -> int:
         payload["url"] = args.url
     if args.wait:
         payload["wait"] = True
+    # Forwarded even without --wait: the bridge needs a deadline for its own
+    # polling, and this flag was being parsed and then dropped, which the contract
+    # test caught.
+    if args.timeout is not None:
+        payload["timeout"] = args.timeout
     response = call(args.endpoint, "start", payload)
     if not response.get("ok", False):
         raise Failure(str(response.get("error", "start refused")), EXIT_SESSION)
     session = response.get("session", {})
     print(session.get("phase", "STARTED"))
     if args.wait:
-        wait_ready(args.endpoint, args.timeout)
+        wait_ready(args.endpoint, args.timeout or DEFAULT_WAIT_TIMEOUT)
     return EXIT_OK
 
 
@@ -237,7 +245,8 @@ def build_parser() -> argparse.ArgumentParser:
                               help="Steam's own UI instead of Big Picture")
     start_parser.add_argument("--url", help="a steam:// URL for the client")
     start_parser.add_argument("--wait", action="store_true", help="wait for READY")
-    start_parser.add_argument("--timeout", type=float, default=90.0)
+    start_parser.add_argument("--timeout", type=float, default=None,
+                              help="seconds to wait for READY (default 90 when --wait)")
     start_parser.set_defaults(handler=cmd_start)
 
     run_parser = subparsers.add_parser("run", help="run a program in the runtime")
