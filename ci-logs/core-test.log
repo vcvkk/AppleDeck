@@ -1,203 +1,203 @@
 # AppleDeckCore: swift test failed
 
-commit: b8d2dafca553ed6584cd14f541fff0baa891e9c3
-run: https://github.com/vcvkk/AppleDeck/actions/runs/37514764008
+commit: caab771989a1102218fe5b23807e67a78a9a6c2b
+run: https://github.com/vcvkk/AppleDeck/actions/runs/37514744538
 
 ```
-Test Suite 'GameEnvironmentOptionsTests' started at 2026-10-06 18:54:27.954
-Test Case 'GameEnvironmentOptionsTests.testAValueTheTableDoesNotKnowIsKept' started at 2026-10-06 18:54:27.954
+Test Case 'GameEnvironmentOptionsTests.testAValueTheTableDoesNotKnowIsKept' started at 2026-10-06 18:54:47.761
 Test Case 'GameEnvironmentOptionsTests.testAValueTheTableDoesNotKnowIsKept' passed (0.0 seconds)
-Test Case 'GameEnvironmentOptionsTests.testAnExplicitNullIsNotTheSameAsUnset' started at 2026-10-06 18:54:27.954
+Test Case 'GameEnvironmentOptionsTests.testAnExplicitNullIsNotTheSameAsUnset' started at 2026-10-06 18:54:47.762
 Test Case 'GameEnvironmentOptionsTests.testAnExplicitNullIsNotTheSameAsUnset' passed (0.0 seconds)
-Test Case 'GameEnvironmentOptionsTests.testEveryChoiceIsOneTheGuestWouldAccept' started at 2026-10-06 18:54:27.955
+Test Case 'GameEnvironmentOptionsTests.testEveryChoiceIsOneTheGuestWouldAccept' started at 2026-10-06 18:54:47.762
 Test Case 'GameEnvironmentOptionsTests.testEveryChoiceIsOneTheGuestWouldAccept' passed (0.0 seconds)
-Test Case 'GameEnvironmentOptionsTests.testEveryOptionIsANameTheGuestWouldAccept' started at 2026-10-06 18:54:27.955
-Test Case 'GameEnvironmentOptionsTests.testEveryOptionIsANameTheGuestWouldAccept' passed (0.101 seconds)
-Test Case 'GameEnvironmentOptionsTests.testTheEditorOffersTheOptionsItShould' started at 2026-10-06 18:54:28.056
+Test Case 'GameEnvironmentOptionsTests.testEveryOptionIsANameTheGuestWouldAccept' started at 2026-10-06 18:54:47.762
+Test Case 'GameEnvironmentOptionsTests.testEveryOptionIsANameTheGuestWouldAccept' passed (0.0 seconds)
+Test Case 'GameEnvironmentOptionsTests.testTheEditorOffersTheOptionsItShould' started at 2026-10-06 18:54:47.762
 Test Case 'GameEnvironmentOptionsTests.testTheEditorOffersTheOptionsItShould' passed (0.0 seconds)
-Test Case 'GameEnvironmentOptionsTests.testTogglingAMultipleOptionIsOrderIndependent' started at 2026-10-06 18:54:28.056
+Test Case 'GameEnvironmentOptionsTests.testTogglingAMultipleOptionIsOrderIndependent' started at 2026-10-06 18:54:47.762
 Test Case 'GameEnvironmentOptionsTests.testTogglingAMultipleOptionIsOrderIndependent' passed (0.0 seconds)
-Test Case 'GameEnvironmentOptionsTests.testTogglingTwiceRemovesTheChoice' started at 2026-10-06 18:54:28.056
+Test Case 'GameEnvironmentOptionsTests.testTogglingTwiceRemovesTheChoice' started at 2026-10-06 18:54:47.763
 Test Case 'GameEnvironmentOptionsTests.testTogglingTwiceRemovesTheChoice' passed (0.0 seconds)
-Test Suite 'GameEnvironmentOptionsTests' passed at 2026-10-06 18:54:28.056
-	 Executed 7 tests, with 0 failures (0 unexpected) in 0.102 (0.102) seconds
-Test Suite 'GameEnvironmentStoreTests' started at 2026-10-06 18:54:28.056
-Test Case 'GameEnvironmentStoreTests.testAMissingFileIsAnEmptyEnvironment' started at 2026-10-06 18:54:28.056
+Test Suite 'GameEnvironmentOptionsTests' passed at 2026-10-06 18:54:47.763
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'GameEnvironmentStoreTests' started at 2026-10-06 18:54:47.763
+Test Case 'GameEnvironmentStoreTests.testAMissingFileIsAnEmptyEnvironment' started at 2026-10-06 18:54:47.763
 Test Case 'GameEnvironmentStoreTests.testAMissingFileIsAnEmptyEnvironment' passed (0.001 seconds)
-Test Case 'GameEnvironmentStoreTests.testARuntimeManagedNameIsRefused' started at 2026-10-06 18:54:28.057
-Test Case 'GameEnvironmentStoreTests.testARuntimeManagedNameIsRefused' passed (0.002 seconds)
-Test Case 'GameEnvironmentStoreTests.testAnExplicitNullSurvives' started at 2026-10-06 18:54:28.058
+Test Case 'GameEnvironmentStoreTests.testARuntimeManagedNameIsRefused' started at 2026-10-06 18:54:47.763
+Test Case 'GameEnvironmentStoreTests.testARuntimeManagedNameIsRefused' passed (0.0 seconds)
+Test Case 'GameEnvironmentStoreTests.testAnExplicitNullSurvives' started at 2026-10-06 18:54:47.764
 Test Case 'GameEnvironmentStoreTests.testAnExplicitNullSurvives' passed (0.0 seconds)
-Test Case 'GameEnvironmentStoreTests.testAnInvalidNameIsAnErrorRatherThanADroppedEntry' started at 2026-10-06 18:54:28.059
+Test Case 'GameEnvironmentStoreTests.testAnInvalidNameIsAnErrorRatherThanADroppedEntry' started at 2026-10-06 18:54:47.764
 Test Case 'GameEnvironmentStoreTests.testAnInvalidNameIsAnErrorRatherThanADroppedEntry' passed (0.0 seconds)
-Test Case 'GameEnvironmentStoreTests.testAnInvalidScopeIsRefused' started at 2026-10-06 18:54:28.059
+Test Case 'GameEnvironmentStoreTests.testAnInvalidScopeIsRefused' started at 2026-10-06 18:54:47.764
 Test Case 'GameEnvironmentStoreTests.testAnInvalidScopeIsRefused' passed (0.0 seconds)
-Test Case 'GameEnvironmentStoreTests.testAnOversizedValueIsRefused' started at 2026-10-06 18:54:28.059
+Test Case 'GameEnvironmentStoreTests.testAnOversizedValueIsRefused' started at 2026-10-06 18:54:47.764
 Test Case 'GameEnvironmentStoreTests.testAnOversizedValueIsRefused' passed (0.001 seconds)
-Test Case 'GameEnvironmentStoreTests.testRoundTrip' started at 2026-10-06 18:54:28.060
+Test Case 'GameEnvironmentStoreTests.testRoundTrip' started at 2026-10-06 18:54:47.765
 Test Case 'GameEnvironmentStoreTests.testRoundTrip' passed (0.002 seconds)
-Test Case 'GameEnvironmentStoreTests.testTheStoreCreatesItsDirectory' started at 2026-10-06 18:54:28.062
+Test Case 'GameEnvironmentStoreTests.testTheStoreCreatesItsDirectory' started at 2026-10-06 18:54:47.767
 Test Case 'GameEnvironmentStoreTests.testTheStoreCreatesItsDirectory' passed (0.001 seconds)
-Test Case 'GameEnvironmentStoreTests.testTheVersionIsInsistedOn' started at 2026-10-06 18:54:28.063
+Test Case 'GameEnvironmentStoreTests.testTheVersionIsInsistedOn' started at 2026-10-06 18:54:47.768
 Test Case 'GameEnvironmentStoreTests.testTheVersionIsInsistedOn' passed (0.0 seconds)
-Test Case 'GameEnvironmentStoreTests.testTheWrittenFileIsReadableJSONWithItsVersion' started at 2026-10-06 18:54:28.063
+Test Case 'GameEnvironmentStoreTests.testTheWrittenFileIsReadableJSONWithItsVersion' started at 2026-10-06 18:54:47.768
 Test Case 'GameEnvironmentStoreTests.testTheWrittenFileIsReadableJSONWithItsVersion' passed (0.001 seconds)
-Test Case 'GameEnvironmentStoreTests.testWritingLeavesNoFileBehindWhenCleared' started at 2026-10-06 18:54:28.064
+Test Case 'GameEnvironmentStoreTests.testWritingLeavesNoFileBehindWhenCleared' started at 2026-10-06 18:54:47.769
 Test Case 'GameEnvironmentStoreTests.testWritingLeavesNoFileBehindWhenCleared' passed (0.001 seconds)
-Test Suite 'GameEnvironmentStoreTests' passed at 2026-10-06 18:54:28.065
-	 Executed 11 tests, with 0 failures (0 unexpected) in 0.009 (0.009) seconds
-Test Suite 'GameEnvironmentTests' started at 2026-10-06 18:54:28.065
-Test Case 'GameEnvironmentTests.testAPresetContributesToTheDefaults' started at 2026-10-06 18:54:28.065
+Test Suite 'GameEnvironmentStoreTests' passed at 2026-10-06 18:54:47.770
+	 Executed 11 tests, with 0 failures (0 unexpected) in 0.007 (0.007) seconds
+Test Suite 'GameEnvironmentTests' started at 2026-10-06 18:54:47.770
+Test Case 'GameEnvironmentTests.testAPresetContributesToTheDefaults' started at 2026-10-06 18:54:47.770
 Test Case 'GameEnvironmentTests.testAPresetContributesToTheDefaults' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testASharedEntryAppliesToAGameWithNothingOfItsOwn' started at 2026-10-06 18:54:28.065
+Test Case 'GameEnvironmentTests.testASharedEntryAppliesToAGameWithNothingOfItsOwn' started at 2026-10-06 18:54:47.770
 Test Case 'GameEnvironmentTests.testASharedEntryAppliesToAGameWithNothingOfItsOwn' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testAStabilityPresetTurnsTheOptimisationsBackOn' started at 2026-10-06 18:54:28.065
+Test Case 'GameEnvironmentTests.testAStabilityPresetTurnsTheOptimisationsBackOn' started at 2026-10-06 18:54:47.770
 Test Case 'GameEnvironmentTests.testAStabilityPresetTurnsTheOptimisationsBackOn' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testAnUnknownPresetFallsBackToTheDefaultOne' started at 2026-10-06 18:54:28.066
+Test Case 'GameEnvironmentTests.testAnUnknownPresetFallsBackToTheDefaultOne' started at 2026-10-06 18:54:47.770
 Test Case 'GameEnvironmentTests.testAnUnknownPresetFallsBackToTheDefaultOne' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testClearingAGamesEntriesRemovesTheScope' started at 2026-10-06 18:54:28.066
+Test Case 'GameEnvironmentTests.testClearingAGamesEntriesRemovesTheScope' started at 2026-10-06 18:54:47.770
 Test Case 'GameEnvironmentTests.testClearingAGamesEntriesRemovesTheScope' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testConfigRoundTripsThroughJSON' started at 2026-10-06 18:54:28.066
+Test Case 'GameEnvironmentTests.testConfigRoundTripsThroughJSON' started at 2026-10-06 18:54:47.770
 Test Case 'GameEnvironmentTests.testConfigRoundTripsThroughJSON' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testEffectiveIsDefaultsThenSharedThenTheGame' started at 2026-10-06 18:54:28.066
+Test Case 'GameEnvironmentTests.testEffectiveIsDefaultsThenSharedThenTheGame' started at 2026-10-06 18:54:47.771
 Test Case 'GameEnvironmentTests.testEffectiveIsDefaultsThenSharedThenTheGame' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testRuntimeManagedNamesAreNotUserSettable' started at 2026-10-06 18:54:28.066
+Test Case 'GameEnvironmentTests.testRuntimeManagedNamesAreNotUserSettable' started at 2026-10-06 18:54:47.771
 Test Case 'GameEnvironmentTests.testRuntimeManagedNamesAreNotUserSettable' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testScopeIsTheSteamAppIdRange' started at 2026-10-06 18:54:28.066
-Test Case 'GameEnvironmentTests.testScopeIsTheSteamAppIdRange' passed (0.002 seconds)
-Test Case 'GameEnvironmentTests.testSharedEntriesAreNotAGameKeyedByEmptyString' started at 2026-10-06 18:54:28.068
+Test Case 'GameEnvironmentTests.testScopeIsTheSteamAppIdRange' started at 2026-10-06 18:54:47.771
+Test Case 'GameEnvironmentTests.testScopeIsTheSteamAppIdRange' passed (0.1 seconds)
+Test Case 'GameEnvironmentTests.testSharedEntriesAreNotAGameKeyedByEmptyString' started at 2026-10-06 18:54:47.871
 Test Case 'GameEnvironmentTests.testSharedEntriesAreNotAGameKeyedByEmptyString' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testValuesMayNotCarryANulOrRunPastEightKibibytes' started at 2026-10-06 18:54:28.068
+Test Case 'GameEnvironmentTests.testValuesMayNotCarryANulOrRunPastEightKibibytes' started at 2026-10-06 18:54:47.871
 Test Case 'GameEnvironmentTests.testValuesMayNotCarryANulOrRunPastEightKibibytes' passed (0.001 seconds)
-Test Case 'GameEnvironmentTests.testVariableNamesAreShellNames' started at 2026-10-06 18:54:28.068
+Test Case 'GameEnvironmentTests.testVariableNamesAreShellNames' started at 2026-10-06 18:54:47.872
 Test Case 'GameEnvironmentTests.testVariableNamesAreShellNames' passed (0.0 seconds)
-Test Suite 'GameEnvironmentTests' passed at 2026-10-06 18:54:28.069
-	 Executed 12 tests, with 0 failures (0 unexpected) in 0.003 (0.003) seconds
-Test Suite 'GameSavesTests' started at 2026-10-06 18:54:28.069
-Test Case 'GameSavesTests.testAGameThatHasNeverRunHasNoDirectories' started at 2026-10-06 18:54:28.069
+Test Suite 'GameEnvironmentTests' passed at 2026-10-06 18:54:47.872
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.102 (0.102) seconds
+Test Suite 'GameSavesTests' started at 2026-10-06 18:54:47.872
+Test Case 'GameSavesTests.testAGameThatHasNeverRunHasNoDirectories' started at 2026-10-06 18:54:47.872
 Test Case 'GameSavesTests.testAGameThatHasNeverRunHasNoDirectories' passed (0.0 seconds)
-Test Case 'GameSavesTests.testAGameWithNoProtonPrefixIsLeftAlone' started at 2026-10-06 18:54:28.069
+Test Case 'GameSavesTests.testAGameWithNoProtonPrefixIsLeftAlone' started at 2026-10-06 18:54:47.873
 Test Case 'GameSavesTests.testAGameWithNoProtonPrefixIsLeftAlone' passed (0.0 seconds)
-Test Case 'GameSavesTests.testExportNameIsSafeAndSorts' started at 2026-10-06 18:54:28.069
+Test Case 'GameSavesTests.testExportNameIsSafeAndSorts' started at 2026-10-06 18:54:47.873
 Test Case 'GameSavesTests.testExportNameIsSafeAndSorts' passed (0.008 seconds)
-Test Case 'GameSavesTests.testExportOfAGameWithNoSavesExplainsItself' started at 2026-10-06 18:54:28.076
+Test Case 'GameSavesTests.testExportOfAGameWithNoSavesExplainsItself' started at 2026-10-06 18:54:47.880
 Test Case 'GameSavesTests.testExportOfAGameWithNoSavesExplainsItself' passed (0.0 seconds)
-Test Case 'GameSavesTests.testExportOfOnlyTheGameFoldersExportsThose' started at 2026-10-06 18:54:28.077
-Test Case 'GameSavesTests.testExportOfOnlyTheGameFoldersExportsThose' passed (0.0 seconds)
-Test Case 'GameSavesTests.testExportOfTheWholeProfileExportsThePrefix' started at 2026-10-06 18:54:28.077
+Test Case 'GameSavesTests.testExportOfOnlyTheGameFoldersExportsThose' started at 2026-10-06 18:54:47.881
+<EXPR>:0: error: GameSavesTests.testExportOfOnlyTheGameFoldersExportsThose : threw error "nothingToExport("Game")"
+Test Case 'GameSavesTests.testExportOfOnlyTheGameFoldersExportsThose' failed (0.001 seconds)
+Test Case 'GameSavesTests.testExportOfTheWholeProfileExportsThePrefix' started at 2026-10-06 18:54:47.881
 Test Case 'GameSavesTests.testExportOfTheWholeProfileExportsThePrefix' passed (0.0 seconds)
-Test Case 'GameSavesTests.testExportWithoutAProtonPrefixExplainsItself' started at 2026-10-06 18:54:28.077
+Test Case 'GameSavesTests.testExportWithoutAProtonPrefixExplainsItself' started at 2026-10-06 18:54:47.882
 Test Case 'GameSavesTests.testExportWithoutAProtonPrefixExplainsItself' passed (0.0 seconds)
-Test Case 'GameSavesTests.testFindsOnlyTheDirectoriesThatExist' started at 2026-10-06 18:54:28.078
+Test Case 'GameSavesTests.testFindsOnlyTheDirectoriesThatExist' started at 2026-10-06 18:54:47.882
 /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GameSavesTests.swift:43: error: GameSavesTests.testFindsOnlyTheDirectoriesThatExist : XCTAssertEqual failed: ("0") is not equal to ("2") - 
 /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GameSavesTests.swift:44: error: GameSavesTests.testFindsOnlyTheDirectoriesThatExist : XCTAssertEqual failed: ("0") is not equal to ("5120") - 
 /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GameSavesTests.swift:45: error: GameSavesTests.testFindsOnlyTheDirectoriesThatExist : XCTAssertTrue failed - 
 Test Case 'GameSavesTests.testFindsOnlyTheDirectoriesThatExist' failed (0.0 seconds)
-Test Case 'GameSavesTests.testSafeNameNeverEmptyAndNeverLong' started at 2026-10-06 18:54:28.078
+Test Case 'GameSavesTests.testSafeNameNeverEmptyAndNeverLong' started at 2026-10-06 18:54:47.882
 Test Case 'GameSavesTests.testSafeNameNeverEmptyAndNeverLong' passed (0.0 seconds)
-Test Case 'GameSavesTests.testSizeIsFormattedTheWayTheFilesScreenDoesIt' started at 2026-10-06 18:54:28.078
+Test Case 'GameSavesTests.testSizeIsFormattedTheWayTheFilesScreenDoesIt' started at 2026-10-06 18:54:47.882
 Test Case 'GameSavesTests.testSizeIsFormattedTheWayTheFilesScreenDoesIt' passed (0.0 seconds)
-Test Suite 'GameSavesTests' failed at 2026-10-06 18:54:28.078
-	 Executed 10 tests, with 3 failures (0 unexpected) in 0.01 (0.01) seconds
-Test Suite 'GuestLayoutTests' started at 2026-10-06 18:54:28.078
-Test Case 'GuestLayoutTests.testBindCoverage' started at 2026-10-06 18:54:28.078
+Test Suite 'GameSavesTests' failed at 2026-10-06 18:54:47.882
+	 Executed 10 tests, with 4 failures (1 unexpected) in 0.01 (0.01) seconds
+Test Suite 'GuestLayoutTests' started at 2026-10-06 18:54:47.882
+Test Case 'GuestLayoutTests.testBindCoverage' started at 2026-10-06 18:54:47.882
 Test Case 'GuestLayoutTests.testBindCoverage' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testBindSpecDropsTheGuestWhenItEqualsTheHost' started at 2026-10-06 18:54:28.078
+Test Case 'GuestLayoutTests.testBindSpecDropsTheGuestWhenItEqualsTheHost' started at 2026-10-06 18:54:47.882
 Test Case 'GuestLayoutTests.testBindSpecDropsTheGuestWhenItEqualsTheHost' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testBindsCarryTheGuestsView' started at 2026-10-06 18:54:28.079
+Test Case 'GuestLayoutTests.testBindsCarryTheGuestsView' started at 2026-10-06 18:54:47.882
 Test Case 'GuestLayoutTests.testBindsCarryTheGuestsView' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testDesktopSessionRunsTheDesktopsOwnScript' started at 2026-10-06 18:54:28.079
+Test Case 'GuestLayoutTests.testDesktopSessionRunsTheDesktopsOwnScript' started at 2026-10-06 18:54:47.883
 Test Case 'GuestLayoutTests.testDesktopSessionRunsTheDesktopsOwnScript' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testEnvIsInvokedAfterTheBindsAndBeforeTheProgram' started at 2026-10-06 18:54:28.079
+Test Case 'GuestLayoutTests.testEnvIsInvokedAfterTheBindsAndBeforeTheProgram' started at 2026-10-06 18:54:47.883
 Test Case 'GuestLayoutTests.testEnvIsInvokedAfterTheBindsAndBeforeTheProgram' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testFakeRootUsesDashZero' started at 2026-10-06 18:54:28.079
+Test Case 'GuestLayoutTests.testFakeRootUsesDashZero' started at 2026-10-06 18:54:47.883
 Test Case 'GuestLayoutTests.testFakeRootUsesDashZero' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testGuestEnvironmentKeepsTheRuntimesVariables' started at 2026-10-06 18:54:28.079
+Test Case 'GuestLayoutTests.testGuestEnvironmentKeepsTheRuntimesVariables' started at 2026-10-06 18:54:47.884
 Test Case 'GuestLayoutTests.testGuestEnvironmentKeepsTheRuntimesVariables' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testHostEnvironmentCarriesTheProotLoader' started at 2026-10-06 18:54:28.079
+Test Case 'GuestLayoutTests.testHostEnvironmentCarriesTheProotLoader' started at 2026-10-06 18:54:47.884
 Test Case 'GuestLayoutTests.testHostEnvironmentCarriesTheProotLoader' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testProotPrefixMatchesLinuxRuntime' started at 2026-10-06 18:54:28.079
+Test Case 'GuestLayoutTests.testProotPrefixMatchesLinuxRuntime' started at 2026-10-06 18:54:47.884
 Test Case 'GuestLayoutTests.testProotPrefixMatchesLinuxRuntime' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testRootfsPathIsTheOneTheOverlayScriptsUse' started at 2026-10-06 18:54:28.079
+Test Case 'GuestLayoutTests.testRootfsPathIsTheOneTheOverlayScriptsUse' started at 2026-10-06 18:54:47.884
 Test Case 'GuestLayoutTests.testRootfsPathIsTheOneTheOverlayScriptsUse' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testRunSessionPassesGuestArgumentsThrough' started at 2026-10-06 18:54:28.080
+Test Case 'GuestLayoutTests.testRunSessionPassesGuestArgumentsThrough' started at 2026-10-06 18:54:47.884
 Test Case 'GuestLayoutTests.testRunSessionPassesGuestArgumentsThrough' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testSteamSessionRunsGamescopeWithTheRuntimesStartupScript' started at 2026-10-06 18:54:28.080
+Test Case 'GuestLayoutTests.testSteamSessionRunsGamescopeWithTheRuntimesStartupScript' started at 2026-10-06 18:54:47.884
 Test Case 'GuestLayoutTests.testSteamSessionRunsGamescopeWithTheRuntimesStartupScript' passed (0.0 seconds)
-Test Suite 'GuestLayoutTests' passed at 2026-10-06 18:54:28.080
-	 Executed 12 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
-Test Suite 'KeyValuesTests' started at 2026-10-06 18:54:28.080
-Test Case 'KeyValuesTests.testAppManifest' started at 2026-10-06 18:54:28.080
+Test Suite 'GuestLayoutTests' passed at 2026-10-06 18:54:47.884
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.002 (0.002) seconds
+Test Suite 'KeyValuesTests' started at 2026-10-06 18:54:47.884
+Test Case 'KeyValuesTests.testAppManifest' started at 2026-10-06 18:54:47.884
 Test Case 'KeyValuesTests.testAppManifest' passed (0.0 seconds)
-Test Case 'KeyValuesTests.testCommasSeparateEntries' started at 2026-10-06 18:54:28.080
-Test Case 'KeyValuesTests.testCommasSeparateEntries' passed (0.001 seconds)
-Test Case 'KeyValuesTests.testCommentsAndEscapes' started at 2026-10-06 18:54:28.081
-Test Case 'KeyValuesTests.testCommentsAndEscapes' passed (0.001 seconds)
-Test Case 'KeyValuesTests.testLibraryFolders' started at 2026-10-06 18:54:28.081
+Test Case 'KeyValuesTests.testCommasSeparateEntries' started at 2026-10-06 18:54:47.885
+Test Case 'KeyValuesTests.testCommasSeparateEntries' passed (0.0 seconds)
+Test Case 'KeyValuesTests.testCommentsAndEscapes' started at 2026-10-06 18:54:47.885
+Test Case 'KeyValuesTests.testCommentsAndEscapes' passed (0.0 seconds)
+Test Case 'KeyValuesTests.testLibraryFolders' started at 2026-10-06 18:54:47.885
 Test Case 'KeyValuesTests.testLibraryFolders' passed (0.0 seconds)
-Test Case 'KeyValuesTests.testSomethingThatIsNotKeyValuesParsesAsAbsent' started at 2026-10-06 18:54:28.082
+Test Case 'KeyValuesTests.testSomethingThatIsNotKeyValuesParsesAsAbsent' started at 2026-10-06 18:54:47.886
 Test Case 'KeyValuesTests.testSomethingThatIsNotKeyValuesParsesAsAbsent' passed (0.0 seconds)
-Test Case 'KeyValuesTests.testTruncatedFileParsesAsAbsent' started at 2026-10-06 18:54:28.082
+Test Case 'KeyValuesTests.testTruncatedFileParsesAsAbsent' started at 2026-10-06 18:54:47.886
 Test Case 'KeyValuesTests.testTruncatedFileParsesAsAbsent' passed (0.0 seconds)
-Test Suite 'KeyValuesTests' passed at 2026-10-06 18:54:28.082
-	 Executed 6 tests, with 0 failures (0 unexpected) in 0.002 (0.002) seconds
-Test Suite 'PrefsTests' started at 2026-10-06 18:54:28.082
-Test Case 'PrefsTests.testAutoOnScreenControlsFollowTheSessionAndTheQAM' started at 2026-10-06 18:54:28.082
+Test Suite 'KeyValuesTests' passed at 2026-10-06 18:54:47.886
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'PrefsTests' started at 2026-10-06 18:54:47.886
+Test Case 'PrefsTests.testAutoOnScreenControlsFollowTheSessionAndTheQAM' started at 2026-10-06 18:54:47.886
 Test Case 'PrefsTests.testAutoOnScreenControlsFollowTheSessionAndTheQAM' passed (0.0 seconds)
-Test Case 'PrefsTests.testAutoTouchModeIsATouchpadOnTheDesktopAndDirectInSteam' started at 2026-10-06 18:54:28.082
+Test Case 'PrefsTests.testAutoTouchModeIsATouchpadOnTheDesktopAndDirectInSteam' started at 2026-10-06 18:54:47.886
 Test Case 'PrefsTests.testAutoTouchModeIsATouchpadOnTheDesktopAndDirectInSteam' passed (0.0 seconds)
-Test Case 'PrefsTests.testBackActionOrderInverts' started at 2026-10-06 18:54:28.082
+Test Case 'PrefsTests.testBackActionOrderInverts' started at 2026-10-06 18:54:47.886
 Test Case 'PrefsTests.testBackActionOrderInverts' passed (0.0 seconds)
-Test Case 'PrefsTests.testDefaultsMatchDroidDeck' started at 2026-10-06 18:54:28.082
+Test Case 'PrefsTests.testDefaultsMatchDroidDeck' started at 2026-10-06 18:54:47.886
 Test Case 'PrefsTests.testDefaultsMatchDroidDeck' passed (0.0 seconds)
-Test Case 'PrefsTests.testLinuxDriverIsKeyedPerMode' started at 2026-10-06 18:54:28.083
+Test Case 'PrefsTests.testLinuxDriverIsKeyedPerMode' started at 2026-10-06 18:54:47.886
 Test Case 'PrefsTests.testLinuxDriverIsKeyedPerMode' passed (0.0 seconds)
-Test Suite 'PrefsTests' passed at 2026-10-06 18:54:28.083
+Test Suite 'PrefsTests' passed at 2026-10-06 18:54:47.887
 	 Executed 5 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
-Test Suite 'SessionStateTests' started at 2026-10-06 18:54:28.083
-Test Case 'SessionStateTests.testArtifactFolderName' started at 2026-10-06 18:54:28.083
-Test Case 'SessionStateTests.testArtifactFolderName' passed (0.001 seconds)
-Test Case 'SessionStateTests.testBeginResetsThePreviousSession' started at 2026-10-06 18:54:28.083
+Test Suite 'SessionStateTests' started at 2026-10-06 18:54:47.887
+Test Case 'SessionStateTests.testArtifactFolderName' started at 2026-10-06 18:54:47.887
+Test Case 'SessionStateTests.testArtifactFolderName' passed (0.0 seconds)
+Test Case 'SessionStateTests.testBeginResetsThePreviousSession' started at 2026-10-06 18:54:47.887
 Test Case 'SessionStateTests.testBeginResetsThePreviousSession' passed (0.0 seconds)
-Test Case 'SessionStateTests.testEventLineIsOneJSONObject' started at 2026-10-06 18:54:28.083
-Test Case 'SessionStateTests.testEventLineIsOneJSONObject' passed (0.101 seconds)
-Test Case 'SessionStateTests.testFailureFromAnyLivePhase' started at 2026-10-06 18:54:28.184
+Test Case 'SessionStateTests.testEventLineIsOneJSONObject' started at 2026-10-06 18:54:47.887
+Test Case 'SessionStateTests.testEventLineIsOneJSONObject' passed (0.0 seconds)
+Test Case 'SessionStateTests.testFailureFromAnyLivePhase' started at 2026-10-06 18:54:47.887
 Test Case 'SessionStateTests.testFailureFromAnyLivePhase' passed (0.0 seconds)
-Test Case 'SessionStateTests.testGuestPidOfOneIsNull' started at 2026-10-06 18:54:28.184
-Test Case 'SessionStateTests.testGuestPidOfOneIsNull' passed (0.101 seconds)
-Test Case 'SessionStateTests.testIllegalTransitionIsRejectedAndChangesNothing' started at 2026-10-06 18:54:28.285
+Test Case 'SessionStateTests.testGuestPidOfOneIsNull' started at 2026-10-06 18:54:47.888
+Test Case 'SessionStateTests.testGuestPidOfOneIsNull' passed (0.0 seconds)
+Test Case 'SessionStateTests.testIllegalTransitionIsRejectedAndChangesNothing' started at 2026-10-06 18:54:47.888
 Test Case 'SessionStateTests.testIllegalTransitionIsRejectedAndChangesNothing' passed (0.0 seconds)
-Test Case 'SessionStateTests.testPayloadIsSchemaOneWithDroidDeckKeys' started at 2026-10-06 18:54:28.285
+Test Case 'SessionStateTests.testPayloadIsSchemaOneWithDroidDeckKeys' started at 2026-10-06 18:54:47.888
 Test Case 'SessionStateTests.testPayloadIsSchemaOneWithDroidDeckKeys' passed (0.0 seconds)
-Test Case 'SessionStateTests.testPhaseNamesMatchDroidDeck' started at 2026-10-06 18:54:28.285
+Test Case 'SessionStateTests.testPhaseNamesMatchDroidDeck' started at 2026-10-06 18:54:47.888
 Test Case 'SessionStateTests.testPhaseNamesMatchDroidDeck' passed (0.0 seconds)
-Test Case 'SessionStateTests.testReenteringTheSamePhaseIsNotATransition' started at 2026-10-06 18:54:28.285
+Test Case 'SessionStateTests.testReenteringTheSamePhaseIsNotATransition' started at 2026-10-06 18:54:47.888
 Test Case 'SessionStateTests.testReenteringTheSamePhaseIsNotATransition' passed (0.0 seconds)
-Test Case 'SessionStateTests.testSuspendAndResumeArePhasesOfALiveSession' started at 2026-10-06 18:54:28.286
+Test Case 'SessionStateTests.testSuspendAndResumeArePhasesOfALiveSession' started at 2026-10-06 18:54:47.889
 Test Case 'SessionStateTests.testSuspendAndResumeArePhasesOfALiveSession' passed (0.0 seconds)
-Test Case 'SessionStateTests.testSuspendIsRejectedBeforeTheGuestIsUp' started at 2026-10-06 18:54:28.286
+Test Case 'SessionStateTests.testSuspendIsRejectedBeforeTheGuestIsUp' started at 2026-10-06 18:54:47.889
 Test Case 'SessionStateTests.testSuspendIsRejectedBeforeTheGuestIsUp' passed (0.0 seconds)
-Test Case 'SessionStateTests.testWalkToReady' started at 2026-10-06 18:54:28.286
-Test Case 'SessionStateTests.testWalkToReady' passed (0.0 seconds)
-Test Suite 'SessionStateTests' passed at 2026-10-06 18:54:28.286
-	 Executed 12 tests, with 0 failures (0 unexpected) in 0.203 (0.203) seconds
-Test Suite 'SteamLibraryTests' started at 2026-10-06 18:54:28.286
-Test Case 'SteamLibraryTests.testAnEmptyLibraryIsEmptyNotBroken' started at 2026-10-06 18:54:28.286
+Test Case 'SessionStateTests.testWalkToReady' started at 2026-10-06 18:54:47.889
+Test Case 'SessionStateTests.testWalkToReady' passed (0.1 seconds)
+Test Suite 'SessionStateTests' passed at 2026-10-06 18:54:47.989
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.102 (0.102) seconds
+Test Suite 'SteamLibraryTests' started at 2026-10-06 18:54:47.989
+Test Case 'SteamLibraryTests.testAnEmptyLibraryIsEmptyNotBroken' started at 2026-10-06 18:54:47.989
 Test Case 'SteamLibraryTests.testAnEmptyLibraryIsEmptyNotBroken' passed (0.0 seconds)
-Test Case 'SteamLibraryTests.testGamesAreSortedByNameAndCarryTheirInstallPath' started at 2026-10-06 18:54:28.286
+Test Case 'SteamLibraryTests.testGamesAreSortedByNameAndCarryTheirInstallPath' started at 2026-10-06 18:54:47.990
 Test Case 'SteamLibraryTests.testGamesAreSortedByNameAndCarryTheirInstallPath' passed (0.0 seconds)
-Test Case 'SteamLibraryTests.testLibraryPath' started at 2026-10-06 18:54:28.286
+Test Case 'SteamLibraryTests.testLibraryPath' started at 2026-10-06 18:54:47.990
 Test Case 'SteamLibraryTests.testLibraryPath' passed (0.0 seconds)
-Test Case 'SteamLibraryTests.testNonSteamManifestsAreIgnored' started at 2026-10-06 18:54:28.286
+Test Case 'SteamLibraryTests.testNonSteamManifestsAreIgnored' started at 2026-10-06 18:54:47.990
 Test Case 'SteamLibraryTests.testNonSteamManifestsAreIgnored' passed (0.0 seconds)
-Test Case 'SteamLibraryTests.testShortcuts' started at 2026-10-06 18:54:28.287
+Test Case 'SteamLibraryTests.testShortcuts' started at 2026-10-06 18:54:47.990
 Test Case 'SteamLibraryTests.testShortcuts' passed (0.0 seconds)
-Test Suite 'SteamLibraryTests' passed at 2026-10-06 18:54:28.287
+Test Suite 'SteamLibraryTests' passed at 2026-10-06 18:54:47.991
 	 Executed 5 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
-Test Suite 'Debug-linux-x86_64.xctest' failed at 2026-10-06 18:54:28.287
-	 Executed 112 tests, with 3 failures (0 unexpected) in 0.925 (0.925) seconds
-Test Suite 'All tests' failed at 2026-10-06 18:54:28.287
-	 Executed 112 tests, with 3 failures (0 unexpected) in 0.925 (0.925) seconds
+Test Suite 'Debug-linux-x86_64.xctest' failed at 2026-10-06 18:54:47.991
+	 Executed 112 tests, with 4 failures (1 unexpected) in 0.38 (0.38) seconds
+Test Suite 'All tests' failed at 2026-10-06 18:54:47.991
+	 Executed 112 tests, with 4 failures (1 unexpected) in 0.38 (0.38) seconds
 ◇ Test run started.
 ↳ Testing Library Version: 6.4 (efd8d65801f569d)
 ↳ Target Platform: x86_64-unknown-linux-gnu
