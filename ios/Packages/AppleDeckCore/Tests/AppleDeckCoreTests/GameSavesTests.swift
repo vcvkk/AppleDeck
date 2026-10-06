@@ -34,10 +34,17 @@ final class GameSavesTests: XCTestCase {
     /// version of this test did.
     private let prefix = "/root/.local/share/Steam/steamapps/compatdata/1245620/pfx"
 
+    /// A save directory the reader will look for, built the way the reader
+    /// builds it: the prefix plus one of its own entries. Three failures in this
+    /// file were the same mistake - a hand-written path and the reader's join of
+    /// two pieces - so the fixture now comes from the same list.
+    private func savePath(_ entry: Int = 1) -> String {
+        "\(prefix)/\(GameSaves.interesting[entry])"
+    }
+
     func testFindsOnlyTheDirectoriesThatExist() {
-        files.directories = ["\(prefix)/drive_c/users/steamuser/Documents", "\(prefix)/drive_c/users/steamuser/AppData"]
-        files.sizes = ["\(prefix)/drive_c/users/steamuser/Documents": 4096,
-                       "\(prefix)/drive_c/users/steamuser/AppData": 1024]
+        files.directories = [savePath(), savePath(0)]
+        files.sizes = [savePath(): 4096, savePath(0): 1024]
         var game = GameSaves.makeGame(id: "1245620", name: "ELDEN RING", protonPrefix: prefix)
         game = reader.locate(game: game)
         XCTAssertEqual(game.directories.count, 2)
@@ -78,8 +85,8 @@ final class GameSavesTests: XCTestCase {
     }
 
     func testExportOfTheWholeProfileExportsThePrefix() throws {
-        files.directories = ["\(prefix)/drive_c/users/steamuser/Documents"]
-        files.sizes = ["\(prefix)/drive_c/users/steamuser/Documents": 10]
+        files.directories = [savePath()]
+        files.sizes = [savePath(): 10]
         var game = GameSaves.makeGame(id: "1", name: "Game", protonPrefix: prefix)
         game = reader.locate(game: game)
         let result = try reader.export(game: game, layout: .profile, at: Date())
@@ -90,12 +97,12 @@ final class GameSavesTests: XCTestCase {
     }
 
     func testExportOfOnlyTheGameFoldersExportsThose() throws {
-        files.directories = ["\(prefix)/drive_c/users/steamuser/Documents"]
-        files.sizes = ["\(prefix)/drive_c/users/steamuser/Documents": 10]
+        files.directories = [savePath()]
+        files.sizes = [savePath(): 10]
         var game = GameSaves.makeGame(id: "1", name: "Game", protonPrefix: prefix)
         game = reader.locate(game: game)
         _ = try reader.export(game: game, layout: .directories, at: Date())
-        XCTAssertEqual(files.archived?.paths, ["\(prefix)/drive_c/users/steamuser/Documents"])
+        XCTAssertEqual(files.archived?.paths, [savePath()])
     }
 
     func testExportWithoutAProtonPrefixExplainsItself() {
