@@ -15,13 +15,13 @@ final class AgentRouteTests: XCTestCase {
         var runtime: (available: Bool, detail: String) = (true, "QEMU (TCG)")
         var startedWith: [AgentRoute.SessionStart] = []
 
-        func statePayload() -> Data { state }
-        func start(_ start: AgentRoute.SessionStart) throws -> SessionPhase {
+        func sessionStatePayload() -> Data { state }
+        func startSession(_ start: AgentRoute.SessionStart) throws -> SessionPhase {
             startedWith.append(start)
             return try startResult.get()
         }
-        func stop() throws { try stopResult.get() }
-        func resume() throws { try resumeResult.get() }
+        func stopSession() throws { try stopResult.get() }
+        func resumeSession() throws { try resumeResult.get() }
         func artifactFolders() throws -> [String: [String]] { try folders.get() }
         func artifact(folder: String, name: String) throws -> Data {
             guard let data = artifacts["\(folder)/\(name)"] else {

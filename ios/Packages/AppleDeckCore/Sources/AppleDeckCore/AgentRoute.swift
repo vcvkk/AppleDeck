@@ -18,13 +18,18 @@ public struct AgentRoute: Sendable {
     /// controller on iOS; a fake in the tests.
     public protocol Backend: AnyObject, Sendable {
         /// The schema-1 payload, as JSON bytes.
-        func statePayload() -> Data
+        func sessionStatePayload() -> Data
         /// Starts a session. Returns the phase it entered, or an error.
-        func start(_ start: AgentRoute.SessionStart) throws -> SessionPhase
+        ///
+        /// Named apart from the host's own `start(_:)`/`stop()`: the backend is
+        /// usually that same type, and a protocol requirement with the same name
+        /// and shape as a method it already has is a redeclaration, not an
+        /// overload. The wire verbs are still `start`, `stop` and `resume`.
+        func startSession(_ request: SessionStart) throws -> SessionPhase
         /// Stops the running session. Throws when there is nothing to stop.
-        func stop() throws
+        func stopSession() throws
         /// Resumes a suspended session. Throws when it is not suspended.
-        func resume() throws
+        func resumeSession() throws
         /// The session folders on the device, newest last, with their file lists.
         func artifactFolders() throws -> [String: [String]]
         /// One file's bytes.
@@ -91,7 +96,7 @@ public struct AgentRoute: Sendable {
     public func handle(method: String, body: Data?) -> Response {
         switch method {
         case "state":
-            return ok(backend.statePayload())
+            return ok(backend.sessionStatePayload())
 
         case "health":
             // Not DroidDeck's: the one thing a person setting this up needs is to
@@ -108,7 +113,7 @@ public struct AgentRoute: Sendable {
 
         case "stop":
             do {
-                try backend.stop()
+                try backend.stopSession()
                 return json(200, ["ok": true, "command": "stop"])
             } catch {
                 return failure(error, fallback: .noSession)
@@ -116,7 +121,7 @@ public struct AgentRoute: Sendable {
 
         case "resume":
             do {
-                try backend.resume()
+                try backend.resumeSession()
                 return json(200, ["ok": true, "command": "resume"])
             } catch {
                 return failure(error, fallback: .noSession)
@@ -150,7 +155,7 @@ public struct AgentRoute: Sendable {
                                  wait: request.wait ?? false,
                                  timeout: request.timeout)
         do {
-            let phase = try backend.start(start)
+            let phase = try backend.startSession(start)
             return json(200, ["ok": true,
                               "command": "start",
                               "session": ["phase": phase.rawValue, "mode": request.mode.rawValue]])

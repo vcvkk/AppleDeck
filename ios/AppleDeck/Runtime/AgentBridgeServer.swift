@@ -29,17 +29,20 @@ final class AgentBridgeServer {
 
     func start() throws {
         guard listener == nil else { return }
+        guard let port = NWEndpoint.Port(rawValue: Self.port) else {
+            throw AgentRoute.BridgeFailure(code: .transport,
+                                           message: "port \(Self.port) is out of range")
+        }
         let parameters = NWParameters.tcp
         parameters.allowLocalEndpointReuse = true
-        // Loopback only. A parameter that says "listen on everything" is not a
-        // knob worth having on a bridge that can start and stop sessions.
-        let listener = try NWListener(using: parameters,
-                                      on: .init(ipAddress: "127.0.0.1",
-                                                port: .init(rawValue: Self.port) ?? 8765))
+        // Loopback only. A listener that says "on everything" is not a knob worth
+        // having on a bridge that can start and stop sessions.
+        let endpoint = NWEndpoint.hostPort(host: .ipv4(.loopback), port: port)
+        let listener = try NWListener(using: parameters, on: endpoint)
         listener.newConnectionHandler = { [weak self] connection in
             Task { @MainActor in self?.serve(connection) }
         }
-        listener.stateUpdateHandler = { [weak self] state in
+        listener.stateUpdateHandler = { [weak self] (state: NWListener.State) in
             Task { @MainActor in
                 switch state {
                 case .ready: self?.isRunning = true
@@ -49,7 +52,7 @@ final class AgentBridgeServer {
             }
         }
         self.listener = listener
-        listener.start(queue: .main)
+        listener.start(queue: DispatchQueue.main)
     }
 
     func stop() {
@@ -154,51 +157,57 @@ final class AgentBridgeServer {
 /// back to the main actor. The listener is already delivering on the main queue,
 /// so that hop is a no-op in practice and correct if it ever is not.
 extension SessionController: AgentRoute.Backend {
-    nonisolated func statePayload() -> Data {
+    nonisolated func sessionStatePayload() -> Data {
         MainActor.assumeIsolated { statePayload }
     }
 
-    nonisolated func start(_ start: AgentRoute.SessionStart) throws -> SessionPhase {
-        try MainActor.assumeIsolated {
+    nonisolated func startSession(_ request: AgentRoute.SessionStart) throws -> SessionPhase {
+        // Result, not throws: assumeIsolated has no throwing overload on every
+        // toolchain, and the alternative - a second copy of the guard on the main
+        // actor - is a race.
+        let outcome: Result<SessionPhase, Error> = MainActor.assumeIsolated {
             guard canStart else {
-                throw AgentRoute.BridgeFailure(code: .noSession,
-                                               message: "a session is already running")
+                return .failure(AgentRoute.BridgeFailure(
+                    code: .noSession, message: "a session is already running"))
             }
-            switch start.mode {
-            case .steam:
-                start(.steam(ui: start.ui, url: start.url))
-            case .desktop:
-                start(.desktop)
+            switch request.mode {
+            case .steam: start(.steam(ui: request.ui, url: request.url))
+            case .desktop: start(.desktop)
             case .run:
-                throw AgentRoute.BridgeFailure(code: .usage,
-                                               message: "run needs a program path")
+                return .failure(AgentRoute.BridgeFailure(
+                    code: .usage, message: "run needs a program path"))
             }
-            return phase
+            return .success(phase)
         }
+        return try outcome.get()
     }
 
-    nonisolated func stop() throws {
-        try MainActor.assumeIsolated {
+    nonisolated func stopSession() throws {
+        let outcome: Result<Void, Error> = MainActor.assumeIsolated {
             guard phase.isLive else {
-                throw AgentRoute.BridgeFailure(code: .noSession,
-                                               message: "no session is running")
+                return .failure(AgentRoute.BridgeFailure(
+                    code: .noSession, message: "no session is running"))
             }
-            self.stop()
+            stop()
+            return .success(())
         }
+        try outcome.get()
     }
 
-    nonisolated func resume() throws {
-        try MainActor.assumeIsolated {
+    nonisolated func resumeSession() throws {
+        let outcome: Result<Void, Error> = MainActor.assumeIsolated {
             guard phase == .suspended else {
-                throw AgentRoute.BridgeFailure(code: .noSession,
-                                               message: "the session is not suspended")
+                return .failure(AgentRoute.BridgeFailure(
+                    code: .noSession, message: "the session is not suspended"))
             }
             toggleSuspend()
+            return .success(())
         }
+        try outcome.get()
     }
 
     nonisolated func artifactFolders() throws -> [String: [String]] {
-        try MainActor.assumeIsolated {
+        MainActor.assumeIsolated {
             guard let directory = logDirectory else { return [:] }
             let url = URL(fileURLWithPath: directory)
             let names = (try? FileManager.default.contentsOfDirectory(atPath: directory)) ?? []
@@ -207,24 +216,23 @@ extension SessionController: AgentRoute.Backend {
     }
 
     nonisolated func artifact(folder: String, name: String) throws -> Data {
-        try MainActor.assumeIsolated {
+        let outcome: Result<Data, Error> = MainActor.assumeIsolated {
             guard let directory = logDirectory,
                   URL(fileURLWithPath: directory).lastPathComponent == folder else {
-                throw AgentRoute.BridgeFailure(code: .artifactsUnavailable,
-                                               message: "no session folder named \(folder)")
+                return .failure(AgentRoute.BridgeFailure(
+                    code: .artifactsUnavailable, message: "no session folder named \(folder)"))
             }
             let file = URL(fileURLWithPath: directory).appendingPathComponent(name)
             guard let data = try? Data(contentsOf: file) else {
-                throw AgentRoute.BridgeFailure(code: .artifactsUnavailable,
-                                               message: "no such file")
+                return .failure(AgentRoute.BridgeFailure(
+                    code: .artifactsUnavailable, message: "no such file"))
             }
-            return data
+            return .success(data)
         }
+        return try outcome.get()
     }
 
     nonisolated func runtimeStatus() -> (available: Bool, detail: String) {
-        MainActor.assumeIsolated {
-            (sessionRuntimeAvailable, sessionRuntimeDetail)
-        }
+        MainActor.assumeIsolated { (sessionRuntimeAvailable, sessionRuntimeDetail) }
     }
 }
