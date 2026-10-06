@@ -187,70 +187,53 @@ final class InputRouter {
     /// which is what makes the QAM, the virtual trackpad and the Steam button
     /// work; `xbox360` presents it as an XInput pad, which is what Proton games
     /// want. The choice is DroidDeck's and the mapping follows from it.
+    /// Attaches a press handler to a pad input.
+    ///
+    /// The parameter is optional and the argument need not be: a value promotes
+    /// to an optional, and an optional stays one. That matters because
+    /// GCExtachedGamepad is not uniform about it - the face buttons and shoulders
+    /// are plain values, the thumbstick buttons and Home are optionals - and
+    /// guessing which is which has cost more builds than the two lines this
+    /// saves are worth.
+    private func on(_ input: GCControllerButtonInput?, _ code: Int) {
+        input?.valueChangedHandler = { [weak self] _, _, pressed in
+            self?.send(pressed, code)
+        }
+    }
+
+    /// The same for a trigger, which is digital: a Steam Input profile maps the
+    /// trigger axis from the digital bit, and a half-pressed trigger read as an
+    /// axis stutters in every menu.
+    private func on(_ input: GCControllerAxisInput?, _ code: Int) {
+        input?.valueChangedHandler = { [weak self] _, value, _ in
+            self?.send(value > 0.5, code)
+        }
+    }
+
     private func adopt(_ controller: GCController) {
         guard let pad = controller.extendedGamepad else { return }
-        // Per-button handlers rather than one handler switching over the
-        // element: the buttons are GCExtendedGamepad members that have been
-        // there since iOS 9 and never moved, while the element constants are the
-        // part of the API this code would rather not depend on.
-        //
         // The deck profile presents the pad as a Steam Deck controller, so B is
         // East and A is South; an Xbox profile swaps A and B, which is what
         // Proton games want.
         let deck = prefs.controllerProfile == .deck
-        pad.buttonA.valueChangedHandler = { [weak self] _, _, pressed in
-            self?.send(pressed, Key.btnSouth)
-        }
-        pad.buttonB.valueChangedHandler = { [weak self] _, _, pressed in
-            self?.send(pressed, deck ? Key.btnEast : Key.btnSouth)
-        }
-        pad.buttonX.valueChangedHandler = { [weak self] _, _, pressed in
-            self?.send(pressed, deck ? Key.btnNorth : Key.btnWest)
-        }
-        pad.buttonY.valueChangedHandler = { [weak self] _, _, pressed in
-            self?.send(pressed, deck ? Key.btnWest : Key.btnNorth)
-        }
-        pad.leftShoulder.valueChangedHandler = { [weak self] _, _, pressed in
-            self?.send(pressed, Key.shoulderL)
-        }
-        pad.rightShoulder.valueChangedHandler = { [weak self] _, _, pressed in
-            self?.send(pressed, Key.shoulderR)
-        }
-        pad.leftThumbstickButton.valueChangedHandler = { [weak self] _, _, pressed in
-            self?.send(pressed, Key.thumbL)
-        }
-        pad.rightThumbstickButton.valueChangedHandler = { [weak self] _, _, pressed in
-            self?.send(pressed, Key.thumbR)
-        }
-        // The Steam Deck's own View button. It is the only vendor button with an
-        // evdev code of its own (BTN_MODE), and the only one worth guessing at:
-        // anything else would send the guest a key it has no use for.
-        pad.buttonHome.valueChangedHandler = { [weak self] _, _, pressed in
-            self?.send(pressed, Key.mode)
-        }
-        // Triggers are digital: a Steam Input profile maps the trigger axis from
-        // the digital bit, and a half-pressed trigger read as an axis stutters in
-        // every menu. The two triggers are optionals on GCExtendedGamepad; the
-        // direction pad's four buttons are not, which is the sort of asymmetry
-        // that costs a build if it is guessed at rather than read off the SDK.
-        pad.leftTrigger?.valueChangedHandler = { [weak self] _, value, _ in
-            self?.trigger(value, Key.triggerL)
-        }
-        pad.rightTrigger?.valueChangedHandler = { [weak self] _, value, _ in
-            self?.trigger(value, Key.triggerR)
-        }
-        pad.dpad.up.valueChangedHandler = { [weak self] _, _, pressed in
-            self?.send(pressed, Key.dpadUp)
-        }
-        pad.dpad.down.valueChangedHandler = { [weak self] _, _, pressed in
-            self?.send(pressed, Key.dpadDown)
-        }
-        pad.dpad.left.valueChangedHandler = { [weak self] _, _, pressed in
-            self?.send(pressed, Key.dpadLeft)
-        }
-        pad.dpad.right.valueChangedHandler = { [weak self] _, _, pressed in
-            self?.send(pressed, Key.dpadRight)
-        }
+        on(pad.buttonA, Key.btnSouth)
+        on(pad.buttonB, deck ? Key.btnEast : Key.btnSouth)
+        on(pad.buttonX, deck ? Key.btnNorth : Key.btnWest)
+        on(pad.buttonY, deck ? Key.btnWest : Key.btnNorth)
+        on(pad.leftShoulder, Key.shoulderL)
+        on(pad.rightShoulder, Key.shoulderR)
+        on(pad.leftThumbstickButton, Key.thumbL)
+        on(pad.rightThumbstickButton, Key.thumbR)
+        // The Steam Deck's own View button: the only vendor button with an evdev
+        // code of its own (BTN_MODE), and the only one worth guessing at, since
+        // anything else sends the guest a key it has no use for.
+        on(pad.buttonHome, Key.mode)
+        on(pad.leftTrigger, Key.triggerL)
+        on(pad.rightTrigger, Key.triggerR)
+        on(pad.dpad.up, Key.dpadUp)
+        on(pad.dpad.down, Key.dpadDown)
+        on(pad.dpad.left, Key.dpadLeft)
+        on(pad.dpad.right, Key.dpadRight)
         padConnected = controller
     }
 
@@ -262,9 +245,6 @@ final class InputRouter {
         sink?(.button(linuxButton: code, down: pressed))
     }
 
-    private func trigger(_ value: Float, _ code: Int) {
-        sink?(.button(linuxButton: code, down: value > 0.5))
-    }
 }
 
 /// Linux evdev codes, which is what virtio-keyboard and virtio-input speak.
