@@ -185,6 +185,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
         run: |
+          # Ends in `exit 0` on purpose: this step exists to explain the failure
+          # above it, and a hiccup while publishing (a flaky git push, a refused
+          # API call) must not turn a compile error into a red step that says
+          # nothing. The step before it is the one that failed, and the run log
+          # has the rest.
           set -uo pipefail
           {
             echo "# Unsigned IPA: build failed"
@@ -192,27 +197,34 @@ jobs:
             echo "commit: $GITHUB_SHA"
             echo "run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             echo
-            echo '```'
-            # Every error the compiler produced, deduplicated and not truncated:
-            # the whole point of -error-limit=0 is that one build answers all of
-            # them, and cutting the list short would undo that.
-            { grep -E 'error:|fatal error|error :' /tmp/appledeck_ipa/build.log 2>/dev/null
-              grep -E 'MISSING|ERROR|missing|no build log' /tmp/ipa.log 2>/dev/null; } \
-              | sed 's#/Users/runner/work/AppleDeck/AppleDeck/##' \
-              | awk '!seen[$0]++'
+            echo "## compiler"
             echo
             echo '```'
-            echo "last 40 lines of the packaging step:"
-            tail -40 /tmp/ipa.log 2>/dev/null || echo "no script output"
-            echo '```' 
+            grep -E 'error:|fatal error|error :' /tmp/appledeck_ipa/build.log 2>/dev/null \
+              | sed 's#/Users/runner/work/AppleDeck/AppleDeck/##' \
+              | awk '!seen[$0]++' || true
+            echo '```'
+            echo
+            echo "## bundle validation and packaging"
+            echo
+            echo '```'
+            grep -E 'MISSING|ERROR|missing|error' /tmp/ipa.log 2>/dev/null || true
+            echo '```'
+            echo
+            echo "## last 40 lines of the packaging step"
+            echo
+            echo '```'
+            tail -40 /tmp/ipa.log 2>/dev/null || true
             echo '```'
           } > /tmp/ios-build.md
-          git config user.name "ci"
-          git config user.email "ci@users.noreply.github.com"
-          git checkout -q --orphan ci/logs
-          git commit -q --allow-empty -m "ci logs"
-          git push -q --force origin HEAD:refs/heads/ci/logs
-          git checkout -q main
+
+          git config user.name "ci" || true
+          git config user.email "ci@users.noreply.github.com" || true
+          git checkout -q --orphan ci/logs 2>/dev/null || true
+          git commit -q --allow-empty -m "ci logs" || true
+          git push -q --force origin HEAD:refs/heads/ci/logs || true
+          git checkout -q main 2>/dev/null || true
+
           sha=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
             "${{ github.api_url }}/repos/$REPO/contents/ci-logs/ios-build.log?ref=ci/logs" \
             | python3 -c 'import json,sys; print(json.load(sys.stdin).get("sha",""))' 2>/dev/null || echo "")
@@ -228,7 +240,7 @@ jobs:
               "branch": "ci/logs",
               **({"sha": os.environ["BLOB_SHA"]} if os.environ.get("BLOB_SHA") else {}),
           }))')" -o /tmp/put-ios.json -w '%{http_code}\n' || true
-          head -c 300 /tmp/put-ios.json; echo
+          exit 0
 
       - name: What this build is
         run: |
