@@ -119,11 +119,11 @@ jobs:
             local attempt=0
             while [ $attempt -lt 3 ]; do
               sha=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
-                "${github.api_url}/repos/$REPO/contents/ci-logs/$file?ref=ci/logs" \
+                "${github.api_url}/repos/$REPO/contents/ci-logs/$remote?ref=ci/logs" \
                 | python3 -c 'import json,sys; print(json.load(sys.stdin).get("sha",""))' 2>/dev/null || echo "")
               code=$(curl -sS -o /tmp/put.json -w '%{http_code}' -X PUT \
                 -H "Authorization: Bearer $GH_TOKEN" -H "Content-Type: application/json" \
-                "${github.api_url}/repos/$REPO/contents/ci-logs/$file" \
+                "${github.api_url}/repos/$REPO/contents/ci-logs/$remote" \
                 -d "$(LOG_FILE="$file" BLOB_SHA="$sha" python3 -c '
           import base64, json, os
           body = open(os.environ["LOG_FILE"], "rb").read()
@@ -344,11 +344,11 @@ jobs:
             local attempt=0
             while [ $attempt -lt 3 ]; do
               sha=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
-                "${github.api_url}/repos/$REPO/contents/ci-logs/$file?ref=ci/logs" \
+                "${github.api_url}/repos/$REPO/contents/ci-logs/$remote?ref=ci/logs" \
                 | python3 -c 'import json,sys; print(json.load(sys.stdin).get("sha",""))' 2>/dev/null || echo "")
               code=$(curl -sS -o /tmp/put.json -w '%{http_code}' -X PUT \
                 -H "Authorization: Bearer $GH_TOKEN" -H "Content-Type: application/json" \
-                "${github.api_url}/repos/$REPO/contents/ci-logs/$file" \
+                "${github.api_url}/repos/$REPO/contents/ci-logs/$remote" \
                 -d "$(LOG_FILE="$file" BLOB_SHA="$sha" python3 -c '
           import base64, json, os
           body = open(os.environ["LOG_FILE"], "rb").read()
