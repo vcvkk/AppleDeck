@@ -1,12 +1,13 @@
 # Unsigned IPA: build failed
 
-commit: 73d4a5d013e57d7781ce38064c19a91544b38958
-run: https://github.com/vcvkk/AppleDeck/actions/runs/37498103695
+commit: 24eb354de2e16abe6af607c22d08c9cbb3b9fde4
+run: https://github.com/vcvkk/AppleDeck/actions/runs/37498605858
 
 ## compiler
 
 ```
-ios/AppleDeck/Runtime/AgentBridgeServer.swift:81:57: error: type 'IPv6Address' has no member 'ipv6Loopback'
+ios/AppleDeck/Runtime/AgentBridgeServer.swift:89:63: error: cannot find 'IN6ADDRSZ' in scope
+ios/AppleDeck/Runtime/AgentBridgeServer.swift:90:28: error: value of type 'IPv6Address' has no member 'copy'
 ```
 
 ## guest build
@@ -18,8 +19,10 @@ no guest log: the guest build did not run
 ## bundle validation and packaging
 
 ```
-/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:81:57: error: type 'IPv6Address' has no member 'ipv6Loopback'
-/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:81:57: error: type 'IPv6Address' has no member 'ipv6Loopback'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:89:63: error: cannot find 'IN6ADDRSZ' in scope
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:90:28: error: value of type 'IPv6Address' has no member 'copy'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:89:63: error: cannot find 'IN6ADDRSZ' in scope
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:90:28: error: value of type 'IPv6Address' has no member 'copy'
 ```
 
 ## last 40 lines of the packaging step
@@ -27,8 +30,10 @@ no guest log: the guest build did not run
 ```
 ==> regenerating the project from project.yml
 ==> building
-/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:81:57: error: type 'IPv6Address' has no member 'ipv6Loopback'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:89:63: error: cannot find 'IN6ADDRSZ' in scope
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:90:28: error: value of type 'IPv6Address' has no member 'copy'
 ** BUILD FAILED **
 build failed; refusing to package a stale app
-/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:81:57: error: type 'IPv6Address' has no member 'ipv6Loopback'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:89:63: error: cannot find 'IN6ADDRSZ' in scope
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:90:28: error: value of type 'IPv6Address' has no member 'copy'
 ```
