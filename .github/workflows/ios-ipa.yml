@@ -4,6 +4,12 @@ run-name: ${{ github.event_name == 'pull_request' && format('ipa for pr {0} at {
 # The Android build is untouched: this workflow only adds an iOS one, so a push
 # that changes nothing under ios/ does not pay for a macOS runner.
 on:
+  schedule:
+    # The guest build is hours of QEMU and its dependencies on the first run and
+    # minutes after that, so it is its own nightly rather than something every
+    # push waits behind. The last IPA of a normal push deliberately ships without
+    # a guest: the app installs, runs, and says why a session cannot start.
+    - cron: "23 4 * * *"
   push:
     branches: [ main ]
     paths:
@@ -121,7 +127,9 @@ jobs:
     name: Unsigned IPA
     needs: core
     runs-on: macos-15
-    timeout-minutes: 60
+    # Generous because the guest build shares this job when it runs: the first
+    # QEMU build is a couple of hours and the runner must not kill it half way.
+    timeout-minutes: 240
     permissions:
       contents: write
     steps:
@@ -158,16 +166,33 @@ jobs:
           brew install xcodegen
           cd ios && xcodegen generate --quiet
 
-      - name: Cache the guest runtime
+      # Two caches, because they age differently: the QEMU build tree is worth
+      # hours and changes only with the patch, while the guest image is 4 GB and
+      # changes only when the runtime catalogue does.
+      - name: Cache the emulator build tree
+        id: qemu
+        uses: actions/cache@v4
+        with:
+          path: ios/build/qemu-utl
+          key: qemu-${{ env.GUEST_CACHE_VERSION }}-${{ hashFiles('ios/patches/**') }}
+          restore-keys: qemu-${{ env.GUEST_CACHE_VERSION }}-
+
+      - name: Cache the guest image
         id: guest
         uses: actions/cache@v4
         with:
-          path: ios/build/guest
-          key: guest-${{ env.GUEST_CACHE_VERSION }}-${{ hashFiles('ios/scripts/build_guest.sh', 'ios/patches/**') }}
+          path: ios/build/guest/rootfs.img
+          key: guest-${{ env.GUEST_CACHE_VERSION }}-${{ hashFiles('ios/scripts/build_guest_image.sh') }}
+          restore-keys: guest-${{ env.GUEST_CACHE_VERSION }}-
 
       - name: Build the guest runtime
-        if: ${{ inputs.guest == true || github.event_name == 'workflow_dispatch' }}
-        run: ./ios/scripts/build_guest.sh
+        if: ${{ github.event_name == 'schedule' || inputs.guest == true }}
+        run: |
+          # The image first: it is a download and a repack, and the emulator is
+          # the long part. Failing fast on a missing kernel beats spending an hour
+          # on QEMU to find out there is nothing to boot.
+          ./ios/scripts/build_guest_image.sh
+          ./ios/scripts/build_guest.sh
 
       - name: Build and package
         # teed, because the script's own output is where a bundle validation

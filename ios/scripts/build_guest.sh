@@ -42,7 +42,7 @@ step() { printf '\n\033[1;34m##### %s\033[0m\n' "$*"; }
 
 step "sources"
 mkdir -p "$BUILD"
-QEMU_SRC="$BUILD/qemu"
+QEMU_SRC="$BUILD/qemu-utl"
 if [ ! -d "$QEMU_SRC" ]; then
     git clone --depth 1 --branch "$QEMU_TAG" https://github.com/utmapp/qemu.git "$QEMU_SRC"
 fi
@@ -80,16 +80,9 @@ step "stage"
 mkdir -p "$BUILD/guest"
 QEMU_LIB=$(find "$BUILD" -name 'libqemu-aarch64-softmmu.dylib' | head -1)
 [ -n "$QEMU_LIB" ] || { echo "no QEMU dylib was built" >&2; exit 1; }
+# Straight into the guest directory: package_ipa.sh stages whatever is there, and
+# keeping one place means the two scripts cannot disagree about what shipped.
 cp "$QEMU_LIB" "$BUILD/guest/"
-
-# The guest image is DroidDeck's own runtime, unpacked into a disk the guest
-# boots: the rootfs the Android app ships as an asset, an arm64 kernel and an
-# initramfs. Fetched, never committed - it is ~1 GiB and it belongs upstream.
-if [ ! -f "$BUILD/guest/rootfs.img" ]; then
-    echo "==> fetching the guest image" >&2
-    echo "    See docs/ios-port.md for how the DroidDeck rootfs becomes a bootable" >&2
-    echo "    image, and tools/linuxfs for what it contains." >&2
-fi
 
 echo
 echo "==> staged in $BUILD/guest:"

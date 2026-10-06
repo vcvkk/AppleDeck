@@ -61,6 +61,32 @@ fi
 APP="$DD/Build/Products/Release-iphoneos/AppleDeck.app"
 [ -d "$APP" ] || { echo "no app bundle at $APP" >&2; exit 1; }
 
+# The guest goes in after the build rather than through the Xcode target: it is
+# gigabytes of fetched content, it is cached between runs rather than committed,
+# and the app is unsigned so nothing has to re-verify it afterwards. A bundle
+# without it installs and runs, and says on the Home page why a session cannot
+# start - which is why the staging is explicit about what it found.
+STAGE_GUEST="${STAGE_GUEST:-$APPLEDECK_ROOT/build/guest}"
+if [ -d "$STAGE_GUEST" ]; then
+    echo "==> staging the guest runtime"
+    mkdir -p "$APP/guest" "$APP/Frameworks"
+    for image in vmlinuz-virt initramfs-virt rootfs.img; do
+        if [ -f "$STAGE_GUEST/$image" ]; then
+            install -m644 "$STAGE_GUEST/$image" "$APP/guest/$image"
+            printf "  ok       %-28s %s\n" "guest/$image" "$(du -h "$STAGE_GUEST/$image" | cut -f1)"
+        fi
+    done
+    [ -f "$STAGE_GUEST/runtime.version" ] && \
+        install -m644 "$STAGE_GUEST/runtime.version" "$APP/guest/runtime.version"
+    for lib in "$STAGE_GUEST"/*.dylib; do
+        [ -e "$lib" ] || continue
+        install -m755 "$lib" "$APP/Frameworks/"
+        printf "  ok       %-28s %s\n" "Frameworks/$(basename "$lib")" "$(du -h "$lib" | cut -f1)"
+    done
+else
+    echo "==> no guest runtime in $STAGE_GUEST; the app will say why at launch"
+fi
+
 # Stamp the build's identity into the bundle so a log from a stale install is
 # distinguishable from a log proving a fix did not work.
 APP_PLIST="$DD/Build/Products/Release-iphoneos/AppleDeck.app/Info.plist"
