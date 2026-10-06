@@ -83,7 +83,11 @@ public enum GameEnvironment {
     /// string early in the shims rather than in the guest, and 8 KiB is the
     /// ceiling Linux itself imposes.
     public static func isValidValue(_ value: String) -> Bool {
-        !value.utf8.contains(UInt8(0)) && value.utf8.count <= 8192
+        // range(of:) rather than utf8.contains: the byte view's `contains` does
+        // not resolve the same way in swift-corelibs as it does in Apple's SDK,
+        // and a value check that only compiles on one of them is a value check
+        // that only runs on one of them.
+        value.range(of: "\0") == nil && value.utf8.count <= 8192
     }
 
     /// A scope is a Steam app id: 1 through 4294967295, no leading zero. The
