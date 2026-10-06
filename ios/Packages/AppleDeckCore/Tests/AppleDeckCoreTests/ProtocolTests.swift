@@ -100,10 +100,15 @@ final class KeyValuesTests: XCTestCase {
         """
         let entries = try XCTUnwrap(KeyValues.parse(text))
         let root = entries.first?.value
-        XCTAssertEqual(root?.string("0")?.listValue?.first?.value.string("path"),
+        // Through `list(_:)`, not `string(_:)`: the value under an index key is a
+        // list, and optional-chaining off the String? that `string(_:)` returns is
+        // not a thing.
+        XCTAssertEqual(root?.list("0")?.first?.value.string("path"),
                        "/root/.local/share/Steam")
-        XCTAssertEqual(root?.string("1")?.listValue?.first?.value.string("path"),
+        XCTAssertEqual(root?.list("1")?.first?.value.string("path"),
                        "/mnt/sd/SteamLibrary")
+        XCTAssertEqual(root?.list("0")?.first?.value.list("apps")?.first?.value.stringValue,
+                       "10")
     }
 
     func testAppManifest() throws {
@@ -135,7 +140,8 @@ final class KeyValuesTests: XCTestCase {
             }
         }
         """
-        let shortcut = try XCTUnwrap(KeyValues.parse(text)).first?.value.string("0")?.listValue?.first?.value
+        let shortcut = try XCTUnwrap(KeyValues.parse(text))
+            .first?.value.list("0")?.first?.value
         XCTAssertEqual(shortcut?.string("AppName"), "Quote \" inside")
         XCTAssertEqual(shortcut?.string("Exe"), "/usr/bin/games/x.sh")
     }
