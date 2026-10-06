@@ -241,6 +241,10 @@ struct DriverView: View {
 struct SettingsView: View {
     @EnvironmentObject private var launcher: LauncherModel
 
+    private func info(_ key: String, _ fallback: String) -> String {
+        (Bundle.main.object(forInfoDictionaryKey: key) as? String) ?? fallback
+    }
+
     var body: some View {
         Form {
             Section("Session") {
@@ -302,6 +306,20 @@ struct SettingsView: View {
                      + "Documents/DroidDeck, which the Files app can reach.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+            Section("Build") {
+                // The three numbers that decide whether a report about the app
+                // "looking wrong" can be answered without rebuilding: which
+                // commit, which SDK, and whether the launch screen made it into
+                // the bundle. The last one matters because an app without a
+                // launch screen is run by iOS in the old 320x480 mode - black
+                // bars and everything scaled up - which looks like a layout bug
+                // and is not one.
+                LabeledContent("Commit", value: info("AppleDeckBuildCommit", "?"))
+                LabeledContent("Built", value: info("AppleDeckBuildDate", "?"))
+                LabeledContent("SDK", value: info("AppleDeckSDKVersion", "?"))
+                LabeledContent("Launch screen", value: info("AppleDeckLaunchScreen", "?"))
+                LabeledContent("Minimum iOS", value: info("MinimumOSVersion", "?"))
             }
             Section("Guest") {
                 TextField("Hostname", text: Binding(

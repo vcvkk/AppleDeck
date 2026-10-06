@@ -67,7 +67,14 @@ if [ -f "$APP_PLIST" ]; then
     git -C "$APPLEDECK_ROOT" diff --quiet 2>/dev/null || COMMIT="$COMMIT-dirty"
     plutil -replace AppleDeckBuildCommit -string "$COMMIT" "$APP_PLIST"
     plutil -replace AppleDeckBuildDate -string "$(date -u '+%Y-%m-%d %H:%M UTC')" "$APP_PLIST"
-    echo "==> stamped build $COMMIT"
+    # The SDK version travels inside the bundle, because "it still looks wrong"
+    # is unanswerable without knowing what the IPA was built against: an app built
+    # against an older SDK is letterboxed by the newer iOS it is installed on, and
+    # the person reporting it is looking at a phone, not at a build log.
+    SDK=$(xcrun --sdk iphoneos --show-sdk-version 2>/dev/null || echo unknown)
+    XCODE=$(xcodebuild -version | head -1)
+    plutil -replace AppleDeckSDKVersion -string "$SDK ($XCODE)" "$APP_PLIST"
+    echo "==> stamped build $COMMIT, sdk $SDK, $XCODE"
 fi
 
 echo "==> validating bundle"
@@ -92,6 +99,43 @@ if [ -n "$EXE" ] && [ ! -f "$APP/$EXE" ]; then
 elif [ -n "$EXE" ]; then
     printf "  ok       %-28s %s\n" "executable present" "$EXE"
 fi
+
+# The compiled launch screen, checked for rather than assumed. An app that ships
+# without one is run by iOS in the old 320x480 compatibility mode: black bars
+# above and below and everything scaled up, which is the first thing an
+# installer sees and looks like a layout bug. Two mistakes produce it - the key
+# is missing from Info.plist, or the storyboard is not in the bundle - and only
+# the second is visible from here.
+LAUNCH_NAME=$(/usr/libexec/PlistBuddy -c "Print :UILaunchStoryboardName" "$PLIST" 2>/dev/null || true)
+if [ -n "$LAUNCH_NAME" ]; then
+    if [ -d "$APP/${LAUNCH_NAME}.storyboardc" ]; then
+        printf "  ok       %-28s %s\n" "launch screen" "${LAUNCH_NAME}.storyboardc"
+    else
+        echo "  MISSING  ${LAUNCH_NAME}.storyboardc   <-- iOS will letterbox this app" >&2
+        rc=1
+    fi
+else
+    echo "  MISSING  UILaunchStoryboardName   <-- iOS will letterbox this app" >&2
+    rc=1
+fi
+
+# The same check for the key form, and for the two that make iPadOS run an app
+# in compatibility mode: no UIRequiresFullScreen, and every orientation declared
+# for both idioms.
+if [ -z "$(/usr/libexec/PlistBuddy -c "Print :UIRequiresFullScreen" "$PLIST" 2>/dev/null || true)" ]; then
+    printf "  ok       %-28s %s\n" "UIRequiresFullScreen" "absent (good)"
+else
+    echo "  NOTE     UIRequiresFullScreen is set; iPadOS ignores it and letterboxes anyway"
+fi
+for key in UISupportedInterfaceOrientations 'UISupportedInterfaceOrientations~iphone' 'UISupportedInterfaceOrientations~ipad'; do
+    count=$(/usr/libexec/PlistBuddy -c "Print :$key" "$PLIST" 2>/dev/null | grep -c "UIInterfaceOrientation" || true)
+    if [ "${count:-0}" -ge 4 ]; then
+        printf "  ok       %-28s %s orientations\n" "$key" "$count"
+    else
+        echo "  MISSING  $key lists ${count:-0} orientations; iPadOS letterboxes an app that does not support all four" >&2
+        rc=1
+    fi
+done
 
 # The guest runtime is optional at build time and mandatory at run time, so the
 # bundle is checked either way: present when the guest was staged, and absent

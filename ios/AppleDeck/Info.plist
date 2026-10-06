@@ -63,11 +63,19 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<!-- The session fills the screen and hides its own controls: the guest is
-	     presented through a CAMetalLayer with the same effect DroidDeck gets
-	     from the immersive sticky mode. -->
-	<key>UIRequiresFullScreen</key>
-	<true/>
+	<key>UISupportedInterfaceOrientations~iphone</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<!-- No UIRequiresFullScreen. On iPadOS it is ignored, and an app that asks
+	     for it while not supporting resizable windows is run in compatibility
+	     mode: letterboxed with black bars, at the old screen size. Both devices
+	     are supported on every orientation instead, and the session covers the
+	     screen through its CAMetalLayer, which is what DroidDeck's immersive
+	     sticky mode is for. -->
 	<!-- Steam Big Picture is a console UI. Every DroidDeck session feature that
 	     depends on a game controller depends on these two declarations being
 	     present, which is why they are here rather than in code. -->
@@ -105,6 +113,10 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>AppleDeckLaunchScreen</key>
+	<string>LaunchScreen</string>
+	<key>AppleDeckSDKVersion</key>
+	<string>unknown</string>
 	<key>AppleDeckBuildCommit</key>
 	<string>unknown</string>
 	<key>AppleDeckBuildDate</key>

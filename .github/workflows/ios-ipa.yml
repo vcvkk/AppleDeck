@@ -235,6 +235,19 @@ jobs:
             echo
             echo "Install with AltStore, SideStore, TrollStore or Sideloadly. Unsigned on"
             echo "purpose; see \`ios/README.md\` for why it cannot be signed here."
+            echo
+            echo "What this IPA was built with, which is what a report of \"it looks wrong\""
+            echo "needs before anyone rebuilds it:"
+            echo
+            echo '```'
+            xcodebuild -version
+            xcrun --sdk iphoneos --show-sdk-version
+            git rev-parse --short HEAD
+            echo '```'
+            echo
+            echo "On the phone, Settings -> Build shows the same three things, plus whether"
+            echo "the launch screen is in the bundle. Without a launch screen iOS runs an"
+            echo "app in the old 320x480 mode: black bars, everything scaled up."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v4
