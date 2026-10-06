@@ -125,9 +125,14 @@ VERSION="$(cat "$BUILD/catalog.json.version")"
 step "unpack"
 # The tarball is rooted at the runtime's own tree, which is what the Android app
 # unpacks over files/linuxfs, so it becomes / in the guest.
+#
+# Not `tar`: macOS's bsdtar refuses a file whose parent directory the archive
+# never declared, and GNU tar quietly creates it. The archive is the same either
+# way - it is the tar that differs - so the unpacker creates parents itself and
+# runs the same on both.
 rm -rf "$WORK"
 mkdir -p "$WORK"
-tar --use-compress-program=unzstd -xf "$ARCHIVE" -C "$WORK"
+python3 "$APPLEDECK_ROOT/scripts/unpack_runtime.py" "$ARCHIVE" "$WORK"
 if [ -d "$WORK/linuxfs" ]; then
     mv "$WORK/linuxfs" "$WORK/.root"
     rmdir "$WORK"
