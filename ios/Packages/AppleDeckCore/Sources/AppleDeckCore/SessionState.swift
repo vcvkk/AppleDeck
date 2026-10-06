@@ -349,7 +349,9 @@ public struct SessionArtifacts: Equatable, Sendable {
         return "session-\(f.string(from: date))"
     }
 
-    private static let utc: Calendar = {
+    /// Internal rather than private: it is the default argument of a public
+    /// function, and Swift will not let a private one be named there.
+    static let utc: Calendar = {
         var c = Calendar(identifier: .gregorian)
         c.timeZone = TimeZone(secondsFromGMT: 0)!
         return c

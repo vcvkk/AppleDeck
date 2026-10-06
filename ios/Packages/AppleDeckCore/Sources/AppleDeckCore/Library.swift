@@ -293,8 +293,8 @@ public struct SteamLibraryReader {
             out.append(GameEntry(id: "sc-\(appID.isEmpty ? UUID().uuidString : appID)",
                                  name: name,
                                  appID: appID.isEmpty ? nil : appID,
-                                 shortcutExe: exe,
                                  artworkPath: icon,
+                                 shortcutExe: exe,
                                  kind: .shortcut))
         }
         return out
