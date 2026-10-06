@@ -184,36 +184,9 @@ struct FilesView: View {
     }
 }
 
-/// Components: the switches upstream's `ComponentsPage` shows - the runtime, the
-/// audio path, the input relay, the battery and rumble bridges.
+/// Components: the launcher tab that opens `ComponentsManager`.
 struct ComponentsView: View {
-    @ObservedObject var launcher: LauncherModel
-
-    var body: some View {
-        Form {
-            Section("Runtime") {
-                LabeledContent("Installed", value: launcher.session.isRuntimeInstalled ? "yes" : "no")
-                LabeledContent("Version", value: launcher.session.runtimeVersion ?? "-")
-                LabeledContent("Backend", value: launcher.runtimeStatus)
-            }
-            Section("Audio") {
-                Toggle("DirectAudio relay", isOn: Binding(
-                    get: { launcher.prefs.directAudio },
-                    set: { launcher.prefs.directAudio = $0 }))
-                Toggle("Client DirectAudio", isOn: Binding(
-                    get: { launcher.prefs.clientDirectAudio },
-                    set: { launcher.prefs.clientDirectAudio = $0 }))
-            }
-            Section("Session") {
-                Toggle("HUD", isOn: Binding(
-                    get: { launcher.prefs.hud },
-                    set: { launcher.prefs.hud = $0 }))
-                Toggle("Force fullscreen", isOn: Binding(
-                    get: { launcher.prefs.forceFullscreen },
-                    set: { launcher.prefs.forceFullscreen = $0 }))
-            }
-        }
-    }
+    var body: some View { ComponentsManager() }
 }
 
 /// Driver: which Vulkan driver the guest draws with. The choice is DroidDeck's;

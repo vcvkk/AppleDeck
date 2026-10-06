@@ -24,6 +24,10 @@ final class InputRouter {
     private var touchMoved = false
     private var leftDown = false
 
+    /// How many controllers the system reports. The components page shows it, and
+    /// a page that says "ready" for a pad that is not paired is a page that lies.
+    static var connectedControllerCount: Int { GCController.controllers().count }
+
     init(prefs: Prefs) {
         self.prefs = prefs
         let center = NotificationCenter.default
