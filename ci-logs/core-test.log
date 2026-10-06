@@ -1,34 +1,34 @@
 # AppleDeckCore: swift test failed
 
-commit: 9dc712ae7a178d6d09e098fc08388cbfa6a187ee
-run: https://github.com/vcvkk/AppleDeck/actions/runs/37512701585
+commit: 8b93c61d803b7c4fce85b39354703d11ad019d2d
+run: https://github.com/vcvkk/AppleDeck/actions/runs/37513427146
 
 ```
 Building for debugging...
 [Constructing description]
 [Pre-planning 1 / 124]
 [Planning deferred tasks]
-[1 / 50]
+/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Sources/AppleDeckCore/GameSaves.swift:3:8: [1;33mwarning: [1;39mfile 'GameSaves.swift' is part of module 'AppleDeckCore'; ignoring import[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/module-self-import\ModuleSelfImport]8;;\]
+  [0;36m1 |[0;0m // SPDX-License-Identifier: GPL-2.0-or-later
+  [0;36m2 |[0;0m import Foundation
+  [0;36m3 |[0;0m import AppleDeckCore
+    [0;36m|[0;0m        `- [1;33mwarning: [1;39mfile 'GameSaves.swift' is part of module 'AppleDeckCore'; ignoring import[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/module-self-import\ModuleSelfImport]8;;\]
+  [0;36m4 |[0;0m 
+  [0;36m5 |[0;0m /// A game's saves, and what can be done with them.
+
+[#ModuleSelfImport]: <https://docs.swift.org/compiler/documentation/diagnostics/module-self-import>
+[32 / 56] AppleDeckCore
+/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Sources/AppleDeckCore/GameSaves.swift:3:8: [1;33mwarning: [1;39mfile 'GameSaves.swift' is part of module 'AppleDeckCore'; ignoring import[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/module-self-import\ModuleSelfImport]8;;\]
+  [0;36m1 |[0;0m // SPDX-License-Identifier: GPL-2.0-or-later
+  [0;36m2 |[0;0m import Foundation
+  [0;36m3 |[0;0m import AppleDeckCore
+    [0;36m|[0;0m        `- [1;33mwarning: [1;39mfile 'GameSaves.swift' is part of module 'AppleDeckCore'; ignoring import[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/module-self-import\ModuleSelfImport]8;;\]
+  [0;36m4 |[0;0m 
+  [0;36m5 |[0;0m /// A game's saves, and what can be done with them.
+
+[#ModuleSelfImport]: <https://docs.swift.org/compiler/documentation/diagnostics/module-self-import>
 [33 / 56] AppleDeckCore
-/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Sources/AppleDeckCore/GameSaves.swift:3:8: [1;33mwarning: [1;39mfile 'GameSaves.swift' is part of module 'AppleDeckCore'; ignoring import[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/module-self-import\ModuleSelfImport]8;;\]
-  [0;36m1 |[0;0m // SPDX-License-Identifier: GPL-2.0-or-later
-  [0;36m2 |[0;0m import Foundation
-  [0;36m3 |[0;0m import AppleDeckCore
-    [0;36m|[0;0m        `- [1;33mwarning: [1;39mfile 'GameSaves.swift' is part of module 'AppleDeckCore'; ignoring import[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/module-self-import\ModuleSelfImport]8;;\]
-  [0;36m4 |[0;0m 
-  [0;36m5 |[0;0m /// A game's saves, and what can be done with them.
-
-[#ModuleSelfImport]: <https://docs.swift.org/compiler/documentation/diagnostics/module-self-import>
-/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Sources/AppleDeckCore/GameSaves.swift:3:8: [1;33mwarning: [1;39mfile 'GameSaves.swift' is part of module 'AppleDeckCore'; ignoring import[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/module-self-import\ModuleSelfImport]8;;\]
-  [0;36m1 |[0;0m // SPDX-License-Identifier: GPL-2.0-or-later
-  [0;36m2 |[0;0m import Foundation
-  [0;36m3 |[0;0m import AppleDeckCore
-    [0;36m|[0;0m        `- [1;33mwarning: [1;39mfile 'GameSaves.swift' is part of module 'AppleDeckCore'; ignoring import[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/module-self-import\ModuleSelfImport]8;;\]
-  [0;36m4 |[0;0m 
-  [0;36m5 |[0;0m /// A game's saves, and what can be done with them.
-
-[#ModuleSelfImport]: <https://docs.swift.org/compiler/documentation/diagnostics/module-self-import>
-[44 / 63] AppleDeckCoreTests-product
+[42 / 62] AppleDeckCoreTests-product
 error: SwiftCompile normal x86_64 /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GameSavesTests.swift failed with a nonzero exit code. Command line:     cd /home/runner/work/AppleDeck/AppleDeck/ios/Packages
     builtin-SwiftPerFileCompile GameSavesTests.swift
 /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GameSavesTests.swift:20:13: [1;31merror: [1;39mcannot assign to property: 'self' is immutable[0;0m
@@ -42,7 +42,7 @@ error: SwiftCompile normal x86_64 /home/runner/work/AppleDeck/AppleDeck/ios/Pack
  [0;36m22 |[0;0m             return try archiveResult.get()
 Failed frontend command:
 /usr/share/swift/usr/bin/swift-frontend -frontend -c /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/DerivedSources/test_anchor.swift /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/AgentRouteTests.swift /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GameEnvironmentStoreTests.swift /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GameEnvironmentTests.swift -primary-file /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GameSavesTests.swift -primary-file /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GuestLayoutTests.swift /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/ProtocolTests.swift /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/SessionStateTests.swift -emit-dependencies-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GameSavesTests.d -emit-const-values-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GameSavesTests.swiftconstvalues -emit-reference-dependencies-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GameSavesTests.swiftdeps -serialize-diagnostics-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GameSavesTests.dia -emit-dependencies-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GuestLayoutTests.d -emit-const-values-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GuestLayoutTests.swiftconstvalues -emit-reference-dependencies-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GuestLayoutTests.swiftdeps -serialize-diagnostics-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GuestLayoutTests.dia -target x86_64-unknown-linux-gnu -disable-objc-interop -I /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Products/Debug-linux-x86_64 -module-cache-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/ModuleCache.noindex -color-diagnostics -Xcc -fcolor-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=4 -swift-version 5 -Onone -D SWIFT_PACKAGE -D DEBUG -D Xcode -serialize-debugging-options -enable-experimental-feature DebugDescriptionMacro -empty-abi-descriptor -external-plugin-path /usr/share/swift/usr/lib/swift/host/plugins/testing\#/usr/share/swift/usr/bin/swift-plugin-server -validate-clang-modules-once -clang-build-session-file /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /home/runner/work/AppleDeck/AppleDeck/ios/Packages -enable-anonymous-context-mangled-names -file-compilation-dir /home/runner/work/AppleDeck/AppleDeck/ios/Packages -Xcc -fno-omit-frame-pointer -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -Xcc -I/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Products/Debug-linux-x86_64/include -Xcc -I/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/DerivedSources-normal/x86_64 -Xcc -I/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/DerivedSources/x86_64 -Xcc -I/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/DerivedSources -Xcc -DSWIFT_PACKAGE -Xcc -DDEBUG\=1 -no-auto-bridging-header-chaining -module-name AppleDeckCoreTests -package-name appledeckcore -const-gather-protocols-file /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/AppleDeckCoreTests_const_extract_protocols.json -in-process-plugin-server-path /usr/share/swift/usr/lib/swift/host/libSwiftInProcPluginServer.so -plugin-path /usr/share/swift/usr/lib/swift/host/plugins -plugin-path /usr/share/swift/usr/local/lib/swift/host/plugins -parse-as-library -o /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GameSavesTests.o -o /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GuestLayoutTests.o -index-unit-output-path /AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GameSavesTests.o -index-unit-output-path /AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GuestLayoutTests.o -index-store-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out -index-system-modules
-[46 / 63] AppleDeckCoreTests-product
+[48 / 63] AppleDeckCoreTests-product
 error: Build failed
 error: fatalError
 ```
