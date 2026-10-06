@@ -1,13 +1,12 @@
 # Unsigned IPA: build failed
 
-commit: a4db7e80167c331fa3c1237479efed0892ef62cd
-run: https://github.com/vcvkk/AppleDeck/actions/runs/37497603292
+commit: 73d4a5d013e57d7781ce38064c19a91544b38958
+run: https://github.com/vcvkk/AppleDeck/actions/runs/37498103695
 
 ## compiler
 
 ```
-ios/AppleDeck/Runtime/AgentBridgeServer.swift:33:51: error: type 'AgentRoute.BridgeError' has no member 'transport'
-ios/AppleDeck/Runtime/AgentBridgeServer.swift:41:62: error: cannot convert value of type 'NWEndpoint' to expected argument type 'NWEndpoint.Port'
+ios/AppleDeck/Runtime/AgentBridgeServer.swift:81:57: error: type 'IPv6Address' has no member 'ipv6Loopback'
 ```
 
 ## guest build
@@ -19,10 +18,8 @@ no guest log: the guest build did not run
 ## bundle validation and packaging
 
 ```
-/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:33:51: error: type 'AgentRoute.BridgeError' has no member 'transport'
-/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:41:62: error: cannot convert value of type 'NWEndpoint' to expected argument type 'NWEndpoint.Port'
-/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:33:51: error: type 'AgentRoute.BridgeError' has no member 'transport'
-/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:41:62: error: cannot convert value of type 'NWEndpoint' to expected argument type 'NWEndpoint.Port'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:81:57: error: type 'IPv6Address' has no member 'ipv6Loopback'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:81:57: error: type 'IPv6Address' has no member 'ipv6Loopback'
 ```
 
 ## last 40 lines of the packaging step
@@ -30,10 +27,8 @@ no guest log: the guest build did not run
 ```
 ==> regenerating the project from project.yml
 ==> building
-/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:33:51: error: type 'AgentRoute.BridgeError' has no member 'transport'
-/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:41:62: error: cannot convert value of type 'NWEndpoint' to expected argument type 'NWEndpoint.Port'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:81:57: error: type 'IPv6Address' has no member 'ipv6Loopback'
 ** BUILD FAILED **
 build failed; refusing to package a stale app
-/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:33:51: error: type 'AgentRoute.BridgeError' has no member 'transport'
-/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:41:62: error: cannot convert value of type 'NWEndpoint' to expected argument type 'NWEndpoint.Port'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:81:57: error: type 'IPv6Address' has no member 'ipv6Loopback'
 ```
