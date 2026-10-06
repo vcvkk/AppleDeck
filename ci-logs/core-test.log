@@ -1,207 +1,48 @@
 # AppleDeckCore: swift test failed
 
-commit: 1d5e36db588d0038d74269fda8e4ccb0a9bf816e
-run: https://github.com/vcvkk/AppleDeck/actions/runs/37495861088
+commit: 9dc712ae7a178d6d09e098fc08388cbfa6a187ee
+run: https://github.com/vcvkk/AppleDeck/actions/runs/37512701585
 
 ```
-Test Case 'AgentRouteTests.testUnknownMethodIsFourOhFour' started at 2026-10-06 16:28:24.064
-Test Case 'AgentRouteTests.testUnknownMethodIsFourOhFour' passed (0.0 seconds)
-Test Suite 'AgentRouteTests' passed at 2026-10-06 16:28:24.064
-	 Executed 13 tests, with 0 failures (0 unexpected) in 0.351 (0.351) seconds
-Test Suite 'FileManagerTests' started at 2026-10-06 16:28:24.064
-Test Case 'FileManagerTests.testDateSortPutsNewestFirstAmongFiles' started at 2026-10-06 16:28:24.064
-Test Case 'FileManagerTests.testDateSortPutsNewestFirstAmongFiles' passed (0.0 seconds)
-Test Case 'FileManagerTests.testDeleteIsDestructiveAndRenameIsNot' started at 2026-10-06 16:28:24.064
-Test Case 'FileManagerTests.testDeleteIsDestructiveAndRenameIsNot' passed (0.0 seconds)
-Test Case 'FileManagerTests.testDirectoriesSortFirstAndNamesCaseInsensitively' started at 2026-10-06 16:28:24.064
-Test Case 'FileManagerTests.testDirectoriesSortFirstAndNamesCaseInsensitively' passed (0.032 seconds)
-Test Case 'FileManagerTests.testEntryNameValidation' started at 2026-10-06 16:28:24.097
-Test Case 'FileManagerTests.testEntryNameValidation' passed (0.0 seconds)
-Test Case 'FileManagerTests.testFormattedSize' started at 2026-10-06 16:28:24.097
-Test Case 'FileManagerTests.testFormattedSize' passed (0.0 seconds)
-Test Case 'FileManagerTests.testHiddenEntriesAreHiddenUnlessAsked' started at 2026-10-06 16:28:24.097
-Test Case 'FileManagerTests.testHiddenEntriesAreHiddenUnlessAsked' passed (0.0 seconds)
-Test Case 'FileManagerTests.testRuntimeFilesAreProtected' started at 2026-10-06 16:28:24.097
-Test Case 'FileManagerTests.testRuntimeFilesAreProtected' passed (0.0 seconds)
-Test Case 'FileManagerTests.testSizeSortIsStableForEqualSizes' started at 2026-10-06 16:28:24.097
-Test Case 'FileManagerTests.testSizeSortIsStableForEqualSizes' passed (0.0 seconds)
-Test Case 'FileManagerTests.testUniqueNameDoesNotOverwrite' started at 2026-10-06 16:28:24.098
-Test Case 'FileManagerTests.testUniqueNameDoesNotOverwrite' passed (0.0 seconds)
-Test Suite 'FileManagerTests' passed at 2026-10-06 16:28:24.098
-	 Executed 9 tests, with 0 failures (0 unexpected) in 0.034 (0.034) seconds
-Test Suite 'GameEnvironmentOptionsTests' started at 2026-10-06 16:28:24.098
-Test Case 'GameEnvironmentOptionsTests.testAValueTheTableDoesNotKnowIsKept' started at 2026-10-06 16:28:24.098
-Test Case 'GameEnvironmentOptionsTests.testAValueTheTableDoesNotKnowIsKept' passed (0.0 seconds)
-Test Case 'GameEnvironmentOptionsTests.testAnExplicitNullIsNotTheSameAsUnset' started at 2026-10-06 16:28:24.098
-Test Case 'GameEnvironmentOptionsTests.testAnExplicitNullIsNotTheSameAsUnset' passed (0.0 seconds)
-Test Case 'GameEnvironmentOptionsTests.testEveryChoiceIsOneTheGuestWouldAccept' started at 2026-10-06 16:28:24.098
-Test Case 'GameEnvironmentOptionsTests.testEveryChoiceIsOneTheGuestWouldAccept' passed (0.0 seconds)
-Test Case 'GameEnvironmentOptionsTests.testEveryOptionIsANameTheGuestWouldAccept' started at 2026-10-06 16:28:24.098
-Test Case 'GameEnvironmentOptionsTests.testEveryOptionIsANameTheGuestWouldAccept' passed (0.1 seconds)
-Test Case 'GameEnvironmentOptionsTests.testTheEditorOffersTheOptionsItShould' started at 2026-10-06 16:28:24.199
-Test Case 'GameEnvironmentOptionsTests.testTheEditorOffersTheOptionsItShould' passed (0.0 seconds)
-Test Case 'GameEnvironmentOptionsTests.testTogglingAMultipleOptionIsOrderIndependent' started at 2026-10-06 16:28:24.199
-Test Case 'GameEnvironmentOptionsTests.testTogglingAMultipleOptionIsOrderIndependent' passed (0.0 seconds)
-Test Case 'GameEnvironmentOptionsTests.testTogglingTwiceRemovesTheChoice' started at 2026-10-06 16:28:24.199
-Test Case 'GameEnvironmentOptionsTests.testTogglingTwiceRemovesTheChoice' passed (0.0 seconds)
-Test Suite 'GameEnvironmentOptionsTests' passed at 2026-10-06 16:28:24.199
-	 Executed 7 tests, with 0 failures (0 unexpected) in 0.101 (0.101) seconds
-Test Suite 'GameEnvironmentStoreTests' started at 2026-10-06 16:28:24.199
-Test Case 'GameEnvironmentStoreTests.testAMissingFileIsAnEmptyEnvironment' started at 2026-10-06 16:28:24.199
-Test Case 'GameEnvironmentStoreTests.testAMissingFileIsAnEmptyEnvironment' passed (0.0 seconds)
-Test Case 'GameEnvironmentStoreTests.testARuntimeManagedNameIsRefused' started at 2026-10-06 16:28:24.199
-Test Case 'GameEnvironmentStoreTests.testARuntimeManagedNameIsRefused' passed (0.002 seconds)
-Test Case 'GameEnvironmentStoreTests.testAnExplicitNullSurvives' started at 2026-10-06 16:28:24.201
-Test Case 'GameEnvironmentStoreTests.testAnExplicitNullSurvives' passed (0.0 seconds)
-Test Case 'GameEnvironmentStoreTests.testAnInvalidNameIsAnErrorRatherThanADroppedEntry' started at 2026-10-06 16:28:24.202
-Test Case 'GameEnvironmentStoreTests.testAnInvalidNameIsAnErrorRatherThanADroppedEntry' passed (0.101 seconds)
-Test Case 'GameEnvironmentStoreTests.testAnInvalidScopeIsRefused' started at 2026-10-06 16:28:24.302
-Test Case 'GameEnvironmentStoreTests.testAnInvalidScopeIsRefused' passed (0.0 seconds)
-Test Case 'GameEnvironmentStoreTests.testAnOversizedValueIsRefused' started at 2026-10-06 16:28:24.302
-Test Case 'GameEnvironmentStoreTests.testAnOversizedValueIsRefused' passed (0.001 seconds)
-Test Case 'GameEnvironmentStoreTests.testRoundTrip' started at 2026-10-06 16:28:24.303
-Test Case 'GameEnvironmentStoreTests.testRoundTrip' passed (0.102 seconds)
-Test Case 'GameEnvironmentStoreTests.testTheStoreCreatesItsDirectory' started at 2026-10-06 16:28:24.405
-Test Case 'GameEnvironmentStoreTests.testTheStoreCreatesItsDirectory' passed (0.001 seconds)
-Test Case 'GameEnvironmentStoreTests.testTheVersionIsInsistedOn' started at 2026-10-06 16:28:24.406
-Test Case 'GameEnvironmentStoreTests.testTheVersionIsInsistedOn' passed (0.0 seconds)
-Test Case 'GameEnvironmentStoreTests.testTheWrittenFileIsReadableJSONWithItsVersion' started at 2026-10-06 16:28:24.406
-Test Case 'GameEnvironmentStoreTests.testTheWrittenFileIsReadableJSONWithItsVersion' passed (0.001 seconds)
-Test Case 'GameEnvironmentStoreTests.testWritingLeavesNoFileBehindWhenCleared' started at 2026-10-06 16:28:24.407
-Test Case 'GameEnvironmentStoreTests.testWritingLeavesNoFileBehindWhenCleared' passed (0.001 seconds)
-Test Suite 'GameEnvironmentStoreTests' passed at 2026-10-06 16:28:24.408
-	 Executed 11 tests, with 0 failures (0 unexpected) in 0.209 (0.209) seconds
-Test Suite 'GameEnvironmentTests' started at 2026-10-06 16:28:24.408
-Test Case 'GameEnvironmentTests.testAPresetContributesToTheDefaults' started at 2026-10-06 16:28:24.408
-Test Case 'GameEnvironmentTests.testAPresetContributesToTheDefaults' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testASharedEntryAppliesToAGameWithNothingOfItsOwn' started at 2026-10-06 16:28:24.408
-Test Case 'GameEnvironmentTests.testASharedEntryAppliesToAGameWithNothingOfItsOwn' passed (0.1 seconds)
-Test Case 'GameEnvironmentTests.testAStabilityPresetTurnsTheOptimisationsBackOn' started at 2026-10-06 16:28:24.509
-Test Case 'GameEnvironmentTests.testAStabilityPresetTurnsTheOptimisationsBackOn' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testAnUnknownPresetFallsBackToTheDefaultOne' started at 2026-10-06 16:28:24.509
-Test Case 'GameEnvironmentTests.testAnUnknownPresetFallsBackToTheDefaultOne' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testClearingAGamesEntriesRemovesTheScope' started at 2026-10-06 16:28:24.509
-Test Case 'GameEnvironmentTests.testClearingAGamesEntriesRemovesTheScope' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testConfigRoundTripsThroughJSON' started at 2026-10-06 16:28:24.509
-Test Case 'GameEnvironmentTests.testConfigRoundTripsThroughJSON' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testEffectiveIsDefaultsThenSharedThenTheGame' started at 2026-10-06 16:28:24.509
-Test Case 'GameEnvironmentTests.testEffectiveIsDefaultsThenSharedThenTheGame' passed (0.1 seconds)
-Test Case 'GameEnvironmentTests.testRuntimeManagedNamesAreNotUserSettable' started at 2026-10-06 16:28:24.609
-Test Case 'GameEnvironmentTests.testRuntimeManagedNamesAreNotUserSettable' passed (0.1 seconds)
-Test Case 'GameEnvironmentTests.testScopeIsTheSteamAppIdRange' started at 2026-10-06 16:28:24.709
-Test Case 'GameEnvironmentTests.testScopeIsTheSteamAppIdRange' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testSharedEntriesAreNotAGameKeyedByEmptyString' started at 2026-10-06 16:28:24.710
-Test Case 'GameEnvironmentTests.testSharedEntriesAreNotAGameKeyedByEmptyString' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testValuesMayNotCarryANulOrRunPastEightKibibytes' started at 2026-10-06 16:28:24.710
-Test Case 'GameEnvironmentTests.testValuesMayNotCarryANulOrRunPastEightKibibytes' passed (0.0 seconds)
-Test Case 'GameEnvironmentTests.testVariableNamesAreShellNames' started at 2026-10-06 16:28:24.710
-Test Case 'GameEnvironmentTests.testVariableNamesAreShellNames' passed (0.0 seconds)
-Test Suite 'GameEnvironmentTests' passed at 2026-10-06 16:28:24.710
-	 Executed 12 tests, with 0 failures (0 unexpected) in 0.302 (0.302) seconds
-Test Suite 'GuestLayoutTests' started at 2026-10-06 16:28:24.710
-Test Case 'GuestLayoutTests.testBindCoverage' started at 2026-10-06 16:28:24.710
-Test Case 'GuestLayoutTests.testBindCoverage' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testBindSpecDropsTheGuestWhenItEqualsTheHost' started at 2026-10-06 16:28:24.710
-Test Case 'GuestLayoutTests.testBindSpecDropsTheGuestWhenItEqualsTheHost' passed (0.1 seconds)
-Test Case 'GuestLayoutTests.testBindsCarryTheGuestsView' started at 2026-10-06 16:28:24.811
-Test Case 'GuestLayoutTests.testBindsCarryTheGuestsView' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testDesktopSessionRunsTheDesktopsOwnScript' started at 2026-10-06 16:28:24.811
-Test Case 'GuestLayoutTests.testDesktopSessionRunsTheDesktopsOwnScript' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testEnvIsInvokedAfterTheBindsAndBeforeTheProgram' started at 2026-10-06 16:28:24.811
-Test Case 'GuestLayoutTests.testEnvIsInvokedAfterTheBindsAndBeforeTheProgram' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testFakeRootUsesDashZero' started at 2026-10-06 16:28:24.811
-Test Case 'GuestLayoutTests.testFakeRootUsesDashZero' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testGuestEnvironmentKeepsTheRuntimesVariables' started at 2026-10-06 16:28:24.811
-Test Case 'GuestLayoutTests.testGuestEnvironmentKeepsTheRuntimesVariables' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testHostEnvironmentCarriesTheProotLoader' started at 2026-10-06 16:28:24.811
-Test Case 'GuestLayoutTests.testHostEnvironmentCarriesTheProotLoader' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testProotPrefixMatchesLinuxRuntime' started at 2026-10-06 16:28:24.811
-Test Case 'GuestLayoutTests.testProotPrefixMatchesLinuxRuntime' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testRootfsPathIsTheOneTheOverlayScriptsUse' started at 2026-10-06 16:28:24.811
-Test Case 'GuestLayoutTests.testRootfsPathIsTheOneTheOverlayScriptsUse' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testRunSessionPassesGuestArgumentsThrough' started at 2026-10-06 16:28:24.811
-Test Case 'GuestLayoutTests.testRunSessionPassesGuestArgumentsThrough' passed (0.0 seconds)
-Test Case 'GuestLayoutTests.testSteamSessionRunsGamescopeWithTheRuntimesStartupScript' started at 2026-10-06 16:28:24.811
-Test Case 'GuestLayoutTests.testSteamSessionRunsGamescopeWithTheRuntimesStartupScript' passed (0.0 seconds)
-Test Suite 'GuestLayoutTests' passed at 2026-10-06 16:28:24.812
-	 Executed 12 tests, with 0 failures (0 unexpected) in 0.101 (0.101) seconds
-Test Suite 'KeyValuesTests' started at 2026-10-06 16:28:24.812
-Test Case 'KeyValuesTests.testAppManifest' started at 2026-10-06 16:28:24.812
-Test Case 'KeyValuesTests.testAppManifest' passed (0.0 seconds)
-Test Case 'KeyValuesTests.testCommasSeparateEntries' started at 2026-10-06 16:28:24.812
-Test Case 'KeyValuesTests.testCommasSeparateEntries' passed (0.0 seconds)
-Test Case 'KeyValuesTests.testCommentsAndEscapes' started at 2026-10-06 16:28:24.812
-Test Case 'KeyValuesTests.testCommentsAndEscapes' passed (0.1 seconds)
-Test Case 'KeyValuesTests.testLibraryFolders' started at 2026-10-06 16:28:24.912
-/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/ProtocolTests.swift:117: error: KeyValuesTests.testLibraryFolders : XCTAssertEqual failed: ("Optional("12000000")") is not equal to ("Optional("10")") - parsed: [AppleDeckCore.KeyValues.Entry(key: "libraryfolders", value: AppleDeckCore.KeyValues.Value.list([AppleDeckCore.KeyValues.Entry(key: "0", value: AppleDeckCore.KeyValues.Value.list([AppleDeckCore.KeyValues.Entry(key: "path", value: AppleDeckCore.KeyValues.Value.string("/root/.local/share/Steam")), AppleDeckCore.KeyValues.Entry(key: "label", value: AppleDeckCore.KeyValues.Value.string("")), AppleDeckCore.KeyValues.Entry(key: "contentid", value: AppleDeckCore.KeyValues.Value.string("123")), AppleDeckCore.KeyValues.Entry(key: "totalsize", value: AppleDeckCore.KeyValues.Value.string("0")), AppleDeckCore.KeyValues.Entry(key: "update_clean_bytes_tally", value: AppleDeckCore.KeyValues.Value.string("0")), AppleDeckCore.KeyValues.Entry(key: "time_last_update_verified", value: AppleDeckCore.KeyValues.Value.string("0")), AppleDeckCore.KeyValues.Entry(key: "apps", value: AppleDeckCore.KeyValues.Value.list([AppleDeckCore.KeyValues.Entry(key: "10", value: AppleDeckCore.KeyValues.Value.string("12000000"))]))])), AppleDeckCore.KeyValues.Entry(key: "1", value: AppleDeckCore.KeyValues.Value.list([AppleDeckCore.KeyValues.Entry(key: "path", value: AppleDeckCore.KeyValues.Value.string("/mnt/sd/SteamLibrary"))]))]))]
-Test Case 'KeyValuesTests.testLibraryFolders' failed (0.003 seconds)
-Test Case 'KeyValuesTests.testSomethingThatIsNotKeyValuesParsesAsAbsent' started at 2026-10-06 16:28:24.915
-Test Case 'KeyValuesTests.testSomethingThatIsNotKeyValuesParsesAsAbsent' passed (0.0 seconds)
-Test Case 'KeyValuesTests.testTruncatedFileParsesAsAbsent' started at 2026-10-06 16:28:24.915
-Test Case 'KeyValuesTests.testTruncatedFileParsesAsAbsent' passed (0.1 seconds)
-Test Suite 'KeyValuesTests' failed at 2026-10-06 16:28:25.015
-	 Executed 6 tests, with 1 failure (0 unexpected) in 0.204 (0.204) seconds
-Test Suite 'PrefsTests' started at 2026-10-06 16:28:25.015
-Test Case 'PrefsTests.testAutoOnScreenControlsFollowTheSessionAndTheQAM' started at 2026-10-06 16:28:25.015
-Test Case 'PrefsTests.testAutoOnScreenControlsFollowTheSessionAndTheQAM' passed (0.1 seconds)
-Test Case 'PrefsTests.testAutoTouchModeIsATouchpadOnTheDesktopAndDirectInSteam' started at 2026-10-06 16:28:25.115
-Test Case 'PrefsTests.testAutoTouchModeIsATouchpadOnTheDesktopAndDirectInSteam' passed (0.1 seconds)
-Test Case 'PrefsTests.testBackActionOrderInverts' started at 2026-10-06 16:28:25.216
-Test Case 'PrefsTests.testBackActionOrderInverts' passed (0.0 seconds)
-Test Case 'PrefsTests.testDefaultsMatchDroidDeck' started at 2026-10-06 16:28:25.216
-Test Case 'PrefsTests.testDefaultsMatchDroidDeck' passed (0.0 seconds)
-Test Case 'PrefsTests.testLinuxDriverIsKeyedPerMode' started at 2026-10-06 16:28:25.216
-Test Case 'PrefsTests.testLinuxDriverIsKeyedPerMode' passed (0.0 seconds)
-Test Suite 'PrefsTests' passed at 2026-10-06 16:28:25.216
-	 Executed 5 tests, with 0 failures (0 unexpected) in 0.201 (0.201) seconds
-Test Suite 'SessionStateTests' started at 2026-10-06 16:28:25.216
-Test Case 'SessionStateTests.testArtifactFolderName' started at 2026-10-06 16:28:25.216
-Test Case 'SessionStateTests.testArtifactFolderName' passed (0.105 seconds)
-Test Case 'SessionStateTests.testBeginResetsThePreviousSession' started at 2026-10-06 16:28:25.321
-Test Case 'SessionStateTests.testBeginResetsThePreviousSession' passed (0.0 seconds)
-Test Case 'SessionStateTests.testEventLineIsOneJSONObject' started at 2026-10-06 16:28:25.321
-Test Case 'SessionStateTests.testEventLineIsOneJSONObject' passed (0.0 seconds)
-Test Case 'SessionStateTests.testFailureFromAnyLivePhase' started at 2026-10-06 16:28:25.322
-Test Case 'SessionStateTests.testFailureFromAnyLivePhase' passed (0.0 seconds)
-Test Case 'SessionStateTests.testGuestPidOfOneIsNull' started at 2026-10-06 16:28:25.322
-Test Case 'SessionStateTests.testGuestPidOfOneIsNull' passed (0.0 seconds)
-Test Case 'SessionStateTests.testIllegalTransitionIsRejectedAndChangesNothing' started at 2026-10-06 16:28:25.322
-Test Case 'SessionStateTests.testIllegalTransitionIsRejectedAndChangesNothing' passed (0.0 seconds)
-Test Case 'SessionStateTests.testPayloadIsSchemaOneWithDroidDeckKeys' started at 2026-10-06 16:28:25.322
-Test Case 'SessionStateTests.testPayloadIsSchemaOneWithDroidDeckKeys' passed (0.0 seconds)
-Test Case 'SessionStateTests.testPhaseNamesMatchDroidDeck' started at 2026-10-06 16:28:25.322
-Test Case 'SessionStateTests.testPhaseNamesMatchDroidDeck' passed (0.001 seconds)
-Test Case 'SessionStateTests.testReenteringTheSamePhaseIsNotATransition' started at 2026-10-06 16:28:25.323
-Test Case 'SessionStateTests.testReenteringTheSamePhaseIsNotATransition' passed (0.0 seconds)
-Test Case 'SessionStateTests.testSuspendAndResumeArePhasesOfALiveSession' started at 2026-10-06 16:28:25.323
-Test Case 'SessionStateTests.testSuspendAndResumeArePhasesOfALiveSession' passed (0.0 seconds)
-Test Case 'SessionStateTests.testSuspendIsRejectedBeforeTheGuestIsUp' started at 2026-10-06 16:28:25.323
-Test Case 'SessionStateTests.testSuspendIsRejectedBeforeTheGuestIsUp' passed (0.1 seconds)
-Test Case 'SessionStateTests.testWalkToReady' started at 2026-10-06 16:28:25.424
-Test Case 'SessionStateTests.testWalkToReady' passed (0.0 seconds)
-Test Suite 'SessionStateTests' passed at 2026-10-06 16:28:25.424
-	 Executed 12 tests, with 0 failures (0 unexpected) in 0.208 (0.208) seconds
-Test Suite 'SteamLibraryTests' started at 2026-10-06 16:28:25.424
-Test Case 'SteamLibraryTests.testAnEmptyLibraryIsEmptyNotBroken' started at 2026-10-06 16:28:25.424
-Test Case 'SteamLibraryTests.testAnEmptyLibraryIsEmptyNotBroken' passed (0.0 seconds)
-Test Case 'SteamLibraryTests.testGamesAreSortedByNameAndCarryTheirInstallPath' started at 2026-10-06 16:28:25.424
-Test Case 'SteamLibraryTests.testGamesAreSortedByNameAndCarryTheirInstallPath' passed (0.0 seconds)
-Test Case 'SteamLibraryTests.testLibraryPath' started at 2026-10-06 16:28:25.424
-Test Case 'SteamLibraryTests.testLibraryPath' passed (0.1 seconds)
-Test Case 'SteamLibraryTests.testNonSteamManifestsAreIgnored' started at 2026-10-06 16:28:25.524
-Test Case 'SteamLibraryTests.testNonSteamManifestsAreIgnored' passed (0.0 seconds)
-Test Case 'SteamLibraryTests.testShortcuts' started at 2026-10-06 16:28:25.524
-Test Case 'SteamLibraryTests.testShortcuts' passed (0.0 seconds)
-Test Suite 'SteamLibraryTests' passed at 2026-10-06 16:28:25.524
-	 Executed 5 tests, with 0 failures (0 unexpected) in 0.101 (0.101) seconds
-Test Suite 'Debug-linux-x86_64.xctest' failed at 2026-10-06 16:28:25.524
-	 Executed 102 tests, with 1 failure (0 unexpected) in 2.013 (2.013) seconds
-Test Suite 'All tests' failed at 2026-10-06 16:28:25.525
-	 Executed 102 tests, with 1 failure (0 unexpected) in 2.013 (2.013) seconds
-◇ Test run started.
-↳ Testing Library Version: 6.4 (efd8d65801f569d)
-↳ Target Platform: x86_64-unknown-linux-gnu
-✔ Test run with 0 tests in 0 suites passed after 0.001 seconds.
-Note: Some test targets reported failures:
-  - AppleDeckCoreTests (XCTest)
+Building for debugging...
+[Constructing description]
+[Pre-planning 1 / 124]
+[Planning deferred tasks]
+[1 / 50]
+[33 / 56] AppleDeckCore
+/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Sources/AppleDeckCore/GameSaves.swift:3:8: [1;33mwarning: [1;39mfile 'GameSaves.swift' is part of module 'AppleDeckCore'; ignoring import[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/module-self-import\ModuleSelfImport]8;;\]
+  [0;36m1 |[0;0m // SPDX-License-Identifier: GPL-2.0-or-later
+  [0;36m2 |[0;0m import Foundation
+  [0;36m3 |[0;0m import AppleDeckCore
+    [0;36m|[0;0m        `- [1;33mwarning: [1;39mfile 'GameSaves.swift' is part of module 'AppleDeckCore'; ignoring import[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/module-self-import\ModuleSelfImport]8;;\]
+  [0;36m4 |[0;0m 
+  [0;36m5 |[0;0m /// A game's saves, and what can be done with them.
+
+[#ModuleSelfImport]: <https://docs.swift.org/compiler/documentation/diagnostics/module-self-import>
+/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Sources/AppleDeckCore/GameSaves.swift:3:8: [1;33mwarning: [1;39mfile 'GameSaves.swift' is part of module 'AppleDeckCore'; ignoring import[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/module-self-import\ModuleSelfImport]8;;\]
+  [0;36m1 |[0;0m // SPDX-License-Identifier: GPL-2.0-or-later
+  [0;36m2 |[0;0m import Foundation
+  [0;36m3 |[0;0m import AppleDeckCore
+    [0;36m|[0;0m        `- [1;33mwarning: [1;39mfile 'GameSaves.swift' is part of module 'AppleDeckCore'; ignoring import[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/module-self-import\ModuleSelfImport]8;;\]
+  [0;36m4 |[0;0m 
+  [0;36m5 |[0;0m /// A game's saves, and what can be done with them.
+
+[#ModuleSelfImport]: <https://docs.swift.org/compiler/documentation/diagnostics/module-self-import>
+[44 / 63] AppleDeckCoreTests-product
+error: SwiftCompile normal x86_64 /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GameSavesTests.swift failed with a nonzero exit code. Command line:     cd /home/runner/work/AppleDeck/AppleDeck/ios/Packages
+    builtin-SwiftPerFileCompile GameSavesTests.swift
+/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GameSavesTests.swift:20:13: [1;31merror: [1;39mcannot assign to property: 'self' is immutable[0;0m
+ [0;36m17 |[0;0m         func entries(in path: String) -> [String]? { [] }
+ [0;36m18 |[0;0m 
+ [0;36m19 |[0;0m         func archive(paths roots: [String], to destination: String, layout: GameSaves.Layout) throws -> (path: String, files: Int) {
+    [0;36m|[0;0m         `- [1;39mnote: [1;39mmark method 'mutating' to make 'self' mutable[0;0m
+ [0;36m20 |[0;0m             [4;39marchived[0;0m = (roots, destination, layout)
+    [0;36m|[0;0m             `- [1;31merror: [1;39mcannot assign to property: 'self' is immutable[0;0m
+ [0;36m21 |[0;0m             if let failWith { throw failWith }
+ [0;36m22 |[0;0m             return try archiveResult.get()
+Failed frontend command:
+/usr/share/swift/usr/bin/swift-frontend -frontend -c /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/DerivedSources/test_anchor.swift /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/AgentRouteTests.swift /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GameEnvironmentStoreTests.swift /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GameEnvironmentTests.swift -primary-file /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GameSavesTests.swift -primary-file /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/GuestLayoutTests.swift /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/ProtocolTests.swift /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/Tests/AppleDeckCoreTests/SessionStateTests.swift -emit-dependencies-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GameSavesTests.d -emit-const-values-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GameSavesTests.swiftconstvalues -emit-reference-dependencies-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GameSavesTests.swiftdeps -serialize-diagnostics-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GameSavesTests.dia -emit-dependencies-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GuestLayoutTests.d -emit-const-values-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GuestLayoutTests.swiftconstvalues -emit-reference-dependencies-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GuestLayoutTests.swiftdeps -serialize-diagnostics-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GuestLayoutTests.dia -target x86_64-unknown-linux-gnu -disable-objc-interop -I /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Products/Debug-linux-x86_64 -module-cache-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/ModuleCache.noindex -color-diagnostics -Xcc -fcolor-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=4 -swift-version 5 -Onone -D SWIFT_PACKAGE -D DEBUG -D Xcode -serialize-debugging-options -enable-experimental-feature DebugDescriptionMacro -empty-abi-descriptor -external-plugin-path /usr/share/swift/usr/lib/swift/host/plugins/testing\#/usr/share/swift/usr/bin/swift-plugin-server -validate-clang-modules-once -clang-build-session-file /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /home/runner/work/AppleDeck/AppleDeck/ios/Packages -enable-anonymous-context-mangled-names -file-compilation-dir /home/runner/work/AppleDeck/AppleDeck/ios/Packages -Xcc -fno-omit-frame-pointer -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -Xcc -I/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Products/Debug-linux-x86_64/include -Xcc -I/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/DerivedSources-normal/x86_64 -Xcc -I/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/DerivedSources/x86_64 -Xcc -I/home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/DerivedSources -Xcc -DSWIFT_PACKAGE -Xcc -DDEBUG\=1 -no-auto-bridging-header-chaining -module-name AppleDeckCoreTests -package-name appledeckcore -const-gather-protocols-file /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/AppleDeckCoreTests_const_extract_protocols.json -in-process-plugin-server-path /usr/share/swift/usr/lib/swift/host/libSwiftInProcPluginServer.so -plugin-path /usr/share/swift/usr/lib/swift/host/plugins -plugin-path /usr/share/swift/usr/local/lib/swift/host/plugins -parse-as-library -o /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GameSavesTests.o -o /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out/Intermediates.noindex/AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GuestLayoutTests.o -index-unit-output-path /AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GameSavesTests.o -index-unit-output-path /AppleDeckCore.build/Debug-linux-x86_64/AppleDeckCoreTests-p.build/Objects-normal/x86_64/GuestLayoutTests.o -index-store-path /home/runner/work/AppleDeck/AppleDeck/ios/Packages/AppleDeckCore/.build/out -index-system-modules
+[46 / 63] AppleDeckCoreTests-product
+error: Build failed
+error: fatalError
 ```
