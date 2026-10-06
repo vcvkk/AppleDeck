@@ -59,7 +59,12 @@ targets:
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
         HEADER_SEARCH_PATHS:
+          - "$(SRCROOT)/AppleDeck"
           - "$(SRCROOT)/AppleDeck/include"
+        # The guest bridge is C in this target, reached from Swift through one
+        # bridging header rather than a module map: iOS cannot spawn a helper,
+        # so the emulator is linked into the app's own binary.
+        SWIFT_OBJC_BRIDGING_HEADER: AppleDeck/include/AppleDeck-Bridging-Header.h
         OTHER_LDFLAGS:
           - "$(inherited)"
           - "-ldl"
