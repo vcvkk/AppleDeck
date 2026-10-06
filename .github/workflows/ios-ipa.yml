@@ -207,7 +207,15 @@ jobs:
         run: |
           set -euo pipefail
           brew install e2fsprogs zstd
-          mkfs.ext4 -V 2>&1 | head -2 || true
+          # Homebrew's filesystem tools live in the keg's sbin, which is not on
+          # PATH: brew install succeeds, mkfs.ext4 is on disk, and every shell
+          # after it says "command not found". Putting the directory on PATH is
+          # the whole fix, and checking afterwards is what proves it.
+          echo "$(brew --prefix)/sbin" >> "$GITHUB_PATH"
+          echo "$(brew --prefix)/opt/e2fsprogs/sbin" >> "$GITHUB_PATH"
+          echo "PATH now includes: $(brew --prefix)/sbin"
+          command -v mkfs.ext4 || ls "$(brew --prefix)/sbin" | grep mkfs || true
+          mkfs.ext4 -V 2>&1 | head -2
 
       # Three ways in: the nightly/hourly schedule, the dispatch input, or a
       # commit that touches ios/GUEST-BUILD. The last one exists because GitHub's

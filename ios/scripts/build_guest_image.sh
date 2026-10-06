@@ -50,6 +50,13 @@ need() {
     }
 }
 
+# Homebrew keeps its filesystem tools in the keg's sbin, which is not on PATH -
+# so brew install succeeding and mkfs.ext4 still being "not found" is the normal
+# outcome on a Mac, not a broken install.
+if command -v brew >/dev/null 2>&1; then
+    export PATH="$(brew --prefix)/sbin:$PATH"
+fi
+
 mkdir -p "$GUEST"
 need curl curl curl
 need zstd zstd zstd
