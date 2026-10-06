@@ -72,7 +72,19 @@ step "dependencies"
 # nothing else fetches them - so without this step every autotools package fails
 # with a configure error about a directory that was never downloaded, which reads
 # like a broken build rather than a missing download.
-"$HUSK_SRC/scripts/fetch_sources.sh"
+# Twice. Two of the dependency downloads failed with a truncated tar on the first
+# run, which is a network hiccup and not a build problem - and it looks exactly
+# like one.
+fetched=0
+for attempt in 1 2; do
+    if "$HUSK_SRC/scripts/fetch_sources.sh"; then
+        fetched=1
+        break
+    fi
+    echo "==> fetch_sources.sh failed (attempt $attempt); retrying" >&2
+    sleep 10
+done
+[ "$fetched" -eq 1 ] || { echo "could not fetch the dependency sources" >&2; exit 1; }
 
 step "build libffi glib pixman libucontext libslirp"
 # On failure the dependency's own log is printed: Husk writes one per package,
@@ -88,6 +100,40 @@ fi
 
 step "build QEMU"
 if ! "$HUSK_SRC/scripts/build_ios.sh" qemu; then
+    for log in "$HUSK_SRC"/build/logs/*.log; do
+        [ -e "$log" ] || continue
+        echo "=== $(basename "$log") ===" >&2
+        tail -40 "$log" >&2
+    done
+    exit 1
+fi
+
+step "integrate AppleDeck's bridge into the emulator that is actually built"
+# The emulator that ends up in the app is Husk's, built from its own tarball -
+# not the tree cloned above. Patching the clone would produce a dylib with no
+# bridge in it, which looks like a working build and boots to a black screen.
+QEMU_BUILD_TREE="$HUSK_SRC/third_party/build/qemu-10.0.12-utm"
+if [ ! -d "$QEMU_BUILD_TREE" ]; then
+    QEMU_BUILD_TREE=$(find "$HUSK_SRC/third_party" -maxdepth 2 -type d -name 'qemu-*' | head -1)
+fi
+echo "  emulator tree: $QEMU_BUILD_TREE"
+for p in "$APPLEDECK_ROOT"/patches/*.patch; do
+    echo "  applying $(basename "$p")"
+    (cd "$QEMU_BUILD_TREE" && git apply --check "$p" && git apply "$p") || {
+        echo "the patch does not apply to the tree that is being built" >&2
+        exit 1
+    }
+done
+
+# Husk integrates its own iOS JIT glue into the same tree; ours and theirs are
+# different files, so theirs first and then a rebuild of only the shared objects
+# would be ideal - but meson does not do that, so it is a full rebuild.
+step "rebuild QEMU with both bridges"
+"$HUSK_SRC/scripts/integrate_husk.sh" || {
+    echo "Husk's integration step failed" >&2
+    exit 1
+}
+if ! "$HUSK_SRC/scripts/build_ios.sh" qemurebuild; then
     for log in "$HUSK_SRC"/build/logs/*.log; do
         [ -e "$log" ] || continue
         echo "=== $(basename "$log") ===" >&2

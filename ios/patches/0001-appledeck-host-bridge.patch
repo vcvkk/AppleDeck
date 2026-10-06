@@ -216,11 +216,11 @@ index 0000000..7a25b8a
 +}
 \ No newline at end of file
 diff --git a/ui/meson.build b/ui/meson.build
-index 6371422..6d74fb8 100644
+index 10eea7e..7bf0d03 100644
 --- a/ui/meson.build
 +++ b/ui/meson.build
-@@ -1,6 +1,9 @@
- system_ss.add(pixman)
+@@ -4,6 +4,9 @@ specific_ss.add(when: ['CONFIG_SYSTEM_ONLY'], if_true: opengl)   # for the inclu
+ 
  system_ss.add(png)
  system_ss.add(files(
 +  # AppleDeck: the host bridge the iOS app links against. See
