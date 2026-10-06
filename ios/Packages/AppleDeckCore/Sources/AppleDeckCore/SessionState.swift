@@ -63,6 +63,40 @@ public struct SessionStatePayload: Codable, Equatable, Sendable {
         public var artifactsAvailable: Bool
         public var artifactsComplete: Bool
         public var failure: Failure?
+
+        // Encoded by hand for one reason: a synthesized Codable encoder omits a nil
+        // optional instead of writing null, and `state` is a published shape whose
+        // fields are all present whether or not they have a value. A harness doing
+        // `jq .session.logDir` has to get null, not nothing.
+        enum CodingKeys: String, CodingKey {
+            case id, phase, running, mode, program, steamUi, steamUrl, suspended
+            case firstFrame, output, refreshHz, lastTransitionAt, guestPid
+            case installing, logDir, eventsFile, artifactsAvailable
+            case artifactsComplete, failure
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var c = encoder.container(keyedBy: CodingKeys.self)
+            try c.encode(id, forKey: .id)
+            try c.encode(phase, forKey: .phase)
+            try c.encode(running, forKey: .running)
+            try c.encode(mode, forKey: .mode)
+            try c.encodeOrNull(program, forKey: .program)
+            try c.encodeOrNull(steamUi, forKey: .steamUi)
+            try c.encodeOrNull(steamUrl, forKey: .steamUrl)
+            try c.encode(suspended, forKey: .suspended)
+            try c.encode(firstFrame, forKey: .firstFrame)
+            try c.encode(output, forKey: .output)
+            try c.encode(refreshHz, forKey: .refreshHz)
+            try c.encode(lastTransitionAt, forKey: .lastTransitionAt)
+            try c.encodeOrNull(guestPid, forKey: .guestPid)
+            try c.encodeOrNull(installing, forKey: .installing)
+            try c.encodeOrNull(logDir, forKey: .logDir)
+            try c.encodeOrNull(eventsFile, forKey: .eventsFile)
+            try c.encode(artifactsAvailable, forKey: .artifactsAvailable)
+            try c.encode(artifactsComplete, forKey: .artifactsComplete)
+            try c.encodeOrNull(failure, forKey: .failure)
+        }
     }
 
     public struct OutputSize: Codable, Equatable, Sendable {
@@ -84,6 +118,29 @@ public struct SessionStatePayload: Codable, Equatable, Sendable {
             self.code = code
             self.message = message
             self.status = status
+        }
+
+        enum CodingKeys: String, CodingKey { case code, message, status }
+
+        public func encode(to encoder: Encoder) throws {
+            var c = encoder.container(keyedBy: CodingKeys.self)
+            try c.encode(code, forKey: .code)
+            try c.encodeOrNull(message, forKey: .message)
+            try c.encodeOrNull(status, forKey: .status)
+        }
+    }
+
+    /// Writes null rather than nothing, for the fields that may have no value.
+    ///
+    /// KeyedEncodingContainer's `encodeNil` writes a bare null, which is what
+    /// the published shape has always had; `encodeIfPresent` would drop the key.
+    extension KeyedEncodingContainer {
+        func encodeOrNull<T: Encodable>(_ value: T?, forKey key: Key) throws {
+            guard let value else {
+                try encodeNil(forKey: key)
+                return
+            }
+            try encode(value, forKey: key)
         }
     }
 

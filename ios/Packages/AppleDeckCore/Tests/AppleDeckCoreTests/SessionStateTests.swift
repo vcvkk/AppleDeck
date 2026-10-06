@@ -148,7 +148,7 @@ final class SessionStateTests: XCTestCase {
         // The stamp is UTC and US-formatted, exactly as upstream, so a bundle
         // from either platform sorts the same way.
         let name = SessionArtifacts.folderName(Date(timeIntervalSince1970: 1_695_934_376))
-        XCTAssertEqual(name, "session-20231103-042656")
+        XCTAssertEqual(name, "session-20230928-205256")
     }
 
     func testEventLineIsOneJSONObject() throws {

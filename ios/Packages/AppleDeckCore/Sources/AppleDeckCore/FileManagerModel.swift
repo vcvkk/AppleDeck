@@ -20,14 +20,16 @@ public struct FileNode: Identifiable, Equatable, Sendable {
                 isDirectory: Bool,
                 size: Int64,
                 modified: Date? = nil,
-                isHidden: Bool = false,
+                isHidden: Bool? = nil,
                 isSymlink: Bool = false) {
         self.path = path
         self.name = name
         self.isDirectory = isDirectory
         self.size = size
         self.modified = modified
-        self.isHidden = isHidden
+        // Derived rather than defaulted: a node that forgot to say it was hidden
+        // was a node the listing showed when it should not have.
+        self.isHidden = isHidden ?? (name.hasPrefix(".") || path.contains("/."))
         self.isSymlink = isSymlink
     }
 

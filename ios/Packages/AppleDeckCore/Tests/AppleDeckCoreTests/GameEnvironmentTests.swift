@@ -143,7 +143,9 @@ final class GameEnvironmentOptionsTests: XCTestCase {
     func testTogglingTwiceRemovesTheChoice() throws {
         let option = try XCTUnwrap(GameEnvironmentOptions.find("GALLIUM_HUD"))
         let on = GameEnvironmentOptions.toggle(value: "simple", choice: "fps", in: option)
-        XCTAssertEqual(on, "fps,simple")
+        // In the table's order, not the order they were tapped: that is what the
+        // order-independence test above checks.
+        XCTAssertEqual(on, "simple,fps")
         let off = GameEnvironmentOptions.toggle(value: on, choice: "fps", in: option)
         XCTAssertEqual(off, "simple")
     }

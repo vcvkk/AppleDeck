@@ -54,12 +54,19 @@ public enum KeyValues {
     public static func parse(_ text: String) -> [Entry]? {
         var scanner = Scanner(Array(text.utf8))
         var out: [Entry] = []
-        return scanner.entries(into: &out, depth: 0) ? out : nil
+        guard scanner.entries(into: &out, depth: 0) else { return nil }
+        // A document with no braces in it is not a KeyValues document. Without
+        // this, a file of plain words parses into entries with the words as keys
+        // and a caller treats garbage as an empty library.
+        guard scanner.sawBraces else { return nil }
+        return out
     }
 
     struct Scanner {
         let bytes: [UInt8]
         var index = 0
+        /// Whether the document had a block in it at all. See `parse`.
+        var sawBraces = false
 
         init(_ bytes: [UInt8]) { self.bytes = bytes }
 
@@ -88,17 +95,29 @@ public enum KeyValues {
         mutating func entries(into out: inout [Entry], depth: Int) -> Bool {
             while true {
                 skipTrivia()
+                // A comma between entries is a separator, not part of a key. Every
+                // file the Steam client writes uses them, and treating one as a
+                // key silently mis-parses everything after the first comma - which
+                // is why a library folder's apps block came back empty.
+                if !atEnd && bytes[index] == 0x2C {
+                    index += 1
+                    continue
+                }
                 if atEnd { return depth == 0 }
                 if bytes[index] == 0x7D {
                     index += 1
                     return depth > 0
                 }
-                if bytes[index] == 0x7B { return false }
+                if bytes[index] == 0x7B {
+                    sawBraces = true
+                    return false
+                }
                 guard let key = token() else { return false }
                 skipTrivia()
                 guard index < bytes.count else { return false }
                 switch bytes[index] {
                 case 0x7B:
+                    sawBraces = true
                     index += 1
                     var child: [Entry] = []
                     guard entries(into: &child, depth: depth + 1) else { return false }
@@ -145,8 +164,8 @@ public enum KeyValues {
                     guard let value = quoted() else { return nil }
                     return value
                 }
-                if byte == 0x7B || byte == 0x7D || byte == 0x20 || byte == 0x09
-                    || byte == 0x0A || byte == 0x0D {
+                if byte == 0x7B || byte == 0x7D || byte == 0x2C || byte == 0x20
+                    || byte == 0x09 || byte == 0x0A || byte == 0x0D {
                     break
                 }
                 out.append(byte)
