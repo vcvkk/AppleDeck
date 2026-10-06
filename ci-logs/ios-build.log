@@ -1,7 +1,7 @@
 # Unsigned IPA: build failed
 
-commit: 1765a3d1534921bc634dcd3649f4a8ebfcb3067c
-run: https://github.com/vcvkk/AppleDeck/actions/runs/37506070582
+commit: b5de31c1273cad74f2a5b6fc181a83d324671273
+run: https://github.com/vcvkk/AppleDeck/actions/runs/37506841640
 
 ## compiler
 
@@ -11,7 +11,7 @@ run: https://github.com/vcvkk/AppleDeck/actions/runs/37506070582
 ## host tools
 
 ```
-host: Darwin sat12-bq146-a6e1af1d-9825-4124-87c7-1cb5202f3d2d-F6851B861548.local 24.6.0 Darwin Kernel Version 24.6.0: Tue Jul 21 20:51:34 PDT 2026; root:xnu-11417.140.69.711.44~1/RELEASE_ARM64_VMAPPLE arm64
+host: Darwin sjc20-bb711-eeac7fd9-985f-454d-8590-d29a1a893681-469554A8E08C.local 24.6.0 Darwin Kernel Version 24.6.0: Tue Jul 21 20:51:34 PDT 2026; root:xnu-11417.140.69.711.44~1/RELEASE_ARM64_VMAPPLE arm64
 brew: /opt/homebrew/bin/brew
 /opt/homebrew
 PATH=/opt/homebrew/lib/ruby/gems/3.3.0/bin:/opt/homebrew/opt/ruby@3.3/bin:/Users/runner/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/runner/.cargo/bin:/usr/local/opt/curl/bin:/usr/local/bin:/usr/local/sbin:/Users/runner/bin:/Users/runner/.yarn/bin:/Users/runner/Library/Android/sdk/tools:/Users/runner/Library/Android/sdk/platform-tools:/Library/Frameworks/Python.framework/Versions/Current/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/bin:/bin:/usr/sbin:/sbin:/Users/runner/.dotnet/tools
@@ -56,19 +56,69 @@ linuxfs-r9 https://github.com/The412Banner/winlator-contents/releases/download/l
 ==> downloading https://github.com/The412Banner/winlator-contents/releases/download/linuxfs-r9/linuxfs.tar.zst
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
- 14  754M   14  108M    0     0   103M      0  0:00:07  0:00:01  0:00:06  103M 32  754M   32  243M    0     0   118M      0  0:00:06  0:00:02  0:00:04  134M 50  754M   50  383M    0     0   125M      0  0:00:05  0:00:03  0:00:02  137M 71  754M   71  537M    0     0   132M      0  0:00:05  0:00:04  0:00:01  143M 92  754M   92  694M    0     0   137M      0  0:00:05  0:00:05 --:--:--  146M100  754M  100  754M    0     0   137M      0  0:00:05  0:00:05 --:--:--  146M
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  2  754M    2 16.3M    0     0  42.7M      0  0:00:17 --:--:--  0:00:17 42.7M 18  754M   18  142M    0     0   103M      0  0:00:07  0:00:01  0:00:06  126M 33  754M   33  255M    0     0   107M      0  0:00:07  0:00:02  0:00:05  119M 52  754M   52  394M    0     0   116M      0  0:00:06  0:00:03  0:00:03  125M 72  754M   72  547M    0     0   125M      0  0:00:06  0:00:04  0:00:02  132M 94  754M   94  709M    0     0   131M      0  0:00:05  0:00:05 --:--:--  138M100  754M  100  754M    0     0   133M      0  0:00:05  0:00:05 --:--:--  143M
 linuxfs.tar.zst: OK
 
 [1;34m##### unpack[0m
-zstd: Traceback (most recent call last):
-  File "/Users/runner/work/AppleDeck/AppleDeck/ios/scripts/unpack_runtime.py", line 144, in <module>
-    sys.exit(main())
-             ~~~~^^
-  File "/Users/runner/work/AppleDeck/AppleDeck/ios/scripts/unpack_runtime.py", line 97, in main
-    with open(target, "wb") as out:
-         ~~~~^^^^^^^^^^^^^^
-OSError: [Errno 62] Too many levels of symbolic links: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/man/man3/OSSL_trace_enabled.3ssl.gz'
+could not link /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P8-W: [Errno 2] No such file or directory: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/p/p8-w' -> '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P8-W'
+could not link /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P12: [Errno 2] No such file or directory: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/p/p12' -> '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P12'
+could not link /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P9-8: [Errno 2] No such file or directory: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/p/p9-8' -> '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P9-8'
+could not link /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P12-W: [Errno 2] No such file or directory: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/p/p12-w' -> '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P12-W'
+could not link /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P14-M: [Errno 2] No such file or directory: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/p/p14-m' -> '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P14-M'
+could not link /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P5: [Errno 2] No such file or directory: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/p/p5' -> '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P5'
+could not link /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P14-M-W: [Errno 2] No such file or directory: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/p/p14-m-w' -> '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P14-M-W'
+could not link /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P8: [Errno 2] No such file or directory: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/p/p8' -> '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P8'
+could not link /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P14: [Errno 2] No such file or directory: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/p/p14' -> '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P14'
+could not link /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/L/LFT-PC850: [Errno 2] No such file or directory: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/l/lft-pc850' -> '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/L/LFT-PC850'
+could not link /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/n/ncr260vt300wpp: [Errno 2] No such file or directory: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/N/NCR260VT300WPP' -> '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/n/ncr260vt300wpp'
+could not link /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/n/ncrvt100wpp: [Errno 2] No such file or directory: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/N/NCRVT100WPP' -> '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/n/ncrvt100wpp'
+hard link with no target: /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/n/ncrvt100wan -> /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/N/NCRVT100WPP
+unpacked 57039 files, 5039 directories, 14000 links into /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work; 13 links could not be made
+bin
+boot
+dev
+etc
+home
+lib
+mnt
+opt
+proc
+root
+note: no steam binary at /usr/bin/steam; checking what is there
+
+[1;34m##### machine identity[0m
+
+[1;34m##### the image[0m
+
+[1;34m##### the kernel and initramfs[0m
+  total 7804760
+  -rw-r--r--  1 runner  staff   790907606 Oct  6 17:53 linuxfs.tar.zst
+  -rw-r--r--  1 runner  staff  6442450944 Oct  6 17:54 rootfs.img
+
+==> guest staged in /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest
+    runtime   r9
+    rootfs    3.0G
+    kernel    MISSING
+==> package it with: ios/scripts/package_ipa.sh
+
+[1;34m##### sources[0m
+Cloning into '/Users/runner/work/AppleDeck/AppleDeck/ios/build/qemu-utl'...
+warning: refs/tags/v10.2.4 b4263afc43e952223d93ac89929669ab9b56b2f2 is not a commit!
+Updating files:  47% (5171/10923)Updating files:  48% (5244/10923)Updating files:  49% (5353/10923)Updating files:  50% (5462/10923)Updating files:  51% (5571/10923)Updating files:  52% (5680/10923)Updating files:  53% (5790/10923)Updating files:  54% (5899/10923)Updating files:  55% (6008/10923)Updating files:  56% (6117/10923)Updating files:  57% (6227/10923)Updating files:  58% (6336/10923)Updating files:  59% (6445/10923)Updating files:  60% (6554/10923)Updating files:  61% (6664/10923)Updating files:  62% (6773/10923)Updating files:  63% (6882/10923)Updating files:  64% (6991/10923)Updating files:  65% (7100/10923)Updating files:  66% (7210/10923)Updating files:  67% (7319/10923)Updating files:  68% (7428/10923)Updating files:  69% (7537/10923)Updating files:  70% (7647/10923)Updating files:  71% (7756/10923)Updating files:  72% (7865/10923)Updating files:  73% (7974/10923)Updating files:  74% (8084/10923)Updating files:  75% (8193/10923)Updating files:  76% (8302/10923)Updating files:  77% (8411/10923)Updating files:  78% (8520/10923)Updating files:  79% (8630/10923)Updating files:  79% (8680/10923)Updating files:  80% (8739/10923)Updating files:  81% (8848/10923)Updating files:  82% (8957/10923)Updating files:  83% (9067/10923)Updating files:  84% (9176/10923)Updating files:  85% (9285/10923)Updating files:  86% (9394/10923)Updating files:  87% (9504/10923)Updating files:  88% (9613/10923)Updating files:  89% (9722/10923)Updating files:  90% (9831/10923)Updating files:  91% (9940/10923)Updating files:  92% (10050/10923)Updating files:  93% (10159/10923)Updating files:  94% (10268/10923)Updating files:  95% (10377/10923)Updating files:  96% (10487/10923)Updating files:  97% (10596/10923)Updating files:  98% (10705/10923)Updating files:  99% (10814/10923)Updating files: 100% (10923/10923)Updating files: 100% (10923/10923), done.
+Cloning into '/Users/runner/work/AppleDeck/AppleDeck/ios/build/husk'...
+
+[1;34m##### AppleDeck's QEMU patch[0m
+
+[1;34m##### apply[0m
+  /Users/runner/work/AppleDeck/AppleDeck/ios/patches/0001-appledeck-host-bridge.patch
+
+[1;34m##### dependencies[0m
+HUSK build: PREFIX=/Users/runner/work/AppleDeck/AppleDeck/ios/build/husk/build/ios-arm64/sysroot
+            SDK=/Applications/Xcode_26.3.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.2.sdk (26.2), min=16.0, ncpu=3
+
+[0;32m=== building libffi-3.5.0 (autotools) ===[0m
+[0;31m[FAIL] libffi-3.5.0 (see /Users/runner/work/AppleDeck/AppleDeck/ios/build/husk/build/logs/libffi-3.5.0.log)[0m
 ```
 
 ## bundle validation and packaging
