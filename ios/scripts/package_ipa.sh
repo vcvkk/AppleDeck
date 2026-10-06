@@ -45,7 +45,9 @@ build_app() {
     return $status
 }
 
-build_app
+# `|| true` so the script reaches the check below, which explains the failure
+# better than `set -e` exiting on a non-zero status does.
+build_app || true
 
 # A failed build used to sail straight past this: the previous .app is still in
 # DerivedData, so validation and packaging both succeed and produce an IPA of the
