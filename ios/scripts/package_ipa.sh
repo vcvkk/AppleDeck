@@ -129,18 +129,27 @@ if [ -z "$(/usr/libexec/PlistBuddy -c "Print :UIRequiresFullScreen" "$PLIST" 2>/
 else
     echo "  NOTE     UIRequiresFullScreen is set; iPadOS ignores it and letterboxes anyway"
 fi
-for key in UISupportedInterfaceOrientations 'UISupportedInterfaceOrientations~iphone' 'UISupportedInterfaceOrientations~ipad'; do
-    # plutil, not PlistBuddy: PlistBuddy's key path parser treats '~' as
-    # something other than part of a key name, and the idiomatic keys are exactly
-    # the ones with a '~' in them.
+# The base key is the iPhone set - portrait and both landscapes, three - and the
+# idiomatic keys are four each because upside down is a real orientation on both
+# devices. iPadOS letterboxes an app that does not offer all four there, and an
+# iPhone that is missing upside down is fine, so the minima differ.
+# plutil, not PlistBuddy: PlistBuddy's key path parser treats '~' as something
+# other than part of a key name, and the idiomatic keys are exactly the ones with
+# one in them.
+check_orientations() {
+    local key="$1" minimum="$2"
+    local count
     count=$(plutil -extract "$key" xml1 -o - "$PLIST" 2>/dev/null | grep -c "UIInterfaceOrientation" || true)
-    if [ "${count:-0}" -ge 4 ]; then
+    if [ "${count:-0}" -ge "$minimum" ]; then
         printf "  ok       %-28s %s orientations\n" "$key" "$count"
     else
-        echo "  MISSING  $key lists ${count:-0} orientations; iPadOS letterboxes an app that does not support all four" >&2
+        echo "  MISSING  $key lists ${count:-0} orientations, needs $minimum" >&2
         rc=1
     fi
-done
+}
+check_orientations UISupportedInterfaceOrientations 3
+check_orientations 'UISupportedInterfaceOrientations~iphone' 4
+check_orientations 'UISupportedInterfaceOrientations~ipad' 4
 
 # The guest runtime is optional at build time and mandatory at run time, so the
 # bundle is checked either way: present when the guest was staged, and absent
