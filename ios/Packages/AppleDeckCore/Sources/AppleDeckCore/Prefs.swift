@@ -215,6 +215,16 @@ public final class Prefs: @unchecked Sendable {
 
     // MARK: - Primitives
 
+    /// A raw string value, for the keys the port added: the FEX preset and
+    /// anything else that is not a typed setting on the screen.
+    public func text(_ key: String, default fallback: String) -> String {
+        string(key, fallback)
+    }
+
+    public func text2(_ key: String, _ value: String) {
+        set(value, key)
+    }
+
     private func bool(_ key: String, _ fallback: Bool) -> Bool {
         store.bool(forKey: key) ?? fallback
     }

@@ -58,7 +58,10 @@ final class LauncherModel: ObservableObject {
             Task { @MainActor in self?.refreshLibrary() }
         }
         // Keep the copy the editor holds honest after a write.
-        self.environmentStore.onWrite = { config in
+        // Weakly, and assigned last: a closure over self during init captures it
+        // as non-optional, and `self?.` on a non-optional is the compiler's way
+        // of saying so.
+        self.environmentStore.onWrite = { [weak self] config in
             Task { @MainActor in self?.environment = config }
         }
         reloadRuntimeStatus()

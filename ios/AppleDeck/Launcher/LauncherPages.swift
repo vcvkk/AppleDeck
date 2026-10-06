@@ -318,8 +318,8 @@ struct SettingsView: View {
                     Text("Game environment")
                 }
                 Picker("FEX preset", selection: Binding(
-                    get: { launcher.prefs.string("fexPreset", "") },
-                    set: { launcher.prefs.string("fexPreset", $0) })) {
+                    get: { launcher.prefs.text("fexPreset", default: "") },
+                    set: { launcher.prefs.text2("fexPreset", $0) })) {
                     ForEach(FexPreset.all) { entry in
                         Text(entry.label).tag(entry.id)
                     }

@@ -126,7 +126,7 @@ struct GameEnvironmentEditor: View {
         guard !loaded else { return }
         loaded = true
         entries = launcher.environment.entries(scope: scope)
-        preset = launcher.prefs.string("fexPreset", "")
+        preset = launcher.prefs.text("fexPreset", default: "")
     }
 
     private func save() {
