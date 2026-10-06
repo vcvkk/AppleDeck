@@ -130,19 +130,6 @@ public struct SessionStatePayload: Codable, Equatable, Sendable {
         }
     }
 
-    /// Writes null rather than nothing, for the fields that may have no value.
-    ///
-    /// KeyedEncodingContainer's `encodeNil` writes a bare null, which is what
-    /// the published shape has always had; `encodeIfPresent` would drop the key.
-    extension KeyedEncodingContainer {
-        func encodeOrNull<T: Encodable>(_ value: T?, forKey key: Key) throws {
-            guard let value else {
-                try encodeNil(forKey: key)
-                return
-            }
-            try encode(value, forKey: key)
-        }
-    }
 
     public init(schema: Int = 1,
                 build: String,
@@ -423,4 +410,20 @@ public struct SessionArtifacts: Equatable, Sendable {
         return "session-\(f.string(from: date))"
     }
 
+}
+
+/// Writes null rather than nothing, for the fields that may have no value.
+///
+/// KeyedEncodingContainer's `encodeNil` writes a bare null, which is what the
+/// published `state` shape has always had; `encodeIfPresent` would drop the key,
+/// and a harness reading `.session.logDir` would get nothing at all. At file
+/// scope: an extension is not valid inside a type.
+extension KeyedEncodingContainer {
+    func encodeOrNull<T: Encodable>(_ value: T?, forKey key: Key) throws {
+        guard let value else {
+            try encodeNil(forKey: key)
+            return
+        }
+        try encode(value, forKey: key)
+    }
 }
