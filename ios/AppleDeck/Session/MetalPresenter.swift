@@ -1,39 +1,40 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import Metal
 import MetalKit
+import SwiftUI
 import UIKit
 
 /// Presents guest frames, and takes touch.
 ///
-/// This is the whole of DroidDeck's `WaylandCompositor` + `SessionActivity`
-/// view layer on iOS: QEMU hands over a BGRA scanout, it goes into a texture
-/// and on to a `CAMetalLayer`. No compositing of the guest's own surfaces
-/// happens here - that is the guest's job, and it is the same code it runs on
-/// Android (MangoApp, gamescope, labwc). AppleDeck's compositor is a blitter
-/// plus the input router, which is the smallest thing that can be correct.
+/// This is the whole of DroidDeck's `WaylandCompositor` view layer on iOS: QEMU
+/// hands over a BGRA scanout, it goes into a texture and on to a `CAMetalLayer`.
+/// No compositing of the guest's own surfaces happens here - that is the guest's
+/// job, and it is the same code it runs on Android (MangoApp, gamescope,
+/// labwc). AppleDeck's compositor is a blitter, which is the smallest thing that
+/// can be correct.
 final class MetalPresenter: UIView {
-    /// Called on the main thread for every frame the guest produced.
+    /// Called once, the first time the guest produces a frame.
     var onFirstFrame: (() -> Void)?
-    /// Set by the session view; receives every touch the guest should see.
-    var inputSink: ((GuestInput) -> Void)?
 
     private let device: MTLDevice
     private let queue: MTLCommandQueue
-    private var layer: CAMetalLayer?
+    private var metalLayer: CAMetalLayer?
     private var texture: MTLTexture?
     private var textureSize = CGSize(width: 0, height: 0)
     private var textureStride = 0
     private var sawFirstFrame = false
 
     /// Frames the guest produced while nothing was on screen. Dropped rather
-    /// than queued: TCG produces them faster than the display can show them,
-    /// and a queue would turn a fast guest into a laggy one.
-    private var droppedFrames: UInt64 = 0
+    /// than queued: TCG produces them faster than a phone can draw them, and a
+    /// queue would turn a fast guest into a laggy one.
+    private(set) var droppedFrames: UInt64 = 0
 
     override init(frame: CGRect) {
         guard let device = MTLCreateSystemDefaultDevice(),
               let queue = device.makeCommandQueue() else {
-            fatalError("AppleDeck needs Metal; UIRequiredDeviceCapabilities says so, so this is a bug report")
+            // UIRequiredDeviceCapabilities says metal, so a device without it
+            // cannot have installed this app.
+            fatalError("AppleDeck needs Metal")
         }
         self.device = device
         self.queue = queue
@@ -51,30 +52,33 @@ final class MetalPresenter: UIView {
         metal.pixelFormat = .bgra8Unorm
         metal.framebufferOnly = true
         metal.isOpaque = true
-        // The guest's scanout size drives the drawable size, and the view is
-        // scaled to fit: gamescope is told an output size, the guest renders at
-        // that size, and this layer presents it edge to edge either way.
+        // The guest's scanout size drives the drawable size and the view is
+        // scaled to fit: the guest was told an output size, renders at that
+        // size, and is presented edge to edge either way.
         metal.contentsGravity = .resizeAspect
         layer.addSublayer(metal)
-        layer.metal = metal
-        layer.frame = bounds
+        metalLayer = metal
+        metal.frame = bounds
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        layer?.metal?.frame = bounds
+        metalLayer?.frame = bounds
     }
 
     var droppedFrameCount: UInt64 { droppedFrames }
 
-    /// Called from QEMU's display thread. Copies into a texture immediately,
-    /// because the pixels belong to the emulator and are gone by the time this
-    /// returns.
+    /// Called from QEMU's display thread. The copy into the texture happens here,
+    /// immediately, because the pixels belong to the emulator and are gone by
+    /// the time this returns; only the draw is deferred to the main thread.
     func present(frame: GuestFrame) {
-        guard frame.width > 0, frame.height > 0, frame.stride >= frame.width * 4 else { return }
+        let bytesPerPixel = 4
+        guard frame.width > 0, frame.height > 0, frame.stride >= frame.width * bytesPerPixel else {
+            droppedFrames += 1
+            return
+        }
         let wanted = CGSize(width: frame.width, height: frame.height)
-        let needsTexture = texture == nil || textureSize != wanted || textureStride != frame.stride
-        if needsTexture {
+        if texture == nil || textureSize != wanted || textureStride != frame.stride {
             let descriptor = MTKTextureDescriptor.texture2DDescriptor(
                 pixelFormat: .bgra8Unorm,
                 width: frame.width,
@@ -90,33 +94,42 @@ final class MetalPresenter: UIView {
             textureSize = wanted
             textureStride = frame.stride
         }
-        guard let texture else { return }
+        guard let texture else {
+            droppedFrames += 1
+            return
+        }
 
-        // BGRA in, BGRA out: no conversion, so the copy is a memcpy of the
-        // bytes QEMU already produced.
-        frame.pixels.withMemoryRebound(to: UInt8.self, capacity: frame.pixels.count) { bytes in
-            let bytesPerRow = min(textureStride, frame.width * 4)
-            bytes.withMemoryRebound(to: UInt8.self, capacity: bytes.count) { source in
-                texture.replace(
-                    region: MTLRegionMake2D(0, 0, frame.width, frame.height),
-                    mipmapLevel: 0,
-                    withBytes: source,
-                    bytesPerRow: bytesPerRow)
-            }
+        // BGRA in, BGRA out: no conversion, so this is a copy of the bytes QEMU
+        // already produced, at the pitch it already has.
+        let rowBytes = min(textureStride, frame.width * bytesPerPixel)
+        frame.pixels.withUnsafeBytes { raw in
+            guard let base = raw.baseAddress else { return }
+            texture.replace(region: MTLRegionMake2D(0, 0, frame.width, frame.height),
+                            mipmapLevel: 0,
+                            withBytes: base,
+                            bytesPerRow: rowBytes)
         }
 
         if Thread.isMainThread {
             draw(texture)
         } else {
-            DispatchQueue.main.async { [weak self] in self?.draw(texture) }
+            DispatchQueue.main.async { [weak self] in
+                guard let self, let texture = self.texture else { return }
+                self.draw(texture)
+            }
         }
     }
 
     private func draw(_ texture: MTLTexture) {
-        guard let metal = layer?.metal, let drawable = metal.nextDrawable() else { return }
+        guard let metal = metalLayer, let drawable = metal.nextDrawable() else { return }
         guard let command = queue.makeCommandBuffer(),
               let blit = command.makeBlitCommandEncoder() else { return }
-        blit.copy(from: texture, to: drawable.texture, sliceCount: 1, levelCount: 1)
+        blit.copy(from: texture,
+                  to: drawable.texture,
+                  sourceSlice: 0,
+                  sourceLevel: 0,
+                  destinationSlice: 0,
+                  destinationLevel: 0)
         command.present(drawable)
         command.commit()
 
@@ -126,59 +139,64 @@ final class MetalPresenter: UIView {
         }
     }
 
-    // MARK: - Input
+    // MARK: - Touch
 
-    /// Normalises a touch into the guest's absolute coordinate space and hands
-    /// it to the sink. The `touchpad` mode is not implemented here: it is a
-    /// relative-pointer emulation over the same absolute device, and it belongs
-    /// in the router where the preference lives.
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        send(touches, phase: .down)
+        forward(touches, release: false)
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        send(touches, phase: .moved)
+        forward(touches, release: false)
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        send(touches, phase: .up)
+        forward(touches, release: true)
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        send(touches, phase: .up)
+        forward(touches, release: true)
     }
 
-    private enum TouchPhase { case down, moved, up }
+    /// A touch, in the guest's absolute coordinate space.
+    ///
+    /// virtio-tablet's absolute range is 0...32767 on both axes and QEMU maps
+    /// that onto the display size the guest was told about - not the view's
+    /// bounds, because the guest does not know the view exists. The touch modes
+    /// (direct against touchpad) are `InputRouter`'s decision, not this view's,
+    /// so this only converts and reports.
+    func guestPoint(for point: CGPoint) -> CGPoint {
+        guard let metal = metalLayer else { return point }
+        let width = Double(max(metal.drawableSize.width, 1))
+        let height = Double(max(metal.drawableSize.height, 1))
+        return CGPoint(x: (Double(point.x) / width) * 32767.0,
+                       y: (Double(point.y) / height) * 32767.0)
+    }
 
-    private func send(_ touches: Set<UITouch>, phase: TouchPhase) {
-        guard let sink = inputSink, let metal = layer?.metal else { return }
-        // virtio-tablet's absolute range is 0..32767 on both axes, and QEMU maps
-        // that onto the display size the guest was told about. Not the view's
-        // bounds: the guest does not know the view exists.
-        let scaleX = Double(32767) / Double(max(metal.drawableSize.width, 1))
-        let scaleY = Double(32767) / Double(max(metal.drawableSize.height, 1))
+    var onTouch: ((CGPoint, UIGestureRecognizer.State) -> Void)?
+
+    private func forward(_ touches: Set<UITouch>, release: Bool) {
+        guard let handler = onTouch else { return }
         for touch in touches {
             let point = touch.location(in: self)
-            let x = Int((point.x * scaleX).rounded())
-            let y = Int((point.y * scaleY).rounded())
-            switch phase {
-            case .down, .moved:
-                sink(.pointer(x: x, y: y))
-            case .up:
-                sink(.pointer(x: x, y: y))
-                sink(.button(linuxButton: 0x110 /* BTN_LEFT */, down: false))
-            }
+            let state: UIGestureRecognizer.State = release ? .ended : (touches.count > 0 ? .changed : .began)
+            handler(guestPoint(for: point), state)
         }
     }
+}
 
-    /// A tap is a left button press and release at one place, which is what the
-    /// guest's Wayland pointer expects and what a finger means.
-    func sendTap(at point: CGPoint) {
-        guard let sink = inputSink, let metal = layer?.metal else { return }
-        let x = Int((point.x * Double(32767) / Double(max(metal.drawableSize.width, 1))).rounded())
-        let y = Int((point.y * Double(32767) / Double(max(metal.drawableSize.height, 1))).rounded())
-        sink(.pointer(x: x, y: y))
-        sink(.button(linuxButton: 0x110, down: true))
-        sink(.button(linuxButton: 0x110, down: false))
+/// The presenter inside SwiftUI. The session screen holds one `UIView`, not a
+/// Metal command queue and a texture cache, and this is the only place the two
+/// meet.
+struct MetalPresenterView: UIViewRepresentable {
+    /// Set by the session screen once, after the view exists: frames in, first
+    /// frame out.
+    var onReady: ((MetalPresenter) -> Void)?
+
+    func makeUIView(context: Context) -> MetalPresenter {
+        let view = MetalPresenter(frame: .zero)
+        onReady?(view)
+        return view
     }
+
+    func updateUIView(_ uiView: MetalPresenter, context: Context) {}
 }

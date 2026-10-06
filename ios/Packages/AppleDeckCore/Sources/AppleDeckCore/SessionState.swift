@@ -28,6 +28,19 @@ public struct SessionStatePayload: Codable, Equatable, Sendable {
         /// backend is available at all (no QEMU dylib built, no guest image).
         public var backend: String?
         public var guestImage: String?
+
+        // Written out rather than left as the memberwise initialiser: that one
+        // is internal, and the app - which imports this package plainly, not
+        // with @testable - has to be able to build this.
+        public init(installed: Bool,
+                    version: String? = nil,
+                    backend: String? = nil,
+                    guestImage: String? = nil) {
+            self.installed = installed
+            self.version = version
+            self.backend = backend
+            self.guestImage = guestImage
+        }
     }
 
     public struct SessionInfo: Codable, Equatable, Sendable {

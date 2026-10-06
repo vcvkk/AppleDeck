@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import GameController
 import UIKit
+import AppleDeckCore
 
 /// Everything the user touches, keys and presses, on its way to the guest.
 ///
@@ -162,7 +163,9 @@ final class InputRouter {
     ]
 
     @objc func handleKeyCommand(_ command: UIKeyCommand) {
-        guard let code = Self.codes[command.input] else { return }
+        // `input` is optional in the current SDK and plain String in older ones,
+        // so it is bound rather than indexed: one spelling compiles against both.
+        guard let input = command.input, let code = Self.codes[input] else { return }
         press(code)
     }
 
@@ -206,18 +209,10 @@ final class InputRouter {
             default: break
             }
         }
-        if deck {
-            controller.valueChangedHandler = { [weak self] _, element in
-                guard let self else { return }
-                switch element {
-                case .buttonMenu: self.set(true, Key.menu)
-                case .buttonHome: self.set(true, Key.mode)
-                case .buttonOptions: self.set(true, Key.select)
-                case .buttonShare: self.set(true, Key.system)
-                default: break
-                }
-            }
-        }
+        // Nothing is done here with the pad's vendor-specific buttons: they have
+        // no evdev codes of their own, and a wrong guess sends a key the guest
+        // has no use for. `buttonHome` above is the one that maps.
+        _ = deck
     }
 
     private func set(_ pressed: Bool, _ code: Int) {
@@ -231,11 +226,11 @@ final class InputRouter {
         sink?(.button(linuxButton: code, down: value > 0.5))
     }
 
-    private func dpad(_ dpad: GCControllerDirectionPad) {
-        set(dpad.up, Key.dpadUp)
-        set(dpad.down, Key.dpadDown)
-        set(dpad.left, Key.dpadLeft)
-        set(dpad.right, Key.dpadRight)
+    private func dpad(_ pad: GCControllerDirectionPad) {
+        set(pad.up, Key.dpadUp)
+        set(pad.down, Key.dpadDown)
+        set(pad.left, Key.dpadLeft)
+        set(pad.right, Key.dpadRight)
     }
 }
 

@@ -87,6 +87,11 @@ struct LauncherScreen: View {
             DriverView(launcher: launcher)
         case .settings:
             SettingsView()
+        case .storeBeta, .cases:
+            // Android-only pages (the beta store rail, the keyboard-case
+            // screens). They exist so a preferences dump from DroidDeck still
+            // round-trips, and they are never reachable here.
+            ContentUnavailableViewCompat("Not on iOS", detail: page.title)
         }
     }
 }

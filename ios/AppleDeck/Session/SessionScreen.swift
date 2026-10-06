@@ -14,7 +14,7 @@ struct SessionScreen: View {
     @EnvironmentObject private var launcher: LauncherModel
     @Environment(\.scenePhase) private var scenePhase
 
-    @State private var presenter = MetalPresenter()
+    @State private var presenter: MetalPresenter?
     @State private var router: InputRouter?
     @State private var overlayVisible = true
     @State private var steamQAMOpen = false
@@ -22,10 +22,11 @@ struct SessionScreen: View {
 
     var body: some View {
         ZStack {
-            presenter
+            MetalPresenterView(onReady: { view in
+                presenter = view
+                attach(to: view)
+            })
                 .ignoresSafeArea()
-                .onAppear(perform: attach)
-                .onDisappear(perform: detach)
 
             if session.phase.isPreparing {
                 preparing
@@ -64,37 +65,27 @@ struct SessionScreen: View {
         .padding(32)
     }
 
-    private func attach() {
+    private func attach(to view: MetalPresenter) {
         let prefs = launcher.prefs
         let router = InputRouter(prefs: prefs)
         router.beginSession(mode: session.request?.mode ?? .steam)
-        router.sink = { input in
-            sessionRuntimeSend(input)
-        }
-        presenter.inputSink = nil
-        presenter.onFirstFrame = { session.noteFrame() }
+        // The session controller owns the runtime; the router does not know about
+        // it, which is what lets the launcher and a session share one router.
+        router.sink = { session.send($0) }
+        view.onTouch = { point, state in router.touch(at: point, phase: state) }
+        view.onFirstFrame = { session.noteFrame() }
         self.router = router
 
-        // Frames go straight to the presenter, which hops to the main thread.
-        AppleDeckFrameBridge.install { pixels, width, height, stride in
+        // Frames go straight to the presenter, which hops to the main thread for
+        // the draw. QEMU's callback is a C function pointer, so this trampoline
+        // is the seam.
+        AppleDeckFrameBridge.install { [weak view] pixels, width, height, stride in
             let buffer = UnsafeRawBufferPointer(start: pixels, count: height * stride)
-            DispatchQueue.main.async { [weak presenter] in
-                presenter?.present(frame: GuestFrame(width: width, height: height,
-                                                    stride: stride, pixels: buffer))
+            DispatchQueue.main.async {
+                view?.present(frame: GuestFrame(width: width, height: height,
+                                               stride: stride, pixels: buffer))
             }
         }
-    }
-
-    private func detach() {
-        AppleDeckFrameBridge.install { _, _, _, _ in }
-        router = nil
-    }
-
-    private func sessionRuntimeSend(_ input: GuestInput) {
-        // The session controller owns the runtime; the router does not know
-        // about it, which is what lets the launcher and the session share one
-        // input router in tests.
-        session.send(input)
     }
 }
 
@@ -210,7 +201,7 @@ struct DeckPad: View {
             Circle()
                 .fill(.white.opacity(0.25))
                 .frame(width: size * 0.36, height: size * 0.36)
-                .offset(x: offset.x, y: offset.y)
+                .offset(x: knobOffset.x, y: knobOffset.y)
         }
         .frame(width: size, height: size)
         .contentShape(Circle())
@@ -231,7 +222,7 @@ struct DeckPad: View {
         )
     }
 
-    private var offset: CGSize {
+    private var knobOffset: CGSize {
         guard let last else { return .zero }
         let radius = size / 2 - size * 0.18
         let dx = last.x - size / 2
