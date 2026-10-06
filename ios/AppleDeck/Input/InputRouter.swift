@@ -230,23 +230,25 @@ final class InputRouter {
         }
         // Triggers are digital: a Steam Input profile maps the trigger axis from
         // the digital bit, and a half-pressed trigger read as an axis stutters in
-        // every menu.
-        pad.leftTrigger.valueChangedHandler = { [weak self] _, value, _ in
+        // every menu. The two triggers are optionals on GCExtendedGamepad; the
+        // direction pad's four buttons are not, which is the sort of asymmetry
+        // that costs a build if it is guessed at rather than read off the SDK.
+        pad.leftTrigger?.valueChangedHandler = { [weak self] _, value, _ in
             self?.trigger(value, Key.triggerL)
         }
-        pad.rightTrigger.valueChangedHandler = { [weak self] _, value, _ in
+        pad.rightTrigger?.valueChangedHandler = { [weak self] _, value, _ in
             self?.trigger(value, Key.triggerR)
         }
-        pad.dpad.up?.valueChangedHandler = { [weak self] _, _, pressed in
+        pad.dpad.up.valueChangedHandler = { [weak self] _, _, pressed in
             self?.send(pressed, Key.dpadUp)
         }
-        pad.dpad.down?.valueChangedHandler = { [weak self] _, _, pressed in
+        pad.dpad.down.valueChangedHandler = { [weak self] _, _, pressed in
             self?.send(pressed, Key.dpadDown)
         }
-        pad.dpad.left?.valueChangedHandler = { [weak self] _, _, pressed in
+        pad.dpad.left.valueChangedHandler = { [weak self] _, _, pressed in
             self?.send(pressed, Key.dpadLeft)
         }
-        pad.dpad.right?.valueChangedHandler = { [weak self] _, _, pressed in
+        pad.dpad.right.valueChangedHandler = { [weak self] _, _, pressed in
             self?.send(pressed, Key.dpadRight)
         }
         padConnected = controller
