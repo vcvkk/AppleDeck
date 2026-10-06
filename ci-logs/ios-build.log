@@ -1,7 +1,7 @@
 # Unsigned IPA: build failed
 
-commit: e280f02a925c7f0b7abb1240534ed54433cff2b5
-run: https://github.com/vcvkk/AppleDeck/actions/runs/37505482734
+commit: 1765a3d1534921bc634dcd3649f4a8ebfcb3067c
+run: https://github.com/vcvkk/AppleDeck/actions/runs/37506070582
 
 ## compiler
 
@@ -11,7 +11,7 @@ run: https://github.com/vcvkk/AppleDeck/actions/runs/37505482734
 ## host tools
 
 ```
-host: Darwin sjc22-bt146-9f78f8e7-2d07-4a08-856c-0228f93a39f9-72ED7C71D2C0.local 24.6.0 Darwin Kernel Version 24.6.0: Tue Jul 21 20:51:34 PDT 2026; root:xnu-11417.140.69.711.44~1/RELEASE_ARM64_VMAPPLE arm64
+host: Darwin sat12-bq146-a6e1af1d-9825-4124-87c7-1cb5202f3d2d-F6851B861548.local 24.6.0 Darwin Kernel Version 24.6.0: Tue Jul 21 20:51:34 PDT 2026; root:xnu-11417.140.69.711.44~1/RELEASE_ARM64_VMAPPLE arm64
 brew: /opt/homebrew/bin/brew
 /opt/homebrew
 PATH=/opt/homebrew/lib/ruby/gems/3.3.0/bin:/opt/homebrew/opt/ruby@3.3/bin:/Users/runner/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/runner/.cargo/bin:/usr/local/opt/curl/bin:/usr/local/bin:/usr/local/sbin:/Users/runner/bin:/Users/runner/.yarn/bin:/Users/runner/Library/Android/sdk/tools:/Users/runner/Library/Android/sdk/platform-tools:/Library/Frameworks/Python.framework/Versions/Current/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/bin:/bin:/usr/sbin:/sbin:/Users/runner/.dotnet/tools
@@ -56,20 +56,19 @@ linuxfs-r9 https://github.com/The412Banner/winlator-contents/releases/download/l
 ==> downloading https://github.com/The412Banner/winlator-contents/releases/download/linuxfs-r9/linuxfs.tar.zst
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
- 13  754M   13  101M    0     0   102M      0  0:00:07 --:--:--  0:00:07  102M 29  754M   29  224M    0     0   113M      0  0:00:06  0:00:01  0:00:05  123M 47  754M   47  359M    0     0   120M      0  0:00:06  0:00:02  0:00:04  128M 64  754M   64  486M    0     0   122M      0  0:00:06  0:00:03  0:00:03  128M 83  754M   83  633M    0     0   126M      0  0:00:05  0:00:04  0:00:01  132M100  754M  100  754M    0     0   129M      0  0:00:05  0:00:05 --:--:--  134M
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+ 14  754M   14  108M    0     0   103M      0  0:00:07  0:00:01  0:00:06  103M 32  754M   32  243M    0     0   118M      0  0:00:06  0:00:02  0:00:04  134M 50  754M   50  383M    0     0   125M      0  0:00:05  0:00:03  0:00:02  137M 71  754M   71  537M    0     0   132M      0  0:00:05  0:00:04  0:00:01  143M 92  754M   92  694M    0     0   137M      0  0:00:05  0:00:05 --:--:--  146M100  754M  100  754M    0     0   137M      0  0:00:05  0:00:05 --:--:--  146M
 linuxfs.tar.zst: OK
 
 [1;34m##### unpack[0m
-zstd: error 70 : Write error : cannot write block : Broken pipe 
-Traceback (most recent call last):
-  File "/Users/runner/work/AppleDeck/AppleDeck/ios/scripts/unpack_runtime.py", line 124, in <module>
+zstd: Traceback (most recent call last):
+  File "/Users/runner/work/AppleDeck/AppleDeck/ios/scripts/unpack_runtime.py", line 144, in <module>
     sys.exit(main())
              ~~~~^^
-  File "/Users/runner/work/AppleDeck/AppleDeck/ios/scripts/unpack_runtime.py", line 90, in main
-    os.link(source, target)
-    ~~~~~~~^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/p/p8-w' -> '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/terminfo/P/P8-W'
+  File "/Users/runner/work/AppleDeck/AppleDeck/ios/scripts/unpack_runtime.py", line 97, in main
+    with open(target, "wb") as out:
+         ~~~~^^^^^^^^^^^^^^
+OSError: [Errno 62] Too many levels of symbolic links: '/Users/runner/work/AppleDeck/AppleDeck/ios/build/guest-work/usr/share/man/man3/OSSL_trace_enabled.3ssl.gz'
 ```
 
 ## bundle validation and packaging
