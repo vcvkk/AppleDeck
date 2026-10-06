@@ -108,8 +108,13 @@ jobs:
           # with a retry, because failing either one produces a 422 that looks
           # like success when the step's status is not checked - which is how two
           # failures in a row published nothing.
+          # Two arguments on purpose: the local file that was written and the name
+          # it is published under are different things, and using one for both
+          # reads a file that does not exist and publishes nothing - which is what
+          # happened for four runs in a row.
           put_log() {
             local file="$1"
+            local remote="$2"
             local sha=""
             local attempt=0
             while [ $attempt -lt 3 ]; do
@@ -128,7 +133,7 @@ jobs:
               "branch": "ci/logs",
               **({"sha": os.environ["BLOB_SHA"]} if os.environ.get("BLOB_SHA") else {}),
           }))')")
-              echo "PUT $file -> HTTP $code (attempt $((attempt + 1)))"
+              echo "PUT $remote from $file -> HTTP $code (attempt $((attempt + 1)))"
               case "$code" in
                 200|201) return 0 ;;
                 404)
@@ -147,7 +152,7 @@ jobs:
             done
             return 1
           }
-          put_log "core-test.log" || echo "could not publish core-test.log" >> "$GITHUB_STEP_SUMMARY"
+          put_log /tmp/core-test.log core-test.log || echo "could not publish core-test.log" >> "$GITHUB_STEP_SUMMARY"
       - name: No vendored key material
         run: |
           set -euo pipefail
@@ -328,8 +333,13 @@ jobs:
           # with a retry, because failing either one produces a 422 that looks
           # like success when the step's status is not checked - which is how two
           # failures in a row published nothing.
+          # Two arguments on purpose: the local file that was written and the name
+          # it is published under are different things, and using one for both
+          # reads a file that does not exist and publishes nothing - which is what
+          # happened for four runs in a row.
           put_log() {
             local file="$1"
+            local remote="$2"
             local sha=""
             local attempt=0
             while [ $attempt -lt 3 ]; do
@@ -348,7 +358,7 @@ jobs:
               "branch": "ci/logs",
               **({"sha": os.environ["BLOB_SHA"]} if os.environ.get("BLOB_SHA") else {}),
           }))')")
-              echo "PUT $file -> HTTP $code (attempt $((attempt + 1)))"
+              echo "PUT $remote from $file -> HTTP $code (attempt $((attempt + 1)))"
               case "$code" in
                 200|201) return 0 ;;
                 404)
@@ -367,7 +377,7 @@ jobs:
             done
             return 1
           }
-          put_log "ios-build.log" || echo "could not publish ios-build.log" >> "$GITHUB_STEP_SUMMARY"
+          put_log /tmp/ios-build.md ios-build.log || echo "could not publish ios-build.log" >> "$GITHUB_STEP_SUMMARY"
           exit 0
 
       - name: What this build is
