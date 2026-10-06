@@ -110,11 +110,11 @@ final class KeyValuesTests: XCTestCase {
                        "/root/.local/share/Steam", seen)
         XCTAssertEqual(root?.list("1").flatMap { KeyValues.value(in: $0, "path") }?.stringValue,
                        "/mnt/sd/SteamLibrary", seen)
-        XCTAssertEqual(root?.list("0")
-                        .flatMap { KeyValues.value(in: $0, "apps") }
-                        .flatMap { $0.list("10") }
-                        .flatMap { KeyValues.value(in: $0, "10") }?.stringValue,
-                       "10", seen)
+        // A list under a key: the entries *of* that list, whose first entry is
+        // the app id and whose value is the size. Two levels down, so both steps
+        // are explicit - a chain this deep is where the last one goes wrong.
+        let apps = root?.list("0").flatMap { KeyValues.value(in: $0, "apps") }
+        XCTAssertEqual(apps?.list("10")?.first?.value.stringValue, "10", seen)
     }
 
     func testAppManifest() throws {
