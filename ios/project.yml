@@ -56,6 +56,11 @@ targets:
       - package: AppleDeckCore
     settings:
       base:
+        # The plist is written by hand and is not generated: it carries the
+        # launch screen declaration, the orientation matrices and the usage
+        # strings, and an XcodeGen `info:` block would overwrite all of it with a
+        # minimal one - which is exactly the bug that shipped an IPA iOS ran in
+        # compatibility mode.
         INFOPLIST_FILE: AppleDeck/Info.plist
         PRODUCT_BUNDLE_IDENTIFIER: com.vcvkk.AppleDeck
         PRODUCT_NAME: AppleDeck
@@ -71,8 +76,6 @@ targets:
         OTHER_LDFLAGS:
           - "$(inherited)"
           - "-ldl"
-    info:
-      path: AppleDeck/Info.plist
 
 schemes:
   AppleDeck:

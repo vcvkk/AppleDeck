@@ -26,26 +26,19 @@ fi
 
 echo "==> building"
 
-# Asking the compiler for every error instead of the first twenty matters more
-# than it looks: a build with thirty problems reports twenty of them and leaves
-# the rest for the next push, which turns one fix into five.
-#
-# The frontend flag is not in every toolchain, and a build that dies on an
-# unknown flag reports no errors at all - so it is probed once, and the build is
-# repeated plainly if the toolchain will not take it.
+# One build reports every error in the module, because the limit the compiler
+# applies is per file: a build with three problems in three files shows all
+# three, and only a single file with twenty of them is cut short. Xcode 26 has no
+# -error-limit frontend flag to raise even that, so this is as close as the
+# toolchain gets.
 build_app() {
     xcodebuild -project "$APPLEDECK_ROOT/AppleDeck.xcodeproj" -scheme AppleDeck \
         -sdk iphoneos -configuration Release -derivedDataPath "$DD" \
         CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-        "$@" \
         build 2>&1 | tee "$DD/build.log" | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
 }
 
-build_app OTHER_SWIFT_FLAGS="$(inherited) -Xfrontend -error-limit -Xfrontend 0"
-if grep -q "unknown argument" "$DD/build.log"; then
-    echo "==> this toolchain has no -error-limit; rebuilding without it" >&2
-    build_app
-fi
+build_app
 
 # A failed build used to sail straight past this: the previous .app is still in
 # DerivedData, so validation and packaging both succeed and produce an IPA of the
