@@ -1,0 +1,83 @@
+name: Sync upstream
+run-name: merge The412Banner/DroidDeck into main
+
+# AppleDeck is a full fork and wants to stay one. DroidDeck moves (as of this
+# writing: Flatpak apps and a Flathub store, 2026-09-30), and a port that only
+# ever sees its own commits finds out months later.
+#
+# The merge is done on a branch and offered as a pull request rather than pushed
+# to main: upstream changes are exactly the ones that need a human to look at
+# them, and an automatic merge of somebody else's commits into a fork's main is
+# how a fork starts diverging in ways nobody chose.
+on:
+  schedule:
+    # Once a day, off the hour so every fork does not hit upstream together.
+    - cron: "37 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    name: Upstream merge
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch upstream
+        run: |
+          set -euo pipefail
+          git remote add upstream https://github.com/The412Banner/DroidDeck.git 2>/dev/null || \
+            git remote set-url upstream https://github.com/The412Banner/DroidDeck.git
+          git fetch --no-tags upstream main
+
+      - name: Nothing to do?
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if git merge-base --is-ancestor upstream/main HEAD; then
+            echo "upstream is already merged" >> "$GITHUB_STEP_SUMMARY"
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "needed=true" >> "$GITHUB_OUTPUT"
+          echo "upstream/main is $(git rev-parse --short upstream/main); this fork is at $(git rev-parse --short HEAD)" \
+            >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Merge and open a pull request
+        if: steps.check.outputs.needed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: sync/upstream-$(github.run_number)
+        run: |
+          set -euo pipefail
+          git config user.name "ci"
+          git config user.email "ci@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          if ! git merge --no-ff --no-edit upstream/main; then
+            echo "::error::upstream/main conflicts with the iOS port"
+            echo "The merge is left unfinished in this job's log. Resolve it locally:" \
+              >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo 'git remote add upstream https://github.com/The412Banner/DroidDeck.git' >> "$GITHUB_STEP_SUMMARY"
+            echo 'git fetch upstream && git merge upstream/main' >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            git merge --abort || true
+            exit 1
+          fi
+          git push -q origin "$BRANCH"
+          # The body is a file in the repository rather than a shell string or a
+          # heredoc: multi-line shell text inside a YAML block scalar needs
+          # every line indented, and getting that wrong makes the whole workflow
+          # file invalid with an error that points nowhere near the cause.
+          gh pr create --fill --base main --head "$BRANCH" \
+            --title "Sync with DroidDeck $(git rev-parse --short upstream/main)" \
+            --body-file .github/upstream-sync-body.md
+          echo "opened a pull request from $BRANCH" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,231 @@
+diff --git a/ui/appledeck-host.c b/ui/appledeck-host.c
+new file mode 100644
+index 0000000..7a25b8a
+--- /dev/null
++++ b/ui/appledeck-host.c
+@@ -0,0 +1,210 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later
++ *
++ * AppleDeck's host bridge: input in, frames out.
++ *
++ * The app cannot use QEMU's UI subsystems directly. Its input path wants a
++ * QemuConsole and its key path wants a QKeyCode, both of which mean nothing
++ * outside a display backend, and its display path wants a pixman image, whose
++ * contents belong to whoever registered the listener. So this file is the
++ * boundary: five functions the app links against, no QEMU types in any of them,
++ * and one DisplayChangeListener that hands the app the scanout.
++ *
++ * What the app needs to know:
++ *
++ *   appledeck_set_frame_callback(fn)  where frames go; call before qemu_init
++ *   appledeck_set_event_callback(fn)   where guest-initiated events go
++ *   appledeck_send_abs(axis, value)   virtio-tablet absolute coordinates,
++ *                                     0...32767 on both axes
++ *   appledeck_send_btn(button, down)  virtio-input buttons, Linux evdev codes
++ *   appledeck_send_key(code, down)    Linux evdev key codes, as virtio-keyboard
++ *                                     sends them
++ *   appledeck_register_display()      attach the frame listener; see below
++ *
++ * Why registration is a function and not something that happens on its own: a
++ * DisplayChangeListener has to be registered while a console exists, and the app
++ * calls the callback setters before qemu_init, when none does yet. So the app
++ * calls appledeck_register_display() once the machine is up. It is idempotent,
++ * because the app has no way to know whether the machine came up before its own
++ * thread got scheduled, and getting that wrong would either leak a listener or
++ * miss the first frames.
++ */
++
++#include "qemu/osdep.h"
++#include "ui/console.h"
++#include "ui/input.h"
++#include "ui/surface.h"
++
++typedef void (*AppleDeckFrameFn)(const void *pixels,
++                                 int width, int height, int stride);
++
++/* Event types, mirrored in ios/AppleDeck/Runtime/qemu_bridge.h. */
++enum {
++    APPLEDECK_EVENT_KEY_DOWN = 1,
++    APPLEDECK_EVENT_KEY_UP,
++    APPLEDECK_EVENT_POINTER,
++    APPLEDECK_EVENT_BUTTON_DOWN,
++    APPLEDECK_EVENT_BUTTON_UP,
++    APPLEDECK_EVENT_WHEEL,
++};
++
++static AppleDeckFrameFn frame_callback;
++static void (*event_callback)(int type, int code, int a, int b, int c);
++
++void appledeck_set_frame_callback(AppleDeckFrameFn fn);
++void appledeck_set_event_callback(
++    void (*fn)(int type, int code, int a, int b, int c));
++void *appledeck_input_clock(void);
++void appledeck_send_abs(int axis, int value);
++void appledeck_send_btn(int button, int down);
++void appledeck_send_key(int keycode, int down);
++void appledeck_register_display(void);
++
++void appledeck_set_frame_callback(AppleDeckFrameFn fn)
++{
++    frame_callback = fn;
++}
++
++void appledeck_set_event_callback(
++    void (*fn)(int type, int code, int a, int b, int c))
++{
++    event_callback = fn;
++}
++
++/*
++ * Kept because the app's bridge asks for it. QEMU 10's qemu_input_queue_abs()
++ * takes a QemuConsole rather than a clock, which is why this patch is small;
++ * there is no clock to hand back, and the app treats NULL as "this QEMU takes a
++ * console, which this function knows what to do about".
++ */
++void *appledeck_input_clock(void)
++{
++    return NULL;
++}
++
++/*
++ * The console every event goes to. Index 0 is the first one the machine
++ * created, which for a virtio-gpu guest is the scanout the guest draws into.
++ * There is no way to ask for a named one: a headless iOS build has exactly the
++ * one it created.
++ */
++static QemuConsole *appledeck_console(void)
++{
++    return qemu_console_lookup_by_index(0);
++}
++
++void appledeck_send_abs(int axis, int value)
++{
++    QemuConsole *console = appledeck_console();
++
++    if (!console) {
++        return;
++    }
++    qemu_input_queue_abs(console, axis, value);
++    qemu_input_event_sync();
++}
++
++void appledeck_send_btn(int button, int down)
++{
++    QemuConsole *console = appledeck_console();
++
++    if (!console) {
++        return;
++    }
++    qemu_input_queue_btn(console, button, down);
++    qemu_input_event_sync();
++}
++
++void appledeck_send_key(int keycode, int down)
++{
++    QemuConsole *console = appledeck_console();
++
++    if (!console) {
++        return;
++    }
++    /*
++     * keycode is a Linux evdev code, which is what virtio-keyboard puts on the
++     * wire and therefore what the guest's input stack expects. QEMU converts it
++     * with the same table the virtio-input backend uses, so a key that the guest
++     * sees on real hardware is the key it sees here.
++     */
++    qemu_input_event_send_key_number(console, keycode, down);
++}
++
++/* ------------------------------------------------------------------ display */
++
++static void appledeck_dpy_refresh(DisplayChangeListener *dcl)
++{
++    /* The scanout changed wholesale (a mode switch, a device reset): ask for a
++     * full update so the next frame is the whole surface and not a patch. */
++    dpy_gfx_update(dcl, 0, 0, 0, 0);
++}
++
++/*
++ * A full copy of the scanout, handed over rather than pointed at.
++ *
++ * The pixman image belongs to QEMU and is recycled; the callback copies it
++ * before returning, which is why it is given a pointer and not a promise. Full
++ * rectangles rather than dirty ones: a dirty rect would be correct and would
++ * save the copy, and under TCG the guest produces frames far faster than the
++ * display consumes them, so the dropped frames are the cheaper trade.
++ */
++static void appledeck_dpy_update(DisplayChangeListener *dcl,
++                                 int x, int y, int w, int h)
++{
++    QemuConsole *console = dcl->con;
++    DisplaySurface *surface;
++    pixman_image_t *image;
++    int width, height, stride;
++    const char *format;
++
++    if (!frame_callback || !console) {
++        return;
++    }
++    surface = qemu_console_surface(console);
++    if (!surface || !surface->image) {
++        return;
++    }
++    image = surface->image;
++    width = pixman_image_get_width(image);
++    height = pixman_image_get_height(image);
++    stride = pixman_image_get_stride(image);
++
++    /* The app's presenter expects BGRA in a 32-bit image and has one blit path
++     * for it. Anything else is reported rather than converted: a conversion here
++     * would be a second colour pipeline to get wrong, and the guest's driver is
++     * the thing that should be producing BGRA. */
++    format = pixman_format_name(pixman_image_get_format(image));
++    if (!format || g_strcmp0(format, "b8g8r8a8") != 0) {
++        if (event_callback) {
++            event_callback(APPLEDECK_EVENT_WHEEL, 0, 0, 0, 0);
++        }
++        return;
++    }
++
++    frame_callback(pixman_image_get_data(image), width, height, stride);
++}
++
++static DisplayChangeListenerOps appledeck_dcl_ops = {
++    .dpy_name = "appledeck",
++    .dpy_refresh = appledeck_dpy_refresh,
++    .dpy_gfx_update = appledeck_dpy_update,
++    .dpy_gfx_switch = NULL,
++};
++
++static DisplayChangeListener appledeck_dcl;
++static bool appledeck_dcl_registered;
++
++void appledeck_register_display(void)
++{
++    if (appledeck_dcl_registered) {
++        return;
++    }
++    if (!qemu_console_lookup_by_index(0)) {
++        /* No console yet: the machine is still being built. The app calls this
++         * again, and being told to come back later is a normal outcome rather
++         * than a failure worth reporting. */
++        return;
++    }
++    register_displaychangelistener(&appledeck_dcl);
++    appledeck_dcl_registered = true;
++}
+\ No newline at end of file
+diff --git a/ui/meson.build b/ui/meson.build
+index 6371422..6d74fb8 100644
+--- a/ui/meson.build
++++ b/ui/meson.build
+@@ -1,6 +1,9 @@
+ system_ss.add(pixman)
+ system_ss.add(png)
+ system_ss.add(files(
++  # AppleDeck: the host bridge the iOS app links against. See
++  # ios/patches/0001-appledeck-host-bridge.patch.
++  'appledeck-host.c',
+   'clipboard.c',
+   'console.c',
+   'cursor.c',
