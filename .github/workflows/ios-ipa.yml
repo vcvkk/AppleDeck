@@ -206,7 +206,21 @@ jobs:
         if: ${{ github.event_name == 'schedule' || inputs.guest == true }}
         run: |
           set -euo pipefail
-          brew install e2fsprogs zstd
+          # Everything this step learns goes to a file the failure report reads,
+          # so a failure here explains itself without a signed-in session.
+          {
+            echo "host: $(uname -a)"
+            echo "brew: $(command -v brew || echo none)"
+            brew --prefix 2>&1 || true
+            echo "PATH=$PATH"
+            brew install e2fsprogs zstd 2>&1
+            echo "after install, sbin:"
+            ls "$(brew --prefix)/sbin" 2>&1 | head -30
+            echo "after install, keg:"
+            ls "$(brew --prefix)/opt/e2fsprogs/sbin" 2>&1 | head -30
+          } 2>&1 | tee /tmp/tools.log
+          echo "$(brew --prefix)/sbin" >> "$GITHUB_PATH"
+          echo "$(brew --prefix)/opt/e2fsprogs/sbin" >> "$GITHUB_PATH"
           # Homebrew's filesystem tools live in the keg's sbin, which is not on
           # PATH: brew install succeeds, mkfs.ext4 is on disk, and every shell
           # after it says "command not found". Putting the directory on PATH is
@@ -271,6 +285,12 @@ jobs:
             grep -E 'error:|fatal error|error :' /tmp/appledeck_ipa/build.log 2>/dev/null \
               | sed 's#/Users/runner/work/AppleDeck/AppleDeck/##' \
               | awk '!seen[$0]++' || true
+            echo '```'
+            echo
+            echo "## host tools"
+            echo
+            echo '```'
+            cat /tmp/tools.log 2>/dev/null || echo "the tools step did not run"
             echo '```'
             echo
             echo "## guest build"
