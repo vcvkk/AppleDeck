@@ -73,13 +73,26 @@ final class AgentBridgeServer {
         receive(connection, body: Data())
     }
 
+    /// Whether a peer is this device.
+    ///
+    /// IPv4 by its well-known address, and IPv6 by the address the kernel hands
+    /// a loopback socket - Network.framework has no named constant for ::1, and
+    /// hardcoding the bytes would be one more place to be wrong.
     static func isLoopback(_ endpoint: NWEndpoint) -> Bool {
         switch endpoint {
         case .hostPort(let host, _):
             switch host {
-            case .ipv4(let address): return address == .loopback
-            case .ipv6(let address): return address == .ipv6Loopback
-            default: return false
+            case .ipv4(let address):
+                return address == .loopback
+            case .ipv6(let address):
+                var addr = address
+                var buffer = [CChar](repeating: 0, count: Int(IN6ADDRSZ))
+                guard addr.copy(to: &buffer) == buffer.count else { return false }
+                let bytes = buffer.map { UInt8(bitPattern: $0) }
+                // ::1: fifteen zero bytes and a one.
+                return bytes.dropLast().allSatisfy { $0 == 0 } && bytes.last == 1
+            default:
+                return false
             }
         default:
             return false
