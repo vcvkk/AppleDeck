@@ -25,6 +25,16 @@ what is where.
 Nothing in this table has been run on a device. It has been compiled, and its
 parts have been tested where they can be tested without an iPhone.
 
+Verified on every push, since the letterbox fix:
+
+- `AppleDeckCore`: `swift test` on ubuntu, all tests green.
+- `Unsigned IPA`: builds on a macOS runner against the newest Xcode on the image,
+  passes the bundle validation in `scripts/package_ipa.sh`, and is attached to the
+  run as `AppleDeck-ipa`.
+- The Android APK still builds from this fork, unmodified except for the two
+  fork adjustments noted in the workflow (release assets come from upstream, and
+  signing is off unless `DROIDDECK_SIGNING` is set).
+
 ## Building
 
 The only supported build is the one in CI, which is also the only one that can
