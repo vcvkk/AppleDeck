@@ -84,6 +84,12 @@ jobs:
       # contents API and is then readable with a plain fetch at
       #   raw.githubusercontent.com/vcvkk/AppleDeck/ci/logs/core-test.log
       # which is what a contributor without an Apple account can use too.
+      # Published with git rather than the contents API.
+      #
+      # The API needs the branch to exist and then the file's blob sha, and it
+      # answers 422 when either is wrong - which is how four failures in a row
+      # published nothing while the step reported success. git already knows how
+      # to do all of it, and this sequence can be exercised without a token.
       - name: publish the failure
         if: failure() && steps.core-test.outcome == 'failure'
         env:
@@ -100,59 +106,24 @@ jobs:
             echo '```'
             tail -200 /tmp/core-test.log 2>/dev/null || echo "no log"
             echo '```'
-          } > /tmp/core-test.log
-          # PUT needs the current blob's sha to overwrite it; 404 means the file
-          # is not there yet, which is the first run.
-          # The branch has to exist before the contents API will put a file on it,
-          # and an overwriting PUT needs that file's blob sha. Both are fetched
-          # with a retry, because failing either one produces a 422 that looks
-          # like success when the step's status is not checked - which is how two
-          # failures in a row published nothing.
-          # Two arguments on purpose: the local file that was written and the name
-          # it is published under are different things, and using one for both
-          # reads a file that does not exist and publishes nothing - which is what
-          # happened for four runs in a row.
-          put_log() {
-            local file="$1"
-            local remote="$2"
-            local sha=""
-            local attempt=0
-            while [ $attempt -lt 3 ]; do
-              sha=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
-                "${github.api_url}/repos/$REPO/contents/ci-logs/$remote?ref=ci/logs" \
-                | python3 -c 'import json,sys; print(json.load(sys.stdin).get("sha",""))' 2>/dev/null || echo "")
-              code=$(curl -sS -o /tmp/put.json -w '%{http_code}' -X PUT \
-                -H "Authorization: Bearer $GH_TOKEN" -H "Content-Type: application/json" \
-                "${github.api_url}/repos/$REPO/contents/ci-logs/$remote" \
-                -d "$(LOG_FILE="$file" BLOB_SHA="$sha" python3 -c '
-          import base64, json, os
-          body = open(os.environ["LOG_FILE"], "rb").read()
-          print(json.dumps({
-              "message": "ci log",
-              "content": base64.b64encode(body).decode(),
-              "branch": "ci/logs",
-              **({"sha": os.environ["BLOB_SHA"]} if os.environ.get("BLOB_SHA") else {}),
-          }))')")
-              echo "PUT $remote from $file -> HTTP $code (attempt $((attempt + 1)))"
-              case "$code" in
-                200|201) return 0 ;;
-                404)
-                  # The branch does not exist yet: create it and try again.
-                  git fetch -q origin ci/logs:ci/logs 2>/dev/null || {
-                    git checkout -q --orphan ci/logs
-                    git commit -q --allow-empty -m "ci logs" || true
-                    git push -q origin HEAD:refs/heads/ci/logs || true
-                    git checkout -q main 2>/dev/null || true
-                  }
-                  git checkout -q ci/logs 2>/dev/null || true
-                  ;;
-              esac
-              attempt=$((attempt + 1))
-              sleep 2
-            done
-            return 1
-          }
-          put_log /tmp/core-test.log core-test.log || echo "could not publish core-test.log" >> "$GITHUB_STEP_SUMMARY"
+          } > /tmp/core-report.md
+          git config user.name "ci" || true
+          git config user.email "ci@users.noreply.github.com" || true
+          git fetch -q --force origin ci/logs:ci/logs 2>/dev/null || true
+          git checkout -q -B ci/logs FETCH_HEAD 2>/dev/null || git checkout -q --orphan ci/logs
+          # After the checkout, not before: checking out the branch restores its
+          # tree, so a file written beforehand is replaced by the old one and the
+          # commit has nothing to say. Found by running the sequence twice
+          # against a scratch repository.
+          mkdir -p ci-logs
+          install -m644 /tmp/core-report.md ci-logs/core-test.log || true
+          git add -f ci-logs/core-test.log
+          git commit -q -m "core test log for $GITHUB_SHA" || true
+          git push -q --force origin HEAD:refs/heads/ci/logs || \
+            echo "could not publish core-test.log" >> "$GITHUB_STEP_SUMMARY"
+          git checkout -q main 2>/dev/null || true
+          exit 0
+
       - name: No vendored key material
         run: |
           set -euo pipefail
@@ -272,10 +243,8 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           # Ends in `exit 0` on purpose: this step exists to explain the failure
-          # above it, and a hiccup while publishing (a flaky git push, a refused
-          # API call) must not turn a compile error into a red step that says
-          # nothing. The step before it is the one that failed, and the run log
-          # has the rest.
+          # above it, and a hiccup while publishing must not turn a compile
+          # error into a red step that says nothing.
           set -uo pipefail
           {
             echo "# Unsigned IPA: build failed"
@@ -300,7 +269,7 @@ jobs:
             echo "## guest build"
             echo
             echo '```'
-            tail -80 /tmp/guest.log 2>/dev/null || echo "no guest log: the guest build did not run"
+            tail -100 /tmp/guest.log 2>/dev/null || echo "no guest log: the guest build did not run"
             echo '```'
             echo
             echo "## bundle validation and packaging"
@@ -314,70 +283,20 @@ jobs:
             echo '```'
             tail -40 /tmp/ipa.log 2>/dev/null || true
             echo '```'
-          } > /tmp/ios-build.md
-
+          } > /tmp/ios-report.md
           git config user.name "ci" || true
           git config user.email "ci@users.noreply.github.com" || true
-          # Checked out rather than re-created: an orphan branch force-pushed every
-          # run wipes the log it was published to.
-          if git fetch -q origin ci/logs:ci/logs 2>/dev/null; then
-            git checkout -q ci/logs
-          else
-            git checkout -q --orphan ci/logs
-            git commit -q --allow-empty -m "ci logs" || true
-            git push -q origin HEAD:refs/heads/ci/logs || true
-            git checkout -q main 2>/dev/null || true
-          fi
-          # The branch has to exist before the contents API will put a file on it,
-          # and an overwriting PUT needs that file's blob sha. Both are fetched
-          # with a retry, because failing either one produces a 422 that looks
-          # like success when the step's status is not checked - which is how two
-          # failures in a row published nothing.
-          # Two arguments on purpose: the local file that was written and the name
-          # it is published under are different things, and using one for both
-          # reads a file that does not exist and publishes nothing - which is what
-          # happened for four runs in a row.
-          put_log() {
-            local file="$1"
-            local remote="$2"
-            local sha=""
-            local attempt=0
-            while [ $attempt -lt 3 ]; do
-              sha=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
-                "${github.api_url}/repos/$REPO/contents/ci-logs/$remote?ref=ci/logs" \
-                | python3 -c 'import json,sys; print(json.load(sys.stdin).get("sha",""))' 2>/dev/null || echo "")
-              code=$(curl -sS -o /tmp/put.json -w '%{http_code}' -X PUT \
-                -H "Authorization: Bearer $GH_TOKEN" -H "Content-Type: application/json" \
-                "${github.api_url}/repos/$REPO/contents/ci-logs/$remote" \
-                -d "$(LOG_FILE="$file" BLOB_SHA="$sha" python3 -c '
-          import base64, json, os
-          body = open(os.environ["LOG_FILE"], "rb").read()
-          print(json.dumps({
-              "message": "ci log",
-              "content": base64.b64encode(body).decode(),
-              "branch": "ci/logs",
-              **({"sha": os.environ["BLOB_SHA"]} if os.environ.get("BLOB_SHA") else {}),
-          }))')")
-              echo "PUT $remote from $file -> HTTP $code (attempt $((attempt + 1)))"
-              case "$code" in
-                200|201) return 0 ;;
-                404)
-                  # The branch does not exist yet: create it and try again.
-                  git fetch -q origin ci/logs:ci/logs 2>/dev/null || {
-                    git checkout -q --orphan ci/logs
-                    git commit -q --allow-empty -m "ci logs" || true
-                    git push -q origin HEAD:refs/heads/ci/logs || true
-                    git checkout -q main 2>/dev/null || true
-                  }
-                  git checkout -q ci/logs 2>/dev/null || true
-                  ;;
-              esac
-              attempt=$((attempt + 1))
-              sleep 2
-            done
-            return 1
-          }
-          put_log /tmp/ios-build.md ios-build.log || echo "could not publish ios-build.log" >> "$GITHUB_STEP_SUMMARY"
+          git fetch -q --force origin ci/logs:ci/logs 2>/dev/null || true
+          git checkout -q -B ci/logs FETCH_HEAD 2>/dev/null || git checkout -q --orphan ci/logs
+          # After the checkout, for the reason in the core job's publisher: a
+          # checkout restores the branch's tree and would put the old log back.
+          mkdir -p ci-logs
+          install -m644 /tmp/ios-report.md ci-logs/ios-build.log || true
+          git add -f ci-logs/ios-build.log
+          git commit -q -m "ios build log for $GITHUB_SHA" || true
+          git push -q --force origin HEAD:refs/heads/ci/logs || \
+            echo "could not publish ios-build.log" >> "$GITHUB_STEP_SUMMARY"
+          git checkout -q main 2>/dev/null || true
           exit 0
 
       - name: What this build is
