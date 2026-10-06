@@ -85,12 +85,11 @@ final class AgentBridgeServer {
             case .ipv4(let address):
                 return address == .loopback
             case .ipv6(let address):
-                var addr = address
-                var buffer = [CChar](repeating: 0, count: Int(IN6ADDRSZ))
-                guard addr.copy(to: &buffer) == buffer.count else { return false }
-                let bytes = buffer.map { UInt8(bitPattern: $0) }
-                // ::1: fifteen zero bytes and a one.
-                return bytes.dropLast().allSatisfy { $0 == 0 } && bytes.last == 1
+                // Built from its text form rather than its bytes: ::1 spelled out
+                // is checkable by a reader, and Network.framework has no named
+                // constant for it.
+                guard let loopback = IPv6Address("::1") else { return false }
+                return address == loopback
             default:
                 return false
             }
