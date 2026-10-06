@@ -443,9 +443,13 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+  # Signing is the maintainers' job: it needs the signing-main environment and
+  # the keys in it, which a fork has none of. The guard is a repository variable
+  # rather than a fork test, so that when this fork does get keys, setting one
+  # variable is the whole of the change.
   sign:
     needs: build
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.DROIDDECK_SIGNING == 'true'
     permissions:
       contents: read
       actions: read
@@ -463,7 +467,7 @@ jobs:
   # DISCORD_BUILDS_WEBHOOK is the channel's webhook URL.
   announce:
     needs: [build, sign]
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.DROIDDECK_SIGNING == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
