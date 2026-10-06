@@ -40,6 +40,10 @@ jobs:
     name: AppleDeckCore
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    # ci-logs: so a failure in a fork, where nobody has the Actions log UI, is
+    # still readable with a plain fetch. See the "publish the failure" step.
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       # The runner image already has the toolchain (Swift 6 on ubuntu-24.04).
@@ -52,7 +56,49 @@ jobs:
       # the agent bridge's verbs, the library reader. Catching those on a Linux
       # runner is minutes instead of the ten a macOS queue costs.
       - name: swift test
-        run: swift test --package-path ios/Packages/AppleDeckCore
+        id: core-test
+        run: swift test --package-path ios/Packages/AppleDeckCore 2>&1 | tee /tmp/core-test.log
+      # A failure has to be legible from outside Actions. Logs need a signed-in
+      # session to download, and this fork has no secrets to publish them any
+      # other way, so the tail is written to the ci/logs branch through the
+      # contents API and is then readable with a plain fetch at
+      #   raw.githubusercontent.com/vcvkk/AppleDeck/ci/logs/core-test.log
+      # which is what a contributor without an Apple account can use too.
+      - name: publish the failure
+        if: failure() && steps.core-test.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -uo pipefail
+          {
+            echo "# AppleDeckCore: swift test failed"
+            echo
+            echo "commit: $GITHUB_SHA"
+            echo "run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo
+            echo '```'
+            tail -200 /tmp/core-test.log 2>/dev/null || echo "no log"
+            echo '```'
+          } > /tmp/core-test.md
+          # PUT needs the current blob's sha to overwrite it; 404 means the file
+          # is not there yet, which is the first run.
+          sha=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
+            "${{ github.api_url }}/repos/$REPO/contents/ci-logs/core-test.log?ref=ci/logs" \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin).get("sha",""))' 2>/dev/null || echo "")
+          curl -sS -X PUT -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Content-Type: application/json" \
+            "${{ github.api_url }}/repos/$REPO/contents/ci-logs/core-test.log" \
+            -d "$(BLOB_SHA="$sha" python3 -c '
+          import base64, json, os
+          body = open("/tmp/core-test.md", "rb").read()
+          print(json.dumps({
+              "message": "core test log",
+              "content": base64.b64encode(body).decode(),
+              "branch": "ci/logs",
+              **({"sha": os.environ["BLOB_SHA"]} if os.environ.get("BLOB_SHA") else {}),
+          }))')" -o /tmp/put.json -w '%{http_code}\n' || true
+          head -c 300 /tmp/put.json; echo
       - name: No vendored key material
         run: |
           set -euo pipefail
@@ -67,6 +113,8 @@ jobs:
     needs: core
     runs-on: macos-15
     timeout-minutes: 60
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -91,6 +139,41 @@ jobs:
 
       - name: Build and package
         run: ./ios/scripts/package_ipa.sh "$PWD/AppleDeck.ipa"
+
+      - name: publish the failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -uo pipefail
+          {
+            echo "# Unsigned IPA: build failed"
+            echo
+            echo "commit: $GITHUB_SHA"
+            echo "run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo
+            echo '```'
+            grep -E 'error:|fatal error|error :' /tmp/appledeck_ipa/build.log 2>/dev/null \
+              | awk '!seen[$0]++' | head -100 || echo "no build log"
+            echo '```'
+          } > /tmp/ios-build.md
+          sha=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
+            "${{ github.api_url }}/repos/$REPO/contents/ci-logs/ios-build.log?ref=ci/logs" \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin).get("sha",""))' 2>/dev/null || echo "")
+          curl -sS -X PUT -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Content-Type: application/json" \
+            "${{ github.api_url }}/repos/$REPO/contents/ci-logs/ios-build.log" \
+            -d "$(BLOB_SHA="$sha" python3 -c '
+          import base64, json, os
+          body = open("/tmp/ios-build.md", "rb").read()
+          print(json.dumps({
+              "message": "ios build log",
+              "content": base64.b64encode(body).decode(),
+              "branch": "ci/logs",
+              **({"sha": os.environ["BLOB_SHA"]} if os.environ.get("BLOB_SHA") else {}),
+          }))')" -o /tmp/put-ios.json -w '%{http_code}\n' || true
+          head -c 300 /tmp/put-ios.json; echo
 
       - name: What this build is
         run: |
