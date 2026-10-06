@@ -291,7 +291,14 @@ jobs:
           # After the checkout, for the reason in the core job's publisher: a
           # checkout restores the branch's tree and would put the old log back.
           mkdir -p ci-logs
-          install -m644 /tmp/ios-report.md ci-logs/ios-build.log || true
+          # A separate file when the guest ran: a guest build takes hours, and a
+          # later push-run's log would overwrite the only report of it.
+          if [ -f /tmp/guest.log ]; then
+            install -m644 /tmp/ios-report.md ci-logs/guest-build.log || true
+            install -m644 /tmp/ios-report.md ci-logs/ios-build.log || true
+          else
+            install -m644 /tmp/ios-report.md ci-logs/ios-build.log || true
+          fi
           git add -f ci-logs/ios-build.log
           git commit -q -m "ios build log for $GITHUB_SHA" || true
           git push -q --force origin HEAD:refs/heads/ci/logs || \
