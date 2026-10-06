@@ -78,7 +78,7 @@ final class GameSavesTests: XCTestCase {
     }
 
     func testExportOfTheWholeProfileExportsThePrefix() throws {
-        files.directories = ["\(prefix)/users/steamuser/Documents"]
+        files.directories = ["\(prefix)/drive_c/users/steamuser/Documents"]
         files.sizes = ["\(prefix)/users/steamuser/Documents": 10]
         var game = GameSaves.makeGame(id: "1", name: "Game", protonPrefix: prefix)
         game = reader.locate(game: game)
@@ -90,12 +90,12 @@ final class GameSavesTests: XCTestCase {
     }
 
     func testExportOfOnlyTheGameFoldersExportsThose() throws {
-        files.directories = ["\(prefix)/users/steamuser/Documents"]
+        files.directories = ["\(prefix)/drive_c/users/steamuser/Documents"]
         files.sizes = ["\(prefix)/users/steamuser/Documents": 10]
         var game = GameSaves.makeGame(id: "1", name: "Game", protonPrefix: prefix)
         game = reader.locate(game: game)
         _ = try reader.export(game: game, layout: .directories, at: Date())
-        XCTAssertEqual(files.archived?.paths, ["\(prefix)/users/steamuser/Documents"])
+        XCTAssertEqual(files.archived?.paths, ["\(prefix)/drive_c/users/steamuser/Documents"])
     }
 
     func testExportWithoutAProtonPrefixExplainsItself() {
