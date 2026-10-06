@@ -21,6 +21,7 @@ links, and the mode bits - the runtime is full of symlinks between /usr/lib and
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -33,6 +34,22 @@ def parents(path: str) -> None:
     parent = os.path.dirname(path)
     if parent:
         os.makedirs(parent, exist_ok=True)
+
+
+def clear(path: str) -> None:
+    """Remove whatever is at `path` so the member can take its place.
+
+    The archive has both symlinks and, later, real files at some of the same
+    paths - usr/share/man is full of them - and writing a regular file through a
+    symlink that points at itself gives ELOOP. Removing what is there first is
+    what tar does, and it is what keeps one odd member from stopping the run.
+    """
+    if os.path.islink(path):
+        os.remove(path)
+    elif os.path.isdir(path):
+        shutil.rmtree(path, ignore_errors=True)
+    elif os.path.exists(path):
+        os.remove(path)
 
 
 def safe_join(dest: str, name: str) -> str | None:
@@ -74,18 +91,25 @@ def main() -> int:
                 if target is None:
                     continue
                 if member.isdir():
-                    os.makedirs(target, exist_ok=True)
-                    os.chmod(target, member.mode & 0o7777)
-                    count["dir"] += 1
+                    try:
+                        os.makedirs(target, exist_ok=True)
+                        os.chmod(target, member.mode & 0o7777)
+                        count["dir"] += 1
+                    except OSError as error:
+                        count["dropped"] += 1
+                        print(f"directory {target}: {error}", file=sys.stderr)
                     continue
                 # Every other kind needs its parent, whether or not the archive
                 # declared it. This is the fix.
                 parents(target)
                 if member.issym():
-                    if os.path.islink(target) or os.path.exists(target):
-                        os.remove(target)
-                    os.symlink(member.linkname, target)
-                    count["link"] += 1
+                    try:
+                        clear(target)
+                        os.symlink(member.linkname, target)
+                        count["link"] += 1
+                    except OSError as error:
+                        count["dropped"] += 1
+                        print(f"symlink {target}: {error}", file=sys.stderr)
                 elif member.islnk():
                     source = safe_join(dest, member.linkname)
                     if source:
@@ -94,17 +118,24 @@ def main() -> int:
                     source = tar.extractfile(member)
                     if source is None:
                         continue
-                    with open(target, "wb") as out:
-                        while True:
-                            chunk = source.read(1 << 20)
-                            if not chunk:
-                                break
-                            out.write(chunk)
-                    # The mode has to survive: the runtime's start scripts are
-                    # invoked directly, and an unpacked tree without its bits is a
-                    # rootfs that boots to nothing.
-                    os.chmod(target, member.mode & 0o7777)
-                    count["file"] += 1
+                    try:
+                        clear(target)
+                        with open(target, "wb") as out:
+                            while True:
+                                chunk = source.read(1 << 20)
+                                if not chunk:
+                                    break
+                                out.write(chunk)
+                        # The mode has to survive: the runtime's start scripts are
+                        # invoked directly, and an unpacked tree without its bits is
+                        # a rootfs that boots to nothing.
+                        os.chmod(target, member.mode & 0o7777)
+                        count["file"] += 1
+                    except OSError as error:
+                        count["dropped"] += 1
+                        print(f"file {target}: {error}", file=sys.stderr)
+                    finally:
+                        source.close()
     finally:
         if decompressor.stdout:
             decompressor.stdout.close()
