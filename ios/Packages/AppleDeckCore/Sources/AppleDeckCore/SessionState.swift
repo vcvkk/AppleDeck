@@ -340,20 +340,18 @@ public struct SessionArtifacts: Equatable, Sendable {
     /// UTC because upstream formats it with a US locale and no time zone, and
     /// two machines in two zones have to name a session the same way for the
     /// artifacts to be comparable.
-    public static func folderName(_ date: Date, calendar: Calendar = SessionArtifacts.utc) -> String {
+    public static func folderName(_ date: Date, calendar: Calendar? = nil) -> String {
+        // The calendar is optional rather than defaulted to a stored constant
+        // because a public function's default argument may not name an
+        // internal static, and duplicating the UTC definition would be worse.
+        var utc = calendar ?? Calendar(identifier: .gregorian)
+        utc.timeZone = TimeZone(secondsFromGMT: 0)
         let f = DateFormatter()
-        f.calendar = calendar
+        f.calendar = utc
         f.locale = Locale(identifier: "en_US_POSIX")
         f.timeZone = TimeZone(secondsFromGMT: 0)
         f.dateFormat = "yyyyMMdd-HHmmss"
         return "session-\(f.string(from: date))"
     }
 
-    /// Internal rather than private: it is the default argument of a public
-    /// function, and Swift will not let a private one be named there.
-    static let utc: Calendar = {
-        var c = Calendar(identifier: .gregorian)
-        c.timeZone = TimeZone(secondsFromGMT: 0)!
-        return c
-    }()
 }
