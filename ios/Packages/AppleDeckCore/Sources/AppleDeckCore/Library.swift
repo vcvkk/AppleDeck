@@ -38,6 +38,17 @@ public enum KeyValues {
         public func list(_ key: String) -> [Entry]? { self[key]?.listValue }
     }
 
+    /// Reading inside a list.
+    ///
+    /// `Value.list(_:)` hands back `[Entry]`, and reaching into that array for a
+    /// named entry was being written as `.first?.value.string(_:)` in three
+    /// places - which reads the *value* of the first entry and then looks for a
+    /// key inside a string. This is the operation that was meant, and it is what
+    /// every nested lookup in the reader needs.
+    public static func value(in entries: [Entry], _ key: String) -> Value? {
+        entries.first { $0.key == key }?.value
+    }
+
     public struct Entry: Equatable {
         public var key: String
         public var value: Value

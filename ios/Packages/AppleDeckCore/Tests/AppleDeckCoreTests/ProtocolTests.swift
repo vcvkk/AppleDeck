@@ -106,11 +106,14 @@ final class KeyValuesTests: XCTestCase {
         // The parsed structure is in the failure message on purpose: a parser bug
         // should say what it saw, not only what it did not find.
         let seen = "parsed: \(entries)"
-        XCTAssertEqual(root?.list("0")?.first?.value.string("path"),
+        XCTAssertEqual(root?.list("0").flatMap { KeyValues.value(in: $0, "path") }?.stringValue,
                        "/root/.local/share/Steam", seen)
-        XCTAssertEqual(root?.list("1")?.first?.value.string("path"),
+        XCTAssertEqual(root?.list("1").flatMap { KeyValues.value(in: $0, "path") }?.stringValue,
                        "/mnt/sd/SteamLibrary", seen)
-        XCTAssertEqual(root?.list("0")?.first?.value.list("apps")?.first?.value.stringValue,
+        XCTAssertEqual(root?.list("0")
+                        .flatMap { KeyValues.value(in: $0, "apps") }
+                        .flatMap { $0.list("10") }
+                        .flatMap { KeyValues.value(in: $0, "10") }?.stringValue,
                        "10", seen)
     }
 
@@ -144,10 +147,12 @@ final class KeyValuesTests: XCTestCase {
         }
         """
         let shortcut = try XCTUnwrap(KeyValues.parse(text))
-            .first?.value.list("0")?.first?.value
+            .first?.value.list("0")
         let seen = "shortcut: \(String(describing: shortcut))"
-        XCTAssertEqual(shortcut?.string("AppName"), "Quote \" inside", seen)
-        XCTAssertEqual(shortcut?.string("Exe"), "/usr/bin/games/x.sh", seen)
+        XCTAssertEqual(shortcut.flatMap { KeyValues.value(in: $0, "AppName") }?.stringValue,
+                       "Quote \" inside", seen)
+        XCTAssertEqual(shortcut.flatMap { KeyValues.value(in: $0, "Exe") }?.stringValue,
+                       "/usr/bin/games/x.sh", seen)
     }
 
     func testTruncatedFileParsesAsAbsent() {
@@ -166,8 +171,10 @@ final class KeyValuesTests: XCTestCase {
         let entries = try XCTUnwrap(KeyValues.parse(text))
         let root = entries.first?.value
         let seen = "parsed: \(entries)"
-        XCTAssertEqual(root?.list("0")?.first?.value.string("path"), "/a", seen)
-        XCTAssertEqual(root?.list("0")?.first?.value.string("label"), "", seen)
+        XCTAssertEqual(root?.list("0").flatMap { KeyValues.value(in: $0, "path") }?.stringValue,
+                       "/a", seen)
+        XCTAssertEqual(root?.list("0").flatMap { KeyValues.value(in: $0, "label") }?.stringValue,
+                       "", seen)
     }
 }
 
