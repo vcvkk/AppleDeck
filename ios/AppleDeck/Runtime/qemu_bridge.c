@@ -6,19 +6,19 @@
  * unpatched QEMU) need three different fixes and "QEMU is missing" does not
  * tell them apart.
  *
- * Input is not driven through QEMU's qemu_input_* API here. Those take a
- * QemuClock pointer that upstream QEMU has no public accessor for, and the
- * key event path takes a QAPI-generated struct whose layout is a private
- * header's business. ios/patches/0001-appledeck-input-clock.patch adds three
- * functions to QEMU that own all of that:
+ * Input and frames go through ios/patches/0001-appledeck-host-bridge.patch,
+ * which adds ui/appledeck-host.c to QEMU:
  *
- *   appledeck_input_clock()            the clock input was registered with
  *   appledeck_send_abs(axis, value)    virtio-tablet absolute coordinates
- *   appledeck_send_btn(button, down)   buttons and keys
- *   appledeck_send_key(keycode, down)
+ *   appledeck_send_btn(button, down)   virtio-input buttons
+ *   appledeck_send_key(keycode, down)  Linux evdev key codes
+ *   appledeck_set_frame_callback(fn)   where the scanout goes
+ *   appledeck_register_display()       attach the frame listener
  *
- * so this file stays free of QEMU internals and the patch stays small enough
- * to review.
+ * The first draft of that patch reached for the input subsystem's QemuClock,
+ * which QEMU 10 does not have: qemu_input_queue_abs() takes a QemuConsole. The
+ * patch is a fifth of the size it would have been, and this file knows five
+ * function names instead of QEMU's types.
  */
 #include "qemu_bridge.h"
 
@@ -34,26 +34,26 @@
 typedef int (*qemu_init_fn)(int argc, char **argv);
 typedef int (*qemu_main_loop_fn)(void);
 typedef void (*qemu_cleanup_fn)(void);
-typedef void *(*appledeck_clock_fn)(void);
 typedef void (*appledeck_send_abs_fn)(int axis, int value);
 typedef void (*appledeck_send_btn_fn)(int button, int down);
 typedef void (*appledeck_send_key_fn)(int keycode, int down);
-/* Added by the same patch: QEMU's display listener needs QEMU's own types to
-   register, so the callback is handed over from inside QEMU instead. */
+/* QEMU's display listener is built from types that only exist inside QEMU, so
+   the callbacks are handed over from there rather than being set here. */
 typedef void (*appledeck_set_frame_callback_fn)(AppleDeckFrameFn);
 typedef void (*appledeck_set_event_callback_fn)(AppleDeckEventFn);
+typedef void (*appledeck_register_display_fn)(void);
 
 static struct {
     void *handle;
     qemu_init_fn init;
     qemu_main_loop_fn main_loop;
     qemu_cleanup_fn cleanup;
-    appledeck_clock_fn clock;
     appledeck_send_abs_fn send_abs;
     appledeck_send_btn_fn send_btn;
     appledeck_send_key_fn send_key;
     appledeck_set_frame_callback_fn set_frame_callback;
     appledeck_set_event_callback_fn set_event_callback;
+    appledeck_register_display_fn set_register_display;
     bool running;
     pthread_t loop;
     bool have_loop;
@@ -81,7 +81,7 @@ static void *symbol(const char *name, bool required) {
     void *address = dlsym(qemu.handle, name);
     if (address == NULL && required) {
         note("libqemu is in the bundle but does not export %s; rebuild the guest with "
-             "ios/patches/0001-appledeck-input-clock.patch applied "
+             "ios/patches/0001-appledeck-host-bridge.patch applied "
              "(an unpatched or older QEMU dylib was staged)", name);
     }
     return address;
@@ -97,12 +97,12 @@ static void load(void) {
     qemu.init = (qemu_init_fn)symbol("qemu_init", true);
     qemu.main_loop = (qemu_main_loop_fn)symbol("qemu_main_loop", true);
     qemu.cleanup = (qemu_cleanup_fn)symbol("qemu_cleanup", false);
-    qemu.clock = (appledeck_clock_fn)symbol("appledeck_input_clock", true);
     qemu.send_abs = (appledeck_send_abs_fn)symbol("appledeck_send_abs", true);
     qemu.send_btn = (appledeck_send_btn_fn)symbol("appledeck_send_btn", true);
     qemu.send_key = (appledeck_send_key_fn)symbol("appledeck_send_key", true);
     qemu.set_frame_callback = (appledeck_set_frame_callback_fn)symbol("appledeck_set_frame_callback", true);
-    qemu.set_event_callback = (appledeck_set_event_callback_fn)symbol("appledeck_set_event_callback", false);
+    qemu.set_event_callback = (appledeck_set_event_callback_fn)symbol("appledeck_set_event_callback", true);
+    qemu.set_register_display = (appledeck_register_display_fn)symbol("appledeck_register_display", true);
     if (qemu.init == NULL || qemu.main_loop == NULL) {
         return;
     }
@@ -131,6 +131,21 @@ void AppleDeckQemuSetCallbacks(AppleDeckFrameFn frame, AppleDeckEventFn event) {
     }
 }
 
+/* The frame listener needs a console, which does not exist until the machine is
+   built, so it is attached once the machine reports itself running rather than
+   from SetCallbacks. Idempotent: the patch refuses a second registration, so
+   being called again is free. */
+static void *register_frames(void *unused) {
+    void *(*registerDisplay)(void);
+    (void)unused;
+    pthread_once(&once, load);
+    registerDisplay = (void *(*)(void))qemu.set_register_display;
+    if (registerDisplay != NULL && qemu.running) {
+        registerDisplay();
+    }
+    return NULL;
+}
+
 /* QEMU's display listener calls this from its own thread for every scanout
    update. It is a C trampoline on purpose: a Swift closure cannot be stored and
    called later across the language boundary without a C function to land on. */
@@ -151,7 +166,7 @@ bool AppleDeckQemuAvailable(char *reason, size_t reason_len) {
         snprintf(reason, reason_len, "%s", unavailable);
     }
     return qemu.init != NULL && qemu.main_loop != NULL && qemu.send_abs != NULL
-        && qemu.set_frame_callback != NULL;
+        && qemu.set_frame_callback != NULL && qemu.set_event_callback != NULL;
 }
 
 /* The QEMU argv for the guest, kept here rather than in Swift because it is the
@@ -320,6 +335,8 @@ void AppleDeckQemuSendEvent(int type, int code, int a, int b, int c) {
         pthread_mutex_unlock(&qemu.lock);
         return;
     }
+    /* Nothing else to check: the patch owns the console, the clock and the event
+       objects, which is the whole reason it exists. */
     /* axis codes are QEMU's: 0 x, 1 y. Buttons are virtio's: 0 left, 1 right,
        2 middle, 3 side, 4 extra. Keycodes are Linux evdev codes, which is what
        the guest's input stack expects from a virtio-keyboard. */

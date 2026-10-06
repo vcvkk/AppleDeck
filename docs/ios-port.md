@@ -127,16 +127,20 @@ AltStore, SideStore or TrollStore.
 
 Each item names what it unblocks. Nothing here is speculative scaffolding.
 
-1. **`ios/patches/0001-appledeck-input-clock.patch`.** The single blocking item.
-   QEMU has no public way to reach the `QemuClock` its input subsystem was
-   registered with, and the key event path takes a QAPI-generated struct from a
-   private header. The patch adds five functions to QEMU (`appledeck_input_clock`,
-   `appledeck_send_abs/btn/key`, `appledeck_set_frame_callback`,
-   `appledeck_set_event_callback`) and registers a `DisplayChangeListener` that
-   calls the frame callback with the scanout's pixman image. Until it exists
-   there is no emulator the app can drive; `ios/scripts/build_guest.sh` stops and
-   says exactly this rather than building something inert.
-2. **The bootable guest image.** DroidDeck's rootfs is an asset directory the
+1. ~~**The QEMU patch.**~~ **Done**: `ios/patches/0001-appledeck-host-bridge.patch`
+   adds `ui/appledeck-host.c` to QEMU (v10.2.4 of utmapp's fork). It exposes five
+   functions and no QEMU types in any signature - `appledeck_send_abs/btn/key`,
+   `appledeck_set_frame_callback`, `appledeck_register_display` - and registers a
+   `DisplayChangeListener` that hands the app the scanout's pixman image.
+
+   It is a fifth of the size it was going to be, and that is the interesting part.
+   The first draft went after the input subsystem's `QemuClock`, on the
+   assumption that `qemu_input_queue_abs()` takes one - which was true of older
+   QEMU and is false of QEMU 10, where it takes a `QemuConsole`. Reading the
+   source before writing the patch turned three awkward symbols into five plain
+   ones, and it is why the app's bridge knows function names rather than types:
+   the next QEMU can move the internals again without touching AppleDeck.
+2. **The bootable guest image** (next). DroidDeck's rootfs is an asset directory the
    Android app unpacks; the guest needs a disk image, a kernel and an initramfs.
    The rootfs contents are already right (`tools/linuxfs`), so this is packaging
    plus a `guest/rootfs.img` build step, and the image itself stays upstream.

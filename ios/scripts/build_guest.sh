@@ -20,10 +20,13 @@
 #
 # What is AppleDeck's own:
 #
-#   ios/patches/0001-appledeck-input-clock.patch
-#       Adds appledeck_input_clock(), appledeck_send_abs/btn/key() and
-#       appledeck_set_frame_callback() to QEMU, so the app bridge can drive
-#       input and receive frames without knowing QEMU's private types.
+#   ios/patches/0001-appledeck-host-bridge.patch
+#       Adds ui/appledeck-host.c to QEMU: appledeck_send_abs/btn/key() for input,
+#       appledeck_set_frame_callback() for frames, and a DisplayChangeListener
+#       that hands the app the scanout. The app's bridge knows five function
+#       names and no QEMU types at all, which is what makes it survive QEMU
+#       updates - the first version of this patch was going to reach into the
+#       input subsystem's clock, and QEMU 10 does not have one to reach for.
 #
 # If the patch is not there yet this script stops and says so, rather than
 # building an emulator the app cannot talk to.
@@ -31,7 +34,7 @@ set -euo pipefail
 
 APPLEDECK_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BUILD="$APPLEDECK_ROOT/build"
-QEMU_TAG="${QEMU_TAG:-10.0.12-utm}"
+QEMU_TAG="${QEMU_TAG:-v10.2.4}"
 HUSK_COMMIT="${HUSK_COMMIT:-main}"
 HUSK_REPO="https://github.com/Leviidev/Husk"
 
@@ -49,28 +52,12 @@ if [ ! -d "$HUSK_SRC" ]; then
 fi
 
 step "AppleDeck's QEMU patch"
-PATCH="$APPLEDECK_ROOT/patches/0001-appledeck-input-clock.patch"
+# ios/patches/0001-appledeck-host-bridge.patch adds ui/appledeck-host.c: input in
+# (abs, buttons, evdev key codes), frames out (one DisplayChangeListener handing
+# over the scanout's pixman image), and no QEMU types in any of the signatures.
+PATCH="$APPLEDECK_ROOT/patches/0001-appledeck-host-bridge.patch"
 if [ ! -f "$PATCH" ]; then
-    cat >&2 <<EOF
-
-No $PATCH.
-
-That patch is the next piece of work (see docs/ios-port.md, "Guest runtime:
-what is left"). It has to add, to QEMU:
-
-  void *appledeck_input_clock(void);
-  void  appledeck_send_abs(int axis, int value);
-  void  appledeck_send_btn(int button, int down);
-  void  appledeck_send_key(int keycode, int down);
-  void  appledeck_set_frame_callback(AppleDeckFrameFn);
-  void  appledeck_set_event_callback(AppleDeckEventFn);
-
-and register a DisplayChangeListener that calls the frame callback with the
-scanout's pixman image. Until it exists there is no way to build an emulator the
-app can drive, and building one anyway would only produce an IPA whose session
-does nothing.
-
-EOF
+    echo "no $PATCH - see docs/ios-port.md" >&2
     exit 1
 fi
 

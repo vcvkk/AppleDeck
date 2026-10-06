@@ -15,9 +15,9 @@ what is where.
 | `AppleDeckCore` - state machine, preferences, guest command line, agent verbs, library, file rules | done, tested on the Linux runner |
 | SwiftUI launcher: home, library, store, files, components, driver, settings | done |
 | Session screen: Metal presenter, HUD, on-screen controls, game controllers | done |
-| QEMU-TCG guest bridge (`qemu_bridge.c`) | done except for the QEMU patch it needs |
-| The QEMU patch that exposes input and frames | **not written** - blocking |
-| Bootable guest image | not built |
+| QEMU-TCG guest bridge (`qemu_bridge.c`) | done, against a written QEMU patch |
+| The QEMU patch that exposes input and frames (`ios/patches/0001-appledeck-host-bridge.patch`) | done |
+| Bootable guest image | **not built** - the next thing |
 | Audio relay to CoreAudio | not written |
 | Agent bridge HTTP server | not written (the protocol is done and tested) |
 | Unsigned IPA from Actions | builds on every push |
