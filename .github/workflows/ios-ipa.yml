@@ -83,6 +83,15 @@ jobs:
           } > /tmp/core-test.md
           # PUT needs the current blob's sha to overwrite it; 404 means the file
           # is not there yet, which is the first run.
+          # The contents API cannot create a file on a ref that does not exist
+          # yet, so the branch is created first. An empty orphan commit is the
+          # cheapest way to do that, and it never touches main.
+          git config user.name "ci"
+          git config user.email "ci@users.noreply.github.com"
+          git checkout -q --orphan ci/logs
+          git commit -q --allow-empty -m "ci logs"
+          git push -q --force origin HEAD:refs/heads/ci/logs
+          git checkout -q main
           sha=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
             "${{ github.api_url }}/repos/$REPO/contents/ci-logs/core-test.log?ref=ci/logs" \
             | python3 -c 'import json,sys; print(json.load(sys.stdin).get("sha",""))' 2>/dev/null || echo "")
@@ -158,6 +167,12 @@ jobs:
               | awk '!seen[$0]++' | head -100 || echo "no build log"
             echo '```'
           } > /tmp/ios-build.md
+          git config user.name "ci"
+          git config user.email "ci@users.noreply.github.com"
+          git checkout -q --orphan ci/logs
+          git commit -q --allow-empty -m "ci logs"
+          git push -q --force origin HEAD:refs/heads/ci/logs
+          git checkout -q main
           sha=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
             "${{ github.api_url }}/repos/$REPO/contents/ci-logs/ios-build.log?ref=ci/logs" \
             | python3 -c 'import json,sys; print(json.load(sys.stdin).get("sha",""))' 2>/dev/null || echo "")
