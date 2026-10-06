@@ -1,0 +1,275 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-2.0-or-later
+"""appledeckctl: drive an AppleDeck session from a Mac.
+
+The iOS counterpart of DroidDeck's ``tools/droiddeckctl``, and deliberately the
+same surface: the same verbs, the same flags, the same JSON and the same exit
+codes, because the point of the agent bridge is that a test harness does not
+have to know which platform it is driving.
+
+DroidDeck's reaches its bridge with ``adb shell content call``; AppleDeck's is a
+loopback HTTP endpoint, so this talks HTTP. Everything above that - what
+``start steam --ui desktop`` means, what ``state`` prints, when to exit 4 -
+is DroidDeck's.
+
+    appledeckctl state --json
+    appledeckctl start steam --wait
+    appledeckctl start desktop
+    appledeckctl run /usr/bin/foo -- arg1 arg2
+    appledeckctl stop
+    appledeckctl resume
+    appledeckctl logs latest ./session-artifacts
+
+Exit codes, upstream's:
+
+    0  success
+    2  invalid or rejected command
+    3  bridge or transport error (adb's device errors have no iOS analogue, so
+       they land here: the phone is the only device, and not talking to it is
+       the failure)
+    4  session failure
+    5  timeout
+    6  artifact or file error
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import shutil
+import subprocess
+import sys
+import time
+import urllib.error
+import urllib.request
+from pathlib import Path
+
+DEFAULT_ENDPOINT = os.environ.get("APOLEDECK_ENDPOINT", "http://127.0.0.1:8765")
+
+EXIT_OK = 0
+EXIT_USAGE = 2
+EXIT_TRANSPORT = 3
+EXIT_SESSION = 4
+EXIT_TIMEOUT = 5
+EXIT_ARTIFACT = 6
+
+# The phases `droiddeckctl wait ready` resolves on.
+READY_PHASES = {"READY", "FAILED"}
+
+
+class Failure(Exception):
+    def __init__(self, message: str, code: int) -> None:
+        super().__init__(message)
+        self.code = code
+
+
+def call(endpoint: str, method: str, payload: dict | None = None, timeout: float = 10.0) -> dict:
+    """One request to the bridge. Anything that is not a 2xx with JSON on it is
+    a transport failure, because there is nothing else it could be: the bridge
+    either answered or the app is not running."""
+    url = f"{endpoint.rstrip('/')}/{method}"
+    data = None
+    headers = {"Accept": "application/json"}
+    if payload is not None:
+        data = json.dumps(payload).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+    request = urllib.request.Request(url, data=data, headers=headers, method="POST")
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            body = response.read().decode("utf-8")
+    except urllib.error.HTTPError as error:
+        raise Failure(f"bridge answered HTTP {error.code}: {error.reason}", EXIT_SESSION)
+    except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as error:
+        raise Failure(f"no answer from {url}: {error}", EXIT_TRANSPORT)
+    try:
+        return json.loads(body)
+    except json.JSONDecodeError as error:
+        raise Failure(f"bridge answered something that is not JSON: {error}", EXIT_TRANSPORT)
+
+
+def state(endpoint: str) -> dict:
+    response = call(endpoint, "state")
+    if not response.get("ok", False):
+        raise Failure(str(response.get("error", "state refused")), EXIT_USAGE)
+    return response
+
+
+def cmd_state(args: argparse.Namespace) -> int:
+    body = state(args.endpoint)
+    session = body.get("session", {})
+    if args.json:
+        print(json.dumps(body, indent=2, sort_keys=True))
+    else:
+        print(f"phase      {session.get('phase')}")
+        print(f"mode       {session.get('mode')}")
+        print(f"program    {session.get('program') or '-'}")
+        print(f"suspended  {session.get('suspended')}")
+        print(f"firstFrame {session.get('firstFrame')}")
+        print(f"output     {session.get('output')}")
+        print(f"guestPid   {session.get('guestPid') or '-'}")
+        print(f"logs       {session.get('logDir') or '-'}")
+        failure = session.get("failure")
+        if failure:
+            print(f"failure    {failure.get('code')}: {failure.get('message') or ''}")
+    return EXIT_OK
+
+
+def cmd_start(args: argparse.Namespace) -> int:
+    payload: dict = {"mode": args.target}
+    if args.ui:
+        payload["ui"] = args.ui
+    if args.url:
+        payload["url"] = args.url
+    if args.wait:
+        payload["wait"] = True
+    response = call(args.endpoint, "start", payload)
+    if not response.get("ok", False):
+        raise Failure(str(response.get("error", "start refused")), EXIT_SESSION)
+    session = response.get("session", {})
+    print(session.get("phase", "STARTED"))
+    if args.wait:
+        wait_ready(args.endpoint, args.timeout)
+    return EXIT_OK
+
+
+def cmd_run(args: argparse.Namespace) -> int:
+    payload = {"mode": "run", "program": args.program, "arguments": args.args or []}
+    response = call(args.endpoint, "start", payload)
+    if not response.get("ok", False):
+        raise Failure(str(response.get("error", "run refused")), EXIT_SESSION)
+    print(response.get("session", {}).get("phase", "STARTED"))
+    return EXIT_OK
+
+
+def cmd_stop(args: argparse.Namespace) -> int:
+    response = call(args.endpoint, "stop")
+    if not response.get("ok", False):
+        raise Failure(str(response.get("error", "stop refused")), EXIT_SESSION)
+    print("STOPPING")
+    return EXIT_OK
+
+
+def cmd_resume(args: argparse.Namespace) -> int:
+    response = call(args.endpoint, "resume")
+    if not response.get("ok", False):
+        raise Failure(str(response.get("error", "resume refused")), EXIT_SESSION)
+    print("RESUMED")
+    return EXIT_OK
+
+
+def wait_ready(endpoint: str, timeout: float) -> None:
+    """Block until the session is READY, or until it fails or the clock runs out.
+
+    Phases are polled rather than waited on because the bridge has no event
+    stream; the interval is short enough that a harness does not notice and long
+    enough that a phone running TCG is not asked to work for nothing.
+    """
+    deadline = time.monotonic() + timeout
+    last = None
+    while True:
+        session = state(endpoint).get("session", {})
+        phase = session.get("phase")
+        if phase != last:
+            print(f"  {phase}", file=sys.stderr)
+            last = phase
+        if phase == "READY":
+            return
+        if phase == "FAILED":
+            failure = session.get("failure") or {}
+            raise Failure(
+                f"session failed: {failure.get('code')} {failure.get('message') or ''}".strip(),
+                EXIT_SESSION,
+            )
+        if time.monotonic() > deadline:
+            raise Failure(f"still {phase} after {timeout:g}s", EXIT_TIMEOUT)
+        time.sleep(1.0)
+
+
+def cmd_logs(args: argparse.Namespace) -> int:
+    """Copy a session's artifacts out of the phone.
+
+    DroidDeck's `logs` uses ``adb pull``. iOS gives an app no shell and no way to
+    be pulled from, so the artifacts are copied over the same bridge: the app
+    exposes its session folder over Documents (UIFileSharingEnabled is set, so
+    the Files app can reach it too) and this reads the listing through the
+    bridge's ``artifacts`` method.
+    """
+    listing = call(args.endpoint, "artifacts")
+    folders = listing.get("folders") or []
+    if not folders:
+        raise Failure("no session folders on the phone", EXIT_ARTIFACT)
+    chosen = sorted(folders)[-1] if args.which == "latest" else args.which
+    if chosen not in folders:
+        raise Failure(f"no session folder named {chosen}", EXIT_ARTIFACT)
+
+    destination = Path(args.destination)
+    destination.mkdir(parents=True, exist_ok=True)
+    files = listing.get("files", {}).get(chosen) or []
+    if not files:
+        raise Failure(f"{chosen} holds no files", EXIT_ARTIFACT)
+    for name in files:
+        response = call(args.endpoint, "artifact", {"folder": chosen, "name": name}, timeout=60.0)
+        payload = response.get("base64")
+        if payload is None:
+            raise Failure(f"could not read {name}", EXIT_ARTIFACT)
+        import base64
+
+        (destination / name).write_bytes(base64.b64decode(payload))
+    print(f"{len(files)} file(s) into {destination}")
+    return EXIT_OK
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="appledeckctl", description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--endpoint", default=DEFAULT_ENDPOINT,
+                        help=f"bridge address (default {DEFAULT_ENDPOINT})")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    state_parser = subparsers.add_parser("state", help="the session's state")
+    state_parser.add_argument("--json", action="store_true", help="the full schema-1 payload")
+    state_parser.set_defaults(handler=cmd_state)
+
+    start_parser = subparsers.add_parser("start", help="start Steam or the desktop")
+    start_parser.add_argument("target", choices=["steam", "desktop"])
+    start_parser.add_argument("--ui", choices=["bigpicture", "desktop"],
+                              help="Steam's own UI instead of Big Picture")
+    start_parser.add_argument("--url", help="a steam:// URL for the client")
+    start_parser.add_argument("--wait", action="store_true", help="wait for READY")
+    start_parser.add_argument("--timeout", type=float, default=90.0)
+    start_parser.set_defaults(handler=cmd_start)
+
+    run_parser = subparsers.add_parser("run", help="run a program in the runtime")
+    run_parser.add_argument("program")
+    run_parser.add_argument("args", nargs="*")
+    run_parser.set_defaults(handler=cmd_run)
+
+    stop_parser = subparsers.add_parser("stop")
+    stop_parser.set_defaults(handler=cmd_stop)
+
+    resume_parser = subparsers.add_parser("resume")
+    resume_parser.set_defaults(handler=cmd_resume)
+
+    logs_parser = subparsers.add_parser("logs", help="copy a session's artifacts")
+    logs_parser.add_argument("which", help="'latest' or a folder name")
+    logs_parser.add_argument("destination")
+    logs_parser.set_defaults(handler=cmd_logs)
+
+    return parser
+
+
+def main(argv: list[str]) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    try:
+        return int(args.handler(args))
+    except Failure as failure:
+        print(f"appledeckctl: {failure}", file=sys.stderr)
+        return failure.code
+    except KeyboardInterrupt:
+        return 130
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
