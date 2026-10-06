@@ -1,0 +1,79 @@
+# Unsigned IPA: build failed
+
+commit: 8c1ef9336a026927b696e5f92736ec431fb66df5
+run: https://github.com/vcvkk/AppleDeck/actions/runs/37496358932
+
+## compiler
+
+```
+ios/AppleDeck/Runtime/AgentBridgeServer.swift:157:22: error: invalid redeclaration of 'statePayload()'
+ios/AppleDeck/Runtime/AgentBridgeServer.swift:180:22: error: invalid redeclaration of 'stop()'
+ios/AppleDeck/Runtime/AgentBridgeServer.swift:37:44: error: value of optional type 'NWEndpoint.Port?' must be unwrapped to a value of type 'NWEndpoint.Port'
+ios/AppleDeck/Runtime/AgentBridgeServer.swift:38:82: error: extra argument 'port' in call
+ios/AppleDeck/Runtime/AgentBridgeServer.swift:38:60: error: extraneous argument label 'rawValue:' in call
+ios/AppleDeck/Runtime/AgentBridgeServer.swift:42:53: error: cannot infer type of closure parameter 'state' without a type annotation
+ios/AppleDeck/Runtime/AgentBridgeServer.swift:52:32: error: cannot infer contextual base in reference to member 'main'
+ios/AppleDeck/Runtime/AgentBridgeServer.swift:169:17: error: cannot call value of non-function type 'AgentRoute.SessionStart'
+ios/AppleDeck/Runtime/AgentBridgeServer.swift:169:24: error: cannot infer contextual base in reference to member 'steam'
+ios/AppleDeck/Runtime/AgentBridgeServer.swift:181:13: error: thrown expression type 'any Error' cannot be converted to error type 'Never'
+```
+
+## guest build
+
+```
+no guest log: the guest build did not run
+```
+
+## bundle validation and packaging
+
+```
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:157:22: error: invalid redeclaration of 'statePayload()'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:180:22: error: invalid redeclaration of 'stop()'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:37:44: error: value of optional type 'NWEndpoint.Port?' must be unwrapped to a value of type 'NWEndpoint.Port'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:38:82: error: extra argument 'port' in call
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:38:60: error: extraneous argument label 'rawValue:' in call
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:42:53: error: cannot infer type of closure parameter 'state' without a type annotation
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:52:32: error: cannot infer contextual base in reference to member 'main'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:169:17: error: cannot call value of non-function type 'AgentRoute.SessionStart'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:169:24: error: cannot infer contextual base in reference to member 'steam'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:181:13: error: thrown expression type 'any Error' cannot be converted to error type 'Never'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:157:22: error: invalid redeclaration of 'statePayload()'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:180:22: error: invalid redeclaration of 'stop()'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:37:44: error: value of optional type 'NWEndpoint.Port?' must be unwrapped to a value of type 'NWEndpoint.Port'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:38:82: error: extra argument 'port' in call
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:38:60: error: extraneous argument label 'rawValue:' in call
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:42:53: error: cannot infer type of closure parameter 'state' without a type annotation
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:52:32: error: cannot infer contextual base in reference to member 'main'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:169:17: error: cannot call value of non-function type 'AgentRoute.SessionStart'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:169:24: error: cannot infer contextual base in reference to member 'steam'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:181:13: error: thrown expression type 'any Error' cannot be converted to error type 'Never'
+```
+
+## last 40 lines of the packaging step
+
+```
+==> regenerating the project from project.yml
+==> building
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:157:22: error: invalid redeclaration of 'statePayload()'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:180:22: error: invalid redeclaration of 'stop()'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:37:44: error: value of optional type 'NWEndpoint.Port?' must be unwrapped to a value of type 'NWEndpoint.Port'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:38:82: error: extra argument 'port' in call
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:38:60: error: extraneous argument label 'rawValue:' in call
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:42:53: error: cannot infer type of closure parameter 'state' without a type annotation
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:52:32: error: cannot infer contextual base in reference to member 'main'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:169:17: error: cannot call value of non-function type 'AgentRoute.SessionStart'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:169:24: error: cannot infer contextual base in reference to member 'steam'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:181:13: error: thrown expression type 'any Error' cannot be converted to error type 'Never'
+** BUILD FAILED **
+build failed; refusing to package a stale app
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:157:22: error: invalid redeclaration of 'statePayload()'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:180:22: error: invalid redeclaration of 'stop()'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:37:44: error: value of optional type 'NWEndpoint.Port?' must be unwrapped to a value of type 'NWEndpoint.Port'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:38:82: error: extra argument 'port' in call
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:38:60: error: extraneous argument label 'rawValue:' in call
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:42:53: error: cannot infer type of closure parameter 'state' without a type annotation
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:52:32: error: cannot infer contextual base in reference to member 'main'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:169:17: error: cannot call value of non-function type 'AgentRoute.SessionStart'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:169:24: error: cannot infer contextual base in reference to member 'steam'
+/Users/runner/work/AppleDeck/AppleDeck/ios/AppleDeck/Runtime/AgentBridgeServer.swift:181:13: error: thrown expression type 'any Error' cannot be converted to error type 'Never'
+```
