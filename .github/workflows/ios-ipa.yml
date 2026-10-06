@@ -5,11 +5,12 @@ run-name: ${{ github.event_name == 'pull_request' && format('ipa for pr {0} at {
 # that changes nothing under ios/ does not pay for a macOS runner.
 on:
   schedule:
-    # The guest build is hours of QEMU and its dependencies on the first run and
-    # minutes after that, so it is its own nightly rather than something every
-    # push waits behind. The last IPA of a normal push deliberately ships without
-    # a guest: the app installs, runs, and says why a session cannot start.
-    - cron: "23 4 * * *"
+    # Hourly while the guest build is being brought up, because it is the only way
+    # to find out whether it works: it takes hours on the first run, minutes after
+    # that, and nothing else in CI exercises it. Relax this back to a nightly once
+    # a run has succeeded - it is here because a guest that is never built is
+    # indistinguishable from a guest that does not work.
+    - cron: "7 * * * *"
   push:
     branches: [ main ]
     paths:
