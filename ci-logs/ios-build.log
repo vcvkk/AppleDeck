@@ -1,7 +1,7 @@
 # Unsigned IPA: build failed
 
-commit: e8c2828b2740129b04ceec8d75b14574bd7878a3
-run: https://github.com/vcvkk/AppleDeck/actions/runs/37499090202
+commit: 1c936586f0d71b1d98cbf3ecb56de45a29d1ece9
+run: https://github.com/vcvkk/AppleDeck/actions/runs/37500300934
 
 ## compiler
 
@@ -11,33 +11,18 @@ run: https://github.com/vcvkk/AppleDeck/actions/runs/37499090202
 ## guest build
 
 ```
-no guest log: the guest build did not run
+missing mkfs.ext4
+  Debian/Ubuntu: apt-get install -y e2fsprogs
+  macOS:         brew install e2fsprogs
+  on this host:  Darwin 24.6.0 arm64 / 15.7.9
 ```
 
 ## bundle validation and packaging
 
 ```
-	2   Foundation                          0x0000000191fa3cb4 -[NSConcreteFileHandle readDataUpToLength:error:] + 0
 ```
 
 ## last 40 lines of the packaging step
 
 ```
-==> regenerating the project from project.yml
-==> building
-** BUILD SUCCEEDED **
-==> no guest runtime in /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest; the app will say why at launch
-*** Terminating app due to uncaught exception 'NSFileHandleOperationException', reason: '*** -[_NSStdIOFileHandle writeData:]: Broken pipe'
-*** First throw call stack:
-(
-	0   CoreFoundation                      0x000000019022b8a0 __exceptionPreprocess + 176
-	1   libobjc.A.dylib                     0x000000018fceeb90 objc_exception_throw + 88
-	2   Foundation                          0x0000000191fa3cb4 -[NSConcreteFileHandle readDataUpToLength:error:] + 0
-	3   Foundation                          0x000000019177b3f8 -[NSConcreteFileHandle writeData:] + 300
-	4   xcodebuild                          0x0000000102a45aac -[XcodebuildPreIDEHandler handleVersionWithArguments:] + 612
-	5   xcodebuild                          0x0000000102a45560 -[XcodebuildPreIDEHandler runWithArguments:] + 116
-	6   xcodebuild                          0x0000000102a45120 main + 512
-	7   dyld                                0x000000018fd2eb98 start + 6076
-)
-libc++abi: terminating due to uncaught exception of type NSException
 ```
