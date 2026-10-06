@@ -170,7 +170,10 @@ jobs:
         run: ./ios/scripts/build_guest.sh
 
       - name: Build and package
-        run: ./ios/scripts/package_ipa.sh "$PWD/AppleDeck.ipa"
+        # teed, because the script's own output is where a bundle validation
+        # failure explains itself; without this the publish step below would
+        # find an empty log and say nothing at all.
+        run: ./ios/scripts/package_ipa.sh "$PWD/AppleDeck.ipa" 2>&1 | tee /tmp/ipa.log
 
       - name: publish the failure
         if: failure()
@@ -189,9 +192,13 @@ jobs:
             # Every error the compiler produced, deduplicated and not truncated:
             # the whole point of -error-limit=0 is that one build answers all of
             # them, and cutting the list short would undo that.
-            grep -E 'error:|fatal error|error :' /tmp/appledeck_ipa/build.log 2>/dev/null \
+            { grep -E 'error:|fatal error|error :' /tmp/appledeck_ipa/build.log 2>/dev/null
+              grep -E 'MISSING|ERROR|missing|no build log' /tmp/ipa.log 2>/dev/null; } \
               | sed 's#/Users/runner/work/AppleDeck/AppleDeck/##' \
-              | awk '!seen[$0]++' || echo "no build log"
+              | awk '!seen[$0]++'
+            if [ ! -s /tmp/appledeck_ipa/build.log ] && [ ! -s /tmp/ipa.log ]; then
+              echo "no build log and no script output: the failure was before either"
+            fi
             echo '```'
           } > /tmp/ios-build.md
           git config user.name "ci"

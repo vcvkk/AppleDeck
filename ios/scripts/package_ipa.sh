@@ -128,7 +128,10 @@ else
     echo "  NOTE     UIRequiresFullScreen is set; iPadOS ignores it and letterboxes anyway"
 fi
 for key in UISupportedInterfaceOrientations 'UISupportedInterfaceOrientations~iphone' 'UISupportedInterfaceOrientations~ipad'; do
-    count=$(/usr/libexec/PlistBuddy -c "Print :$key" "$PLIST" 2>/dev/null | grep -c "UIInterfaceOrientation" || true)
+    # plutil, not PlistBuddy: PlistBuddy's key path parser treats '~' as
+    # something other than part of a key name, and the idiomatic keys are exactly
+    # the ones with a '~' in them.
+    count=$(plutil -extract "$key" xml1 -o - "$PLIST" 2>/dev/null | grep -c "UIInterfaceOrientation" || true)
     if [ "${count:-0}" -ge 4 ]; then
         printf "  ok       %-28s %s orientations\n" "$key" "$count"
     else
