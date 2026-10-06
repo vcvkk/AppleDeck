@@ -28,7 +28,11 @@ final class GameSavesTests: XCTestCase {
     private var files = FakeFiles()
     private var reader: SavesReader { SavesReader(files: files, exportsRoot: "/Documents/DroidDeck/Saves") }
 
-    private let prefix = "/root/.local/share/Steam/steamapps/compatdata/1245620/pfx/drive_c"
+    /// The Proton prefix as Steam builds it: .../pfx. The reader appends
+    /// "users/steamuser/..." to it, so a prefix that already ends in drive_c
+    /// would produce paths that exist nowhere - which is exactly what the first
+    /// version of this test did.
+    private let prefix = "/root/.local/share/Steam/steamapps/compatdata/1245620/pfx"
 
     func testFindsOnlyTheDirectoriesThatExist() {
         files.directories = ["\(prefix)/users/steamuser/Documents", "\(prefix)/users/steamuser/AppData"]
