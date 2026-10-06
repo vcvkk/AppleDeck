@@ -140,10 +140,25 @@ Each item names what it unblocks. Nothing here is speculative scaffolding.
    source before writing the patch turned three awkward symbols into five plain
    ones, and it is why the app's bridge knows function names rather than types:
    the next QEMU can move the internals again without touching AppleDeck.
-2. **The bootable guest image** (next). DroidDeck's rootfs is an asset directory the
-   Android app unpacks; the guest needs a disk image, a kernel and an initramfs.
-   The rootfs contents are already right (`tools/linuxfs`), so this is packaging
-   plus a `guest/rootfs.img` build step, and the image itself stays upstream.
+2. **The bootable guest image** — built. `ios/scripts/build_guest_image.sh` takes
+   DroidDeck's own runtime from its own catalogue
+   (`winlator-contents/linuxfs.json`, release `linuxfs-r9`), verifies the sha256,
+   unpacks it and packs it into an ext4 image with `mkfs.ext4 -d`, so the guest is
+   the runtime an Android device would have run, byte for byte. Verified locally:
+   a 6 GiB image with 3.0 GiB used, systemd at `/sbin/init` and the runtime's tree
+   in place.
+
+   The kernel is Alpine's aarch64 netboot pair (`vmlinuz-virt`, `initramfs-virt`),
+   the same one Husk boots and the reason it is not the runtime's own: Arch's
+   aarch64 kernel keeps `virtio_blk` modular and would need an initramfs built for
+   it, while this pair mounts `/dev/vda` and switch_roots out of the box. A kernel
+   is a kernel - the userland that ends up running is the runtime's. The script
+   refuses a kernel whose checksum does not match and says so rather than staging
+   a truncated one.
+
+   What is left of it is not the image: it is whether the runtime's overlay
+   scripts want proot and Android's `/dev`, which inside a real guest are real
+   devices. That is a first-boot-on-a-device question, not a build question.
 3. **Audio.** There is no QEMU audio backend that reaches CoreAudio, and no AAudio
    to sink into. DroidDeck's DirectAudio relay already speaks a file-descriptor
    protocol between a guest `.so` and a host relay; only the host half is

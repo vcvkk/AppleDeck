@@ -17,7 +17,7 @@ what is where.
 | Session screen: Metal presenter, HUD, on-screen controls, game controllers | done |
 | QEMU-TCG guest bridge (`qemu_bridge.c`) | done, against a written QEMU patch |
 | The QEMU patch that exposes input and frames (`ios/patches/0001-appledeck-host-bridge.patch`) | done |
-| Bootable guest image | **not built** - the next thing |
+| Bootable guest image (`ios/scripts/build_guest_image.sh`) | built and verified: DroidDeck's r9 runtime as a bootable ext4 |
 | Audio relay to CoreAudio | not written |
 | Agent bridge HTTP server | not written (the protocol is done and tested) |
 | Unsigned IPA from Actions | builds on every push |
