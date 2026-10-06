@@ -16,6 +16,9 @@ final class InputRouter {
     var sink: ((GuestInput) -> Void)?
 
     private let prefs: Prefs
+    /// The pad this router adopted, so a reconnect replaces its handlers instead
+    /// of stacking another set on top of them.
+    private var padConnected: GCController?
     private var mode: SessionMode = .steam
     private var touchAnchor: CGPoint?
     private var touchMoved = false
@@ -195,43 +198,43 @@ final class InputRouter {
         // East and A is South; an Xbox profile swaps A and B, which is what
         // Proton games want.
         let deck = prefs.controllerProfile == .deck
-        pad.buttonA?.valueChangedHandler = { [weak self] _, _, pressed in
+        pad.buttonA.valueChangedHandler = { [weak self] _, _, pressed in
             self?.send(pressed, Key.btnSouth)
         }
-        pad.buttonB?.valueChangedHandler = { [weak self] _, _, pressed in
+        pad.buttonB.valueChangedHandler = { [weak self] _, _, pressed in
             self?.send(pressed, deck ? Key.btnEast : Key.btnSouth)
         }
-        pad.buttonX?.valueChangedHandler = { [weak self] _, _, pressed in
+        pad.buttonX.valueChangedHandler = { [weak self] _, _, pressed in
             self?.send(pressed, deck ? Key.btnNorth : Key.btnWest)
         }
-        pad.buttonY?.valueChangedHandler = { [weak self] _, _, pressed in
+        pad.buttonY.valueChangedHandler = { [weak self] _, _, pressed in
             self?.send(pressed, deck ? Key.btnWest : Key.btnNorth)
         }
-        pad.leftShoulder?.valueChangedHandler = { [weak self] _, _, pressed in
+        pad.leftShoulder.valueChangedHandler = { [weak self] _, _, pressed in
             self?.send(pressed, Key.shoulderL)
         }
-        pad.rightShoulder?.valueChangedHandler = { [weak self] _, _, pressed in
+        pad.rightShoulder.valueChangedHandler = { [weak self] _, _, pressed in
             self?.send(pressed, Key.shoulderR)
         }
-        pad.leftThumbstickButton?.valueChangedHandler = { [weak self] _, _, pressed in
+        pad.leftThumbstickButton.valueChangedHandler = { [weak self] _, _, pressed in
             self?.send(pressed, Key.thumbL)
         }
-        pad.rightThumbstickButton?.valueChangedHandler = { [weak self] _, _, pressed in
+        pad.rightThumbstickButton.valueChangedHandler = { [weak self] _, _, pressed in
             self?.send(pressed, Key.thumbR)
         }
         // The Steam Deck's own View button. It is the only vendor button with an
         // evdev code of its own (BTN_MODE), and the only one worth guessing at:
         // anything else would send the guest a key it has no use for.
-        pad.buttonHome?.valueChangedHandler = { [weak self] _, _, pressed in
+        pad.buttonHome.valueChangedHandler = { [weak self] _, _, pressed in
             self?.send(pressed, Key.mode)
         }
         // Triggers are digital: a Steam Input profile maps the trigger axis from
         // the digital bit, and a half-pressed trigger read as an axis stutters in
         // every menu.
-        pad.leftTrigger?.valueChangedHandler = { [weak self] _, value, _ in
+        pad.leftTrigger.valueChangedHandler = { [weak self] _, value, _ in
             self?.trigger(value, Key.triggerL)
         }
-        pad.rightTrigger?.valueChangedHandler = { [weak self] _, value, _ in
+        pad.rightTrigger.valueChangedHandler = { [weak self] _, value, _ in
             self?.trigger(value, Key.triggerR)
         }
         pad.dpad.up?.valueChangedHandler = { [weak self] _, _, pressed in
