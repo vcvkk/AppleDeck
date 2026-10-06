@@ -251,7 +251,6 @@ public final class SessionStateMachine: @unchecked Sendable {
             _guestPID = nil
             _installing = nil
         }
-        let previous = _phase
         let at = explicitTime ?? now()
         if allowed {
             _phase = .preparing
@@ -419,7 +418,10 @@ public struct SessionArtifacts: Equatable, Sendable {
 /// and a harness reading `.session.logDir` would get nothing at all. At file
 /// scope: an extension is not valid inside a type.
 extension KeyedEncodingContainer {
-    func encodeOrNull<T: Encodable>(_ value: T?, forKey key: Key) throws {
+    // mutating: KeyedEncodingContainer is a struct, and encodeNil and encode both
+    // change it. Declaring it otherwise is the compiler's "cannot use mutating
+    // member on immutable value".
+    mutating func encodeOrNull<T: Encodable>(_ value: T?, forKey key: Key) throws {
         guard let value else {
             try encodeNil(forKey: key)
             return
