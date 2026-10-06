@@ -129,6 +129,29 @@ jobs:
         with:
           fetch-depth: 0
 
+      # The newest Xcode on the image, not the default one. The default tracks
+      # whatever the image shipped with, and an app built against an older
+      # SDK gets letterboxed by the newer iOS it is installed on: black bars top
+      # and bottom, everything scaled up. That is not something the build should
+      # be able to get wrong silently, so the version is chosen here and printed.
+      - name: Newest Xcode
+        run: |
+          set -euo pipefail
+          best=""
+          best_version="0"
+          for app in /Applications/Xcode*.app; do
+            [ -d "$app" ] || continue
+            version=$(plutil -extract CFBundleShortVersionString raw "$app/Contents/Info.plist" 2>/dev/null || echo 0)
+            if [ "$(printf '%s\n%s\n' "$best_version" "$version" | sort -V | tail -1)" = "$version" ]; then
+              best="$app"
+              best_version="$version"
+            fi
+          done
+          [ -n "$best" ] || { echo "no Xcode on this image" >&2; exit 1; }
+          sudo xcode-select -s "$best"
+          echo "DEVELOPER_DIR=$best" >> "$GITHUB_ENV"
+          xcodebuild -version
+
       - name: XcodeGen
         run: |
           set -euo pipefail

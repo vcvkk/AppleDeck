@@ -152,6 +152,17 @@ Each item names what it unblocks. Nothing here is speculative scaffolding.
    models; the screens still to write.
 6. **A second backend** (Madeira, §1) behind `GuestRuntime`.
 
+### The letterbox, and why the build pins its Xcode
+
+An IPA installed on iOS 26 came out with black bars above and below and
+everything drawn too large. That is not a layout bug: iOS runs an app with no
+launch screen in the old 320x480 compatibility mode, which letterboxes it and
+caps it out of the full screen a session needs. The two fixes are a real
+`LaunchScreen.storyboard` and building against the newest Xcode on the runner
+rather than the default one - an app built against an older SDK gets letterboxed
+by the newer iOS it lands on. Both are in place, and the CI prints the Xcode it
+chose so a regression is visible in the log rather than on somebody's phone.
+
 ### Performance, honestly
 
 | What | Expectation |

@@ -29,6 +29,13 @@
 		<integer>1</integer>
 		<integer>2</integer>
 	</array>
+	<!-- A launch screen is not decoration: an app without one runs in the old
+	     320x480 compatibility mode, which is the black bars top and bottom with
+	     everything scaled up. The storyboard wins over the UILaunchScreen
+	     dictionary, so both are declared and the colour exists in the catalogue
+	     either way. -->
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
@@ -70,6 +77,12 @@
 	<true/>
 	<key>GCSupportsWirelessControllers</key>
 	<true/>
+	<!-- The agent bridge listens on the loopback interface so a Mac can drive a
+	     session. Loopback alone is exempt on iOS, but the bridge may be reached
+	     from another device on the network during testing, and a prompt that
+	     appears only then is a prompt nobody debugs. -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>AppleDeck uses the local network only so a computer on the same Wi-Fi can drive a session over the agent bridge.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>AppleDeck needs the microphone for Steam voice chat and in-game voice.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
