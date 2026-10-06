@@ -37,10 +37,13 @@ echo "==> building"
 # The log is written, then read.
 build_app() {
     local status=0
+    # tee, not a redirect: a plain > sends xcodebuild's own diagnostics down a
+    # pipe it does not own, and it died on a broken pipe while writing the log of
+    # a build that had already succeeded.
     xcodebuild -project "$APPLEDECK_ROOT/AppleDeck.xcodeproj" -scheme AppleDeck \
         -sdk iphoneos -configuration Release -derivedDataPath "$DD" \
         CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-        build > "$DD/build.log" 2>&1 || status=$?
+        build 2>&1 | tee "$DD/build.log" || status=$?
     grep -E "error:|BUILD (SUCCEEDED|FAILED)" "$DD/build.log" || true
     return $status
 }
