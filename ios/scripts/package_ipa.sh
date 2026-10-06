@@ -31,11 +31,18 @@ echo "==> building"
 # three, and only a single file with twenty of them is cut short. Xcode 26 has no
 # -error-limit frontend flag to raise even that, so this is as close as the
 # toolchain gets.
+# No pipeline here. `xcodebuild | tee | grep` is the obvious way to get a log and
+# a console summary, and it takes the build down with a SIGPIPE the moment the
+# reader stops reading - which cost one build and looked like a compile failure.
+# The log is written, then read.
 build_app() {
+    local status=0
     xcodebuild -project "$APPLEDECK_ROOT/AppleDeck.xcodeproj" -scheme AppleDeck \
         -sdk iphoneos -configuration Release -derivedDataPath "$DD" \
         CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-        build 2>&1 | tee "$DD/build.log" | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
+        build > "$DD/build.log" 2>&1 || status=$?
+    grep -E "error:|BUILD (SUCCEEDED|FAILED)" "$DD/build.log" || true
+    return $status
 }
 
 build_app
