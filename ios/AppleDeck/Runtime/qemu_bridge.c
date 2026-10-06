@@ -116,8 +116,8 @@ void AppleDeckQemuSetCallbacks(AppleDeckFrameFn frame, AppleDeckEventFn event) {
     qemu.event = event;
     AppleDeckFrameFn frameCopy = frame;
     AppleDeckEventFn eventCopy = event;
-    AppleDeck_set_frame_callback_fn setFrame = qemu.set_frame_callback;
-    AppleDeck_set_event_callback_fn setEvent = qemu.set_event_callback;
+    appledeck_set_frame_callback_fn setFrame = qemu.set_frame_callback;
+    appledeck_set_event_callback_fn setEvent = qemu.set_event_callback;
     pthread_mutex_unlock(&qemu.lock);
     /* The frame callback has to be registered from inside QEMU: its display
        listener is built from types that only exist there. The copy handed over
