@@ -50,12 +50,36 @@ need() {
     }
 }
 
-# Homebrew keeps its filesystem tools in the keg's sbin, which is not on PATH -
-# so brew install succeeding and mkfs.ext4 still being "not found" is the normal
-# outcome on a Mac, not a broken install.
-if command -v brew >/dev/null 2>&1; then
-    export PATH="$(brew --prefix)/sbin:$PATH"
-fi
+# Tools first, and by the script rather than by a step in the workflow.
+#
+# Two things are true on a Mac and neither is obvious: Homebrew keeps the
+# filesystem tools in the keg's sbin, which is not on PATH, and it installs them
+# happily. So `brew install` can succeed, mkfs.ext4 can be on disk, and every
+# shell after it can still say "command not found". Owning it here means the
+# script works the same in CI, on a Mac and on Linux, and the workflow does not
+# have to get an ordering right.
+ensure_tools() {
+    if command -v brew >/dev/null 2>&1; then
+        export PATH="$(brew --prefix)/sbin:$(brew --prefix)/opt/e2fsprogs/sbin:$PATH"
+    fi
+    local missing=0
+    for tool in "$@"; do
+        command -v "$tool" >/dev/null 2>&1 || missing=1
+    done
+    if [ "$missing" -eq 0 ]; then
+        return 0
+    fi
+    if command -v brew >/dev/null 2>&1; then
+        echo "==> installing what is missing" >&2
+        brew install e2fsprogs zstd >&2 || true
+        export PATH="$(brew --prefix)/sbin:$(brew --prefix)/opt/e2fsprogs/sbin:$PATH"
+    fi
+    if command -v apt-get >/dev/null 2>&1 && [ "$(id -u)" = 0 ]; then
+        apt-get install -y e2fsprogs zstd >&2 || true
+    fi
+}
+
+ensure_tools mkfs.ext4 tune2fs e2fsck zstd tar curl
 
 mkdir -p "$GUEST"
 need curl curl curl

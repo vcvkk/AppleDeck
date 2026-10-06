@@ -199,42 +199,21 @@ jobs:
           key: guest-${{ env.GUEST_CACHE_VERSION }}-${{ hashFiles('ios/scripts/build_guest_image.sh') }}
           restore-keys: guest-${{ env.GUEST_CACHE_VERSION }}-
 
-      # The image is packed with mkfs.ext4, which is a Linux tool: on a macOS
-      # runner it has to come from Homebrew, and without this the guest build
-      # stops on the first missing command rather than on anything interesting.
-      - name: Tools for the guest build
-        if: ${{ github.event_name == 'schedule' || inputs.guest == true }}
+      # Advisory only. The script installs and finds its own tools, because the
+      # two facts about Homebrew - it installs successfully and puts the
+      # filesystem tools in a sbin that is not on PATH - make a step that
+      # installs them wrong in a way that looks like success.
+      - name: Report on the host's tools
+        if: ${{ github.event_name == 'schedule' || inputs.guest == true || contains(github.event.head_commit.message, 'guest build') }}
         run: |
-          set -euo pipefail
-          # Everything this step learns goes to a file the failure report reads,
-          # so a failure here explains itself without a signed-in session.
           {
             echo "host: $(uname -a)"
             echo "brew: $(command -v brew || echo none)"
             brew --prefix 2>&1 || true
             echo "PATH=$PATH"
-            brew install e2fsprogs zstd 2>&1
-            echo "after install, sbin:"
-            ls "$(brew --prefix)/sbin" 2>&1 | head -30
-            echo "after install, keg:"
-            ls "$(brew --prefix)/opt/e2fsprogs/sbin" 2>&1 | head -30
           } 2>&1 | tee /tmp/tools.log
-          echo "$(brew --prefix)/sbin" >> "$GITHUB_PATH"
-          echo "$(brew --prefix)/opt/e2fsprogs/sbin" >> "$GITHUB_PATH"
-          # Homebrew's filesystem tools live in the keg's sbin, which is not on
-          # PATH: brew install succeeds, mkfs.ext4 is on disk, and every shell
-          # after it says "command not found". Putting the directory on PATH is
-          # the whole fix, and checking afterwards is what proves it.
-          echo "$(brew --prefix)/sbin" >> "$GITHUB_PATH"
-          echo "$(brew --prefix)/opt/e2fsprogs/sbin" >> "$GITHUB_PATH"
-          echo "PATH now includes: $(brew --prefix)/sbin"
-          command -v mkfs.ext4 || ls "$(brew --prefix)/sbin" | grep mkfs || true
-          mkfs.ext4 -V 2>&1 | head -2
+          command -v mkfs.ext4 || ls "$(brew --prefix)/sbin" 2>/dev/null | head -20 || true
 
-      # Three ways in: the nightly/hourly schedule, the dispatch input, or a
-      # commit that touches ios/GUEST-BUILD. The last one exists because GitHub's
-      # scheduler did not fire a single run on this fork, and a guest that is
-      # never built looks exactly like a guest that does not work.
       - name: Build the guest runtime
         if: ${{ github.event_name == 'schedule' || inputs.guest == true || contains(github.event.head_commit.message, 'guest build') }}
         run: |
