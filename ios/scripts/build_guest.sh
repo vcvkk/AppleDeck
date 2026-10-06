@@ -68,11 +68,33 @@ for p in "$APPLEDECK_ROOT"/patches/*.patch; do
 done
 
 step "dependencies"
-# libffi glib pixman libucontext libslirp, ANGLE, then libepoxy + virglrenderer.
-"$HUSK_SRC/scripts/build_ios.sh" libffi glib pixman libucontext libslirp
+# The sources first. Husk's build script builds out of third_party/build, and
+# nothing else fetches them - so without this step every autotools package fails
+# with a configure error about a directory that was never downloaded, which reads
+# like a broken build rather than a missing download.
+"$HUSK_SRC/scripts/fetch_sources.sh"
 
-step "QEMU"
-"$HUSK_SRC/scripts/build_ios.sh" qemu
+step "build libffi glib pixman libucontext libslirp"
+# On failure the dependency's own log is printed: Husk writes one per package,
+# and "[FAIL] libffi" on its own says nothing about why.
+if ! "$HUSK_SRC/scripts/build_ios.sh" libffi glib pixman libucontext libslirp; then
+    for log in "$HUSK_SRC"/build/logs/*.log; do
+        [ -e "$log" ] || continue
+        echo "=== $(basename "$log") ===" >&2
+        tail -40 "$log" >&2
+    done
+    exit 1
+fi
+
+step "build QEMU"
+if ! "$HUSK_SRC/scripts/build_ios.sh" qemu; then
+    for log in "$HUSK_SRC"/build/logs/*.log; do
+        [ -e "$log" ] || continue
+        echo "=== $(basename "$log") ===" >&2
+        tail -40 "$log" >&2
+    done
+    exit 1
+fi
 
 step "stage"
 # Husk stages into build/ios-arm64/lib; the app expects the dylib in its
