@@ -1,7 +1,7 @@
 # Unsigned IPA: build failed
 
 commit: c1a0baf6ac2224eff0feded8d124a2dbe68df29a
-run: https://github.com/vcvkk/AppleDeck/actions/runs/37552666194
+run: https://github.com/vcvkk/AppleDeck/actions/runs/37585290367
 
 ## compiler
 
@@ -11,7 +11,7 @@ run: https://github.com/vcvkk/AppleDeck/actions/runs/37552666194
 ## host tools
 
 ```
-host: Darwin iad20-fj925-5a4fe024-54c9-4f33-a27c-59e11a74d58d-AAA26E210E01.local 24.6.0 Darwin Kernel Version 24.6.0: Tue Jul 21 20:51:34 PDT 2026; root:xnu-11417.140.69.711.44~1/RELEASE_ARM64_VMAPPLE arm64
+host: Darwin iad20-fj923-82be39b2-f958-4636-a454-cc169d836a86-A237B4A47CB3.local 24.6.0 Darwin Kernel Version 24.6.0: Tue Jul 21 20:51:34 PDT 2026; root:xnu-11417.140.69.711.44~1/RELEASE_ARM64_VMAPPLE arm64
 brew: /opt/homebrew/bin/brew
 /opt/homebrew
 PATH=/opt/homebrew/lib/ruby/gems/3.3.0/bin:/opt/homebrew/opt/ruby@3.3/bin:/Users/runner/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/runner/.cargo/bin:/usr/local/opt/curl/bin:/usr/local/bin:/usr/local/sbin:/Users/runner/bin:/Users/runner/.yarn/bin:/Users/runner/Library/Android/sdk/tools:/Users/runner/Library/Android/sdk/platform-tools:/Library/Frameworks/Python.framework/Versions/Current/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/bin:/bin:/usr/sbin:/sbin:/Users/runner/.dotnet/tools
@@ -56,8 +56,8 @@ linuxfs-r9 https://github.com/The412Banner/winlator-contents/releases/download/l
 ==> downloading https://github.com/The412Banner/winlator-contents/releases/download/linuxfs-r9/linuxfs.tar.zst
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
- 15  754M   15  115M    0     0  90.8M      0  0:00:08  0:00:01  0:00:07 90.8M 33  754M   33  250M    0     0   110M      0  0:00:06  0:00:02  0:00:04  135M 48  754M   48  366M    0     0   112M      0  0:00:06  0:00:03  0:00:03  125M 62  754M   62  474M    0     0   111M      0  0:00:06  0:00:04  0:00:02  119M 81  754M   81  616M    0     0   117M      0  0:00:06  0:00:05  0:00:01  125M 98  754M   98  742M    0     0   118M      0  0:00:06  0:00:06 --:--:--  125M100  754M  100  754M    0     0   119M      0  0:00:06  0:00:06 --:--:--  124M
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  6  754M    6 46.2M    0     0  65.0M      0  0:00:11 --:--:--  0:00:11 65.0M 25  754M   25  189M    0     0   110M      0  0:00:06  0:00:01  0:00:05  143M 40  754M   40  308M    0     0   113M      0  0:00:06  0:00:02  0:00:04  131M 60  754M   60  458M    0     0   123M      0  0:00:06  0:00:03  0:00:03  137M 79  754M   79  597M    0     0   126M      0  0:00:05  0:00:04  0:00:01  137M 99  754M   99  746M    0     0   130M      0  0:00:05  0:00:05 --:--:--  140M100  754M  100  754M    0     0   131M      0  0:00:05  0:00:05 --:--:--  139M
 linuxfs.tar.zst: OK
 
 [1;34m##### unpack[0m
@@ -92,9 +92,9 @@ note: no steam binary at /usr/bin/steam; checking what is there
 [1;34m##### the image[0m
 
 [1;34m##### the kernel and initramfs[0m
-  total 7820984
-  -rw-r--r--  1 runner  staff   790907606 Oct  7 00:35 linuxfs.tar.zst
-  -rw-r--r--  1 runner  staff  6442450944 Oct  7 00:36 rootfs.img
+  total 7794328
+  -rw-r--r--  1 runner  staff   790907606 Oct  7 07:07 linuxfs.tar.zst
+  -rw-r--r--  1 runner  staff  6442450944 Oct  7 07:08 rootfs.img
 
 ==> guest staged in /Users/runner/work/AppleDeck/AppleDeck/ios/build/guest
     runtime   r9
@@ -105,7 +105,7 @@ note: no steam binary at /usr/bin/steam; checking what is there
 [1;34m##### sources[0m
 Cloning into '/Users/runner/work/AppleDeck/AppleDeck/ios/build/qemu-utl'...
 warning: refs/tags/v10.2.4 b4263afc43e952223d93ac89929669ab9b56b2f2 is not a commit!
-Updating files:  49% (5386/10923)Updating files:  50% (5462/10923)Updating files:  51% (5571/10923)Updating files:  52% (5680/10923)Updating files:  53% (5790/10923)Updating files:  54% (5899/10923)Updating files:  55% (6008/10923)Updating files:  56% (6117/10923)Updating files:  57% (6227/10923)Updating files:  58% (6336/10923)Updating files:  59% (6445/10923)Updating files:  60% (6554/10923)Updating files:  61% (6664/10923)Updating files:  62% (6773/10923)Updating files:  63% (6882/10923)Updating files:  64% (6991/10923)Updating files:  65% (7100/10923)Updating files:  66% (7210/10923)Updating files:  67% (7319/10923)Updating files:  68% (7428/10923)Updating files:  69% (7537/10923)Updating files:  70% (7647/10923)Updating files:  71% (7756/10923)Updating files:  72% (7865/10923)Updating files:  73% (7974/10923)Updating files:  74% (8084/10923)Updating files:  75% (8193/10923)Updating files:  76% (8302/10923)Updating files:  77% (8411/10923)Updating files:  78% (8520/10923)Updating files:  79% (8630/10923)Updating files:  80% (8739/10923)Updating files:  81% (8848/10923)Updating files:  82% (8957/10923)Updating files:  83% (9067/10923)Updating files:  84% (9176/10923)Updating files:  85% (9285/10923)Updating files:  86% (9394/10923)Updating files:  87% (9504/10923)Updating files:  88% (9613/10923)Updating files:  88% (9655/10923)Updating files:  89% (9722/10923)Updating files:  90% (9831/10923)Updating files:  91% (9940/10923)Updating files:  92% (10050/10923)Updating files:  93% (10159/10923)Updating files:  94% (10268/10923)Updating files:  95% (10377/10923)Updating files:  96% (10487/10923)Updating files:  97% (10596/10923)Updating files:  98% (10705/10923)Updating files:  99% (10814/10923)Updating files: 100% (10923/10923)Updating files: 100% (10923/10923), done.
+Updating files:  39% (4343/10923)Updating files:  40% (4370/10923)Updating files:  41% (4479/10923)Updating files:  42% (4588/10923)Updating files:  43% (4697/10923)Updating files:  44% (4807/10923)Updating files:  45% (4916/10923)Updating files:  46% (5025/10923)Updating files:  47% (5134/10923)Updating files:  48% (5244/10923)Updating files:  49% (5353/10923)Updating files:  50% (5462/10923)Updating files:  51% (5571/10923)Updating files:  52% (5680/10923)Updating files:  53% (5790/10923)Updating files:  54% (5899/10923)Updating files:  55% (6008/10923)Updating files:  56% (6117/10923)Updating files:  57% (6227/10923)Updating files:  58% (6336/10923)Updating files:  59% (6445/10923)Updating files:  60% (6554/10923)Updating files:  61% (6664/10923)Updating files:  62% (6773/10923)Updating files:  63% (6882/10923)Updating files:  64% (6991/10923)Updating files:  65% (7100/10923)Updating files:  66% (7210/10923)Updating files:  67% (7319/10923)Updating files:  68% (7428/10923)Updating files:  69% (7537/10923)Updating files:  70% (7647/10923)Updating files:  71% (7756/10923)Updating files:  72% (7865/10923)Updating files:  73% (7974/10923)Updating files:  74% (8084/10923)Updating files:  74% (8190/10923)Updating files:  75% (8193/10923)Updating files:  76% (8302/10923)Updating files:  77% (8411/10923)Updating files:  78% (8520/10923)Updating files:  79% (8630/10923)Updating files:  80% (8739/10923)Updating files:  81% (8848/10923)Updating files:  82% (8957/10923)Updating files:  83% (9067/10923)Updating files:  84% (9176/10923)Updating files:  85% (9285/10923)Updating files:  86% (9394/10923)Updating files:  87% (9504/10923)Updating files:  88% (9613/10923)Updating files:  89% (9722/10923)Updating files:  90% (9831/10923)Updating files:  91% (9940/10923)Updating files:  92% (10050/10923)Updating files:  93% (10159/10923)Updating files:  94% (10268/10923)Updating files:  95% (10377/10923)Updating files:  96% (10487/10923)Updating files:  97% (10596/10923)Updating files:  98% (10705/10923)Updating files:  99% (10814/10923)Updating files: 100% (10923/10923)Updating files: 100% (10923/10923), done.
 Cloning into '/Users/runner/work/AppleDeck/AppleDeck/ios/build/husk'...
 
 [1;34m##### AppleDeck's QEMU patch[0m
