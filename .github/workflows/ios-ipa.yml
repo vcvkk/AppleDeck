@@ -4,13 +4,6 @@ run-name: ${{ github.event_name == 'pull_request' && format('ipa for pr {0} at {
 # The Android build is untouched: this workflow only adds an iOS one, so a push
 # that changes nothing under ios/ does not pay for a macOS runner.
 on:
-  schedule:
-    # Hourly while the guest build is being brought up, because it is the only way
-    # to find out whether it works: it takes hours on the first run, minutes after
-    # that, and nothing else in CI exercises it. Relax this back to a nightly once
-    # a run has succeeded - it is here because a guest that is never built is
-    # indistinguishable from a guest that does not work.
-    - cron: "7 * * * *"
   push:
     branches: [ main ]
     paths:
